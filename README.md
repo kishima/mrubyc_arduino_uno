@@ -13,6 +13,9 @@ https://silentworlds.info/2018/10/26/hacked-mruby-c-can-work-on-arduino-uno/
 mruby/c  
 https://www.s-itoc.jp/activity/research/mrubyc/  
 
+mruby  
+http://mruby.org/  
+
 IchigoJam  
 https://ichigojam.net/  
 
@@ -43,7 +46,7 @@ You will get the TransCoder.
 
 ## Compile target mruby code
 
-Compile your target mruby code by mrbc ver1.3.0/1.4.0/1.4.1. (ver2.0.0 or higher version is not supported since the bytecode format is updated.)
+Compile your target mruby code by mrbc ver1.3.0/1.4.0/1.4.1. (ver2.0.0 or higher version is not supported since the bytecode format.)
 
 ```
 $ mrbc code.rb
@@ -55,7 +58,7 @@ $ mrbc code.rb
 $ Transcode code.mrb
 ```
 
-It will make two files "code.h" and "symbol_ids.h" in ../src directory.
+It will make two files "code.h" and "symbol_ids.h" in "../src" directory.
 
 ## Make a binary
 
@@ -72,8 +75,7 @@ void main() {
 ```
 
 ```
-make write
+$ make write
 ```
 
-To run it on IchigoCake!
-
+To run it on IchigoCake! (IchigoJam TBD!)  
