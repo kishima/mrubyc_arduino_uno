@@ -1,19 +1,34 @@
-# micro mruby for arduino uno
+# mmruby for IchigoJam / IchigoCake
 
-This is my experimental project to show that mruby/c can work on Arduino Uno, which has 2KB RAM.
-I call it "micro mruby", which is a subset of mruby/c with a lot of limitation.
+This project is to run mruby/c on IchigoJam (LPC1114FN28/FDH28 by NXP) or IchigoCake (LPC1114FHN33 by NXP), which has 4KB/8KB RAM. (4KB version is TBD)
+"micro mruby" or "mmruby" is a subset of mruby/c with a lot of limitation.
+This project is based on "micro mruby for Arduino Uno".
+"micro mruby for Arduino Uno" is a subset of mruby/c with a lot of limitations.  
+
+Be careful! This is still very buggy!!  
+
+micro mruby for Arduino Uno  
+https://silentworlds.info/2018/10/26/hacked-mruby-c-can-work-on-arduino-uno/  
+
+mruby/c  
+https://www.s-itoc.jp/activity/research/mrubyc/  
+
+IchigoJam  
+https://ichigojam.net/  
 
 # Required environment
 
-* Arduino Uno
-* Arduino IDE
+* IchigoCake (IchigoJam TBD)
+* USB-Serial adapter
 * Complile environment for C (gcc, make)
 
 # How to run it?
 
 ## Install
 
-Copy micro_mruby_for_arduino_uno to the Arduino library folder like other libraries.
+```
+$ make all write
+```
 
 ## Prepare a transcoder tool
 
@@ -28,7 +43,7 @@ You will get the TransCoder.
 
 ## Compile target mruby code
 
-Please compile your target mruby code. I confirmed it with mruby ver1.3. Latest master version is not supported since the bytecode format is updated.
+Compile your target mruby code by mrbc ver1.3.0/1.4.0/1.4.1. (ver2.0.0 or higher version is not supported since the bytecode format is updated.)
 
 ```
 $ mrbc code.rb
@@ -40,20 +55,25 @@ $ mrbc code.rb
 $ Transcode code.mrb
 ```
 
-It will make to files in /src. They are "code.h" and "symbol_ids.h".
+It will make two files "code.h" and "symbol_ids.h" in ../src directory.
 
 ## Make a binary
 
-Open Ardiono IDE. Implement the following sketch.
+```
+$ make
+```
 
 ```C
-#include "mmruby_arduino.h"
-void setup()
-{
+#include "mmruby_lpc1114.h"
+void main() {
 	mmruby_setup();
 	mmruby_run();
 }
-void loop(){}
 ```
 
-Then compile and run it on Arduino Uno.
+```
+make write
+```
+
+To run it on IchigoCake!
+

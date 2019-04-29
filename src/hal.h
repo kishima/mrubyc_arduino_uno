@@ -6,7 +6,7 @@
 void init_hal();
 void hal_delay(int msec);
 int hal_write(int fd, const void *buf, int nbytes);
-inline static int hal_flush(int fd){}
+inline static int hal_flush(int fd) { return 0; }
 void hal_write_string(char* text);
 
 #endif // ifndef MRBC_HAL_H_

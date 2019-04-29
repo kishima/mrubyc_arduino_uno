@@ -1,4 +1,4 @@
-#include <Arduino.h>
+//#include <Arduino.h>
 #include "console.h"
 #include "hal.h"
 #include "debug.h"
@@ -6,18 +6,19 @@
 
 void init_hal(){
 #ifdef MMRUBY_DEBUG_ENABLE
-  Serial.begin(SERIAL_FOR_STDIO_BAUDRATE);
-  delay(1000);
+  //Serial.begin(SERIAL_FOR_STDIO_BAUDRATE);
+  //delay(1000);
   DEBUG_FPRINTLN("Debug Serial enabled");
 #endif
 }
 
 void hal_delay(int msec){
-  delay(msec);
+  //delay(msec);
 }
 
 void hal_write_string(char* text){
-  Serial.print(text);
+  //Serial.print(text);
+  printf(text);
 }
 
 int hal_write(int fd, const void *buf, int nbytes){
@@ -37,15 +38,18 @@ int hal_write(int fd, const void *buf, int nbytes){
 #ifdef MMRUBY_DEBUG_ENABLE
 
 void debug_print(char* text){
-  Serial.print(text);
+//  Serial.print(text);
+  DEBUG_PRINT(text);
 }
 
 void debug_println(char* text){
-  Serial.println(text);
+//  Serial.println(text);
+  DEBUG_PRINTLN(text);
 }
 
 void debug_printb(unsigned char byte){
-  Serial.print(byte);
+//  Serial.print(byte);
+  printf("%x\n", byte);
 }
 
 #endif

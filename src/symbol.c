@@ -64,7 +64,7 @@ mrb_sym search_index_dynamic(const char* str){
   return INVALID_SYMBOL;
 }
 
-inline mrb_sym search_index(const char* str){
+xinline mrb_sym search_index(const char* str){
   mrb_sym sym_id = search_index_static(str);
   if(INVALID_SYMBOL!=sym_id) return sym_id;
   

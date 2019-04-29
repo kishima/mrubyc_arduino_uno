@@ -1,4 +1,4 @@
-#include <stdio.h>
+//#include <stdio.h>
 
 #include <stdint.h>
 #include <stddef.h>
@@ -15,8 +15,8 @@
 
 #include "c_string.h"
 
-#include <Arduino.h>
-#include <avr/pgmspace.h>
+//#include <Arduino.h>
+//#include <avr/pgmspace.h>
 
 //Only one VM is available
 static mrb_mvm vm_body;
@@ -426,7 +426,6 @@ inline static int op_jmpnot( mrb_mvm *vm, uint32_t code, mrb_value *regs )
   return 0;
 }
 
-
 inline static int op_send( mrb_mvm *vm, uint32_t code, mrb_value *regs )
 {
   int ra = GETARG_A(code);
@@ -458,12 +457,13 @@ inline static int op_send( mrb_mvm *vm, uint32_t code, mrb_value *regs )
   //cprintf("find sym:%d ra=%d\n", sym_id, ra);
   mrb_proc *m = find_method(recv, sym_id);
   
+//  printf("method: %x\n", m);
   if( m == 0 ) {
     cprintf("MethodNotFound %d\n", sym_id);
     return 0;
   }
   
-  if(IS_PGM(m)){
+  if (IS_PGM(m)){ // 組み込み？ < 0x100
     mrb_func_t func = find_c_funcs(m);
     //cprintf("pgm %d %p\n",m,func);delay(500);
     func(vm, regs + ra, rc);
@@ -535,7 +535,7 @@ inline static int op_return( mrb_mvm *vm, uint32_t code, mrb_value *regs )
   // restore irep,pc,regs
   vm->callinfo_top--;
   mrb_callinfo *callinfo = vm->callinfo + vm->callinfo_top;
-  mrb_value *regs_ptr = vm->current_regs;
+  //mrb_value *regs_ptr = vm->current_regs;
   vm->current_regs = callinfo->current_regs;
 
   vm->pc_irep = callinfo->pc_irep;
@@ -990,6 +990,7 @@ void run_vm(void){
     
     // Dispatch
     uint32_t opcode = GET_OPCODE(code);
+printf("%x %x\n", code, opcode);
 #ifdef SHOW_OPCODE
     show_opcode_name(vm,opcode);
 #endif

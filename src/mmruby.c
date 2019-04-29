@@ -6,6 +6,8 @@
 #include "debug.h"
 #include "console.h"
 
+//#include <stdio.h>
+
 void mmruby_setup(){
   init_hal();
   init_symbol_table();

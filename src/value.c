@@ -61,7 +61,7 @@ mrb_proc *mrbc_rproc_alloc(const char *name)
 */
 int mrbc_compare(const mrb_value *v1, const mrb_value *v2)
 {
-  double d1, d2;
+//  double d1, d2;
 
   // if TT_XXX is different
   if( v1->tt != v2->tt ) {

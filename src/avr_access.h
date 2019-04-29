@@ -4,6 +4,11 @@
 #include <stdint.h>
 #include "value.h"
 
+#define pgm_read_byte_near(address) (*(uint8_t*)(address))
+#define pgm_read_word_near(address) (*(uint16_t*)(address))
+#define pgm_read_dword_near(address) (*(uint32_t*)(address))
+#define PROGMEM
+
 #define IS_PGM(x) (((short)x)<0x0100)
 
 //access irep

@@ -63,6 +63,7 @@ mrb_class *find_class_by_object(mrb_object *obj)
 
 mrb_proc *find_method(mrb_value recv, mrb_sym sym_id)
 {
+//  printf("find_method %d %d\n", recv, sym_id);
   mrb_class *cls = find_class_by_object(&recv);
   //cprintf("cls=%p\n",cls);
 

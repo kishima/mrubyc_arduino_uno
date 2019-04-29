@@ -21,12 +21,12 @@ void class_arduino_delay(mrb_mvm *vm, mrb_value *v, int argc )
 { 
 	//DEBUG_FPRINTLN(">delay");
 	int d=GET_INT_ARG(1);
-	delay(d);
+	//delay(d);
 	SET_TRUE_RETURN();
 }
 
 static uint8_t sym_to_pinmode(mrb_sym sym_in){
-	uint8_t mode = INPUT;
+/*	uint8_t mode = INPUT;
 
 	if(sym_in == MRBC_SSYM_INPUT){
 		mode = INPUT;
@@ -36,9 +36,12 @@ static uint8_t sym_to_pinmode(mrb_sym sym_in){
 		mode = INPUT_PULLUP;
 	}
 	return mode;
+	*/
+	return 0;
 }
 
 static uint8_t sym_to_siglevel(mrb_sym sym_in){
+	/*
 	uint8_t sig = LOW;
 
 	if(sym_in == MRBC_SSYM_HIGH){
@@ -47,10 +50,13 @@ static uint8_t sym_to_siglevel(mrb_sym sym_in){
 		sig = LOW;
 	}
 	return sig;
+	*/
+	return 0;
 }
 
 void class_arduino_pin_mode(mrb_mvm *vm, mrb_value *v, int argc )
 {
+	/*
  	int pin = 0;
 	if(GET_TT_ARG(1) == MRB_TT_FIXNUM){
 		pin = GET_INT_ARG(1);
@@ -71,11 +77,13 @@ void class_arduino_pin_mode(mrb_mvm *vm, mrb_value *v, int argc )
 	uint8_t mode = sym_to_pinmode( sym_in );
 	
 	pinMode(pin,mode);
+	*/
 	SET_TRUE_RETURN();
 }
 
 void class_arduino_digital_write(mrb_mvm *vm, mrb_value *v, int argc )
 {
+	/*
 	int pin = 0;
 	if(GET_TT_ARG(1) == MRB_TT_FIXNUM){
 		pin = GET_INT_ARG(1);
@@ -96,10 +104,12 @@ void class_arduino_digital_write(mrb_mvm *vm, mrb_value *v, int argc )
 	//cprintf("dwrite %d %d\n",pin,sig);
 
 	digitalWrite(pin,sig);
+	*/
 	SET_TRUE_RETURN();
 }
 void class_arduino_digital_read(mrb_mvm *vm, mrb_value *v, int argc )
 {
+	/*
 	int pin = 0;
 	if(GET_TT_ARG(1) == MRB_TT_FIXNUM){
 		pin = GET_INT_ARG(1);
@@ -110,6 +120,8 @@ void class_arduino_digital_read(mrb_mvm *vm, mrb_value *v, int argc )
 	uint8_t sig = INPUT;
 	sig = digitalRead(pin);
 	SET_INT_RETURN(sig);
+	*/
+	SET_INT_RETURN(0);
 }
 
 void mrbc_init_class_arduino(void)

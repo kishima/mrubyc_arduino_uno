@@ -406,3 +406,67 @@ void mrbc_init_class_object(){
 #endif
   
 }
+
+// add by taisukef
+
+void emb_led(int n);
+void emb_wait(int n);
+
+void c_object_cls(mrb_mvm *vm, mrb_value v[], int argc) {
+//  printf("cls\n");
+}
+void c_object_lc(mrb_mvm *vm, mrb_value v[], int argc) {
+  int32_t n = GET_INT_ARG(1);
+  int32_t m = GET_INT_ARG(2);
+//  printf("lc %d,%d\n", n, m);
+}
+void c_object_scr(mrb_mvm *vm, mrb_value v[], int argc) {
+  int32_t n = GET_INT_ARG(1);
+  int32_t m = GET_INT_ARG(2);
+//  printf("scr(%d,%d)\n", n, m);
+  SET_INT_RETURN(0);
+}
+void c_object_print(mrb_mvm *vm, mrb_value v[], int argc) {
+//  printf("print\n");
+}
+void c_object_rnd(mrb_mvm *vm, mrb_value v[], int argc) {
+  int32_t n = GET_INT_ARG(1);
+//  printf("rnd(%d)\n", n);
+  SET_INT_RETURN(0);
+}
+void c_object_inkey(mrb_mvm *vm, mrb_value v[], int argc) {
+//  printf("inkey\n");
+  SET_INT_RETURN(0);
+}
+void c_object_wait(mrb_mvm *vm, mrb_value v[], int argc) {
+  int32_t n = GET_INT_ARG(1);
+  emb_wait(n);
+//  printf("wait %d\n", n);
+}
+void c_object_led(mrb_mvm *vm, mrb_value v[], int argc) {
+  int32_t n = GET_INT_ARG(1);
+  emb_led(n);
+//  printf("led %d\n", n);
+}
+void c_object_out(mrb_mvm *vm, mrb_value v[], int argc) {
+  int32_t n = GET_INT_ARG(1);
+  int32_t m = GET_INT_ARG(2);
+//  printf("out %d, %d\n", n, m);
+ //SET_RETURN(0);
+}
+void c_object_in(mrb_mvm *vm, mrb_value v[], int argc) {
+  int32_t n = GET_INT_ARG(1);
+//  printf("in(%d)\n", n);
+  SET_INT_RETURN(0);
+}
+void c_object_pwm(mrb_mvm *vm, mrb_value v[], int argc) {
+  int32_t n = GET_INT_ARG(1);
+  int32_t m = GET_INT_ARG(2);
+//  printf("pwm %d, %d\n", n, m);
+}
+void c_object_ana(mrb_mvm *vm, mrb_value v[], int argc) {
+  int32_t n = GET_INT_ARG(1);
+//  printf("ana(%d)\n", n);
+  SET_INT_RETURN(0);
+}
+

@@ -34,4 +34,6 @@ static char* static_symbols[] = {
    "()","ESC_LAMBDA",
    "-","ESC_06",
    ">>","ESC_07",
+   // methods add?
+
 };

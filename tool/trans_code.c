@@ -365,7 +365,8 @@ void output_procs(FILE* f){
 
 void output_procs2(FILE* f){
   int i;
-  fprintf(f,"inline mrb_func_t find_c_funcs_by_no(short no){\n");
+  //fprintf(f,"inline mrb_func_t find_c_funcs_by_no(short no){\n");
+  fprintf(f,"xinline mrb_func_t find_c_funcs_by_no(short no){\n");
   fprintf(f,"  mrb_func_t func=0;\n");
   fprintf(f,"  switch(no){\n");
   for(i=0;i<sizeof(static_procs)/sizeof(char*)/3 - 1;i++){

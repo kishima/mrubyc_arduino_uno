@@ -11,7 +11,9 @@ static const char* const basic_class_names[] = {
   "String",
   "Symbol",
   "Range",
+#ifdef USE_ARDUION
   "Arduino",
+#endif
 #ifdef USE_RGB_LCD
   "RGB_LCD",
 #endif
@@ -28,6 +30,20 @@ static const char* const static_procs[] = {
   "Object","class","c_object_class",
   "Object","attr_reader","c_object_attr_reader",
   "Object","attr_accessor","c_object_attr_accessor",
+
+  // add by taisukef
+  "Object","led","c_object_led",
+  "Object","wait","c_object_wait",
+  "Object","out","c_object_out",
+  "Object","in","c_object_in",
+  "Object","in","c_object_ana",
+  "Object","in","c_object_pwm",
+  "Object","cls","c_object_cls",
+  "Object","lc","c_object_lc",
+  "Object","scr","c_object_scr",
+  "Object","inkey","c_object_inkey",
+  "Object","rnd","c_object_rnd",
+  "Object","print","c_object_print",
 
   "Fixnum","[]","c_fixnum_bitref",
   "Fixnum","-@","c_fixnum_negative",
@@ -57,11 +73,13 @@ static const char* const static_procs[] = {
   "String","to_s","c_to_s",
   "String","id2name","c_to_s",
   "String","to_sym","c_ineffect",
-  
+
+#ifdef USE_ARDUINO
   "Arduino","delay","class_arduino_delay",
   "Arduino","pin_mode","class_arduino_pin_mode",
   "Arduino","digital_write","class_arduino_digital_write",
   "Arduino","digital_read","class_arduino_digital_read",
+#endif
 
 #ifdef USE_RGB_LCD
   "RGB_LCD","initialize","class_rbg_lcd_initialize",

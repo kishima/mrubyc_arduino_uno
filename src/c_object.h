@@ -18,6 +18,18 @@ void c_object_attr_reader(mrb_mvm *vm, mrb_value v[], int argc);
 void c_object_attr_accessor(mrb_mvm *vm, mrb_value v[], int argc);
 void c_object_to_s(mrb_mvm *vm, mrb_value v[], int argc);
 
+void c_object_led(mrb_mvm *vm, mrb_value v[], int argc);
+void c_object_out(mrb_mvm *vm, mrb_value v[], int argc);
+void c_object_in(mrb_mvm *vm, mrb_value v[], int argc);
+void c_object_pwm(mrb_mvm *vm, mrb_value v[], int argc);
+void c_object_ana(mrb_mvm *vm, mrb_value v[], int argc);
+void c_object_cls(mrb_mvm *vm, mrb_value v[], int argc);
+void c_object_lc(mrb_mvm *vm, mrb_value v[], int argc);
+void c_object_scr(mrb_mvm *vm, mrb_value v[], int argc);
+void c_object_print(mrb_mvm *vm, mrb_value v[], int argc);
+void c_object_rnd(mrb_mvm *vm, mrb_value v[], int argc);
+void c_object_inkey(mrb_mvm *vm, mrb_value v[], int argc);
+void c_object_wait(mrb_mvm *vm, mrb_value v[], int argc);
 
 
 

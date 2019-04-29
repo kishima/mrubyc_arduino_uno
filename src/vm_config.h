@@ -15,6 +15,7 @@
 #ifndef MRBC_SRC_VM_CONFIG_H_
 #define MRBC_SRC_VM_CONFIG_H_
 
+#define xinline
 
 #define CODE_PREFIX "mmruby_code_"
 #define CODE_LEN 4
