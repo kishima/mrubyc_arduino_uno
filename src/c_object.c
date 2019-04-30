@@ -411,9 +411,6 @@ void mrbc_init_class_object(){
 
 // add by taisukef
 
-void ext_led(int n);
-void ext_wait(int n);
-
 void c_object_cls(mrb_mvm *vm, mrb_value v[], int argc) {
 //  printf("cls\n");
 }

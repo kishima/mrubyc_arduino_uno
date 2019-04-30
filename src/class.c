@@ -63,7 +63,7 @@ mrb_class *find_class_by_object(mrb_object *obj)
 
 mrb_proc *find_method(mrb_value recv, mrb_sym sym_id)
 {
-//  printf("find_method %d %d\n", recv, sym_id);
+  //cprintf("find_method %d %d\n", recv, sym_id);
   mrb_class *cls = find_class_by_object(&recv);
   //cprintf("cls=%p\n",cls);
 
@@ -75,7 +75,6 @@ mrb_proc *find_method(mrb_value recv, mrb_sym sym_id)
     //dynaic procs
     proc = cls->procs;
     while( proc != 0 ) {
-      //cprintf(" ? %d %d\n",proc->sym_id,sym_id);
       if( proc->sym_id == sym_id ) {
         return proc;
       }
@@ -86,12 +85,13 @@ mrb_proc *find_method(mrb_value recv, mrb_sym sym_id)
   return 0;
 }
 
-mrb_class * mrbc_define_class(const char *name, mrb_class *super)
+mrb_class * mrbc_define_class(const char* name, mrb_class* super)
 {
-  //DEBUG_FPRINTLN("define class");
+//  cprintf("define class %d\n", name);
+//  DEBUG_FPRINTLN("define class %d", name);
   mrb_class *cls;
   mrb_sym sym_id;
-  if((int)name < 0xFF){ //direct sym_id 
+  if((int)name < 0xFF) { //direct sym_id 
     sym_id = (mrb_sym)((int)name);
   }else{
     sym_id = str_to_symid(name);
@@ -100,8 +100,8 @@ mrb_class * mrbc_define_class(const char *name, mrb_class *super)
 
   // create a new class?
   if( obj.tt == MRB_TT_NIL ) {
-    cls = (mrb_class*)mrbc_alloc( 0, sizeof(mrb_class) );
-    if( !cls ) return cls;	// ENOMEM
+    cls = (mrb_class*)mrbc_alloc(0, sizeof(mrb_class));
+    if( !cls ) return cls;	// Out of memory!
 
     cls->sym_id = sym_id;
     cls->super = super;

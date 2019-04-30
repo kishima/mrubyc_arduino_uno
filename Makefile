@@ -1,6 +1,6 @@
 PROJECT	= mmruby
 
-CSRC	= main.c startup1100.c alloc.c c_object.c debug.c hal.c value.c avr_access.c c_string.c ext_arduino.c vm.c c_common.c class.c ext_rgb_lcd.c mmruby.c c_fixnum.c console.c global.c symbol.c memman.c string_mini.c ext.c
+CSRC	= main.c startup1100.c alloc.c c_object.c debug.c hal.c value.c avr_access.c c_string.c vm.c c_common.c class.c c_fixnum.c console.c global.c symbol.c memman.c string_mini.c ext.c
 ASRC	=
 CSRCARM	=
 ASRCARM	=

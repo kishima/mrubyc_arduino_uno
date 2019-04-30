@@ -2,12 +2,12 @@
 #define __MEMMAN_H
 
 // 16 * 64 = 1024byte
-#define MM_BLOCK 16
-#define MM_N_MEM 64
+#define MM_BLOCK 128
+#define MM_N_MEM 16
 
 void memman_init();
-void* malloc(int size);
-void* realloc(void* p, int size);
-void free(void* p);
+void* memman_malloc(int size);
+void* memman_realloc(void* p, int size);
+void memman_free(void* p);
 
 #endif

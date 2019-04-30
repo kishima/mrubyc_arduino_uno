@@ -3,7 +3,7 @@
 
 #define SERIAL_FOR_STDIO_BAUDRATE 9600
 
-void init_hal();
+void hal_init();
 void hal_delay(int msec);
 int hal_write(int fd, const void *buf, int nbytes);
 inline static int hal_flush(int fd) { return 0; }

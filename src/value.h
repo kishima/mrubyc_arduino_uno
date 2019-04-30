@@ -79,8 +79,7 @@ typedef enum {
 typedef struct RObject {
   mrb_vtype tt : 8;
   union {
-    //TODO check int32 -> int16
-    int16_t i;			// MRB_TT_FIXNUM, SYMBOL
+    int32_t i;			// MRB_TT_FIXNUM, SYMBOL
     struct RClass *cls;		// MRB_TT_CLASS
     struct RObject *handle;	// handle to objects
     struct RInstance *instance;	// MRB_TT_OBJECT

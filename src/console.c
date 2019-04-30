@@ -12,14 +12,11 @@
 */
 
 #include "vm_config.h"
-// #include <stdio.h>
-//#include <stdint.h>
-//#include <stdarg.h>
 #include "string_mini.h"
 #include "console.h"
 #include "hal.h"
 
-
+#ifndef USE_STDIO
 
 //================================================================
 /*! output formatted string
@@ -28,6 +25,7 @@
 */
 void console_printf(const char *fstr, ...)
 {
+  /*
   va_list ap;
   va_start(ap, fstr);
 
@@ -35,9 +33,10 @@ void console_printf(const char *fstr, ...)
   //vsprintf(buf,fstr,ap);
   hal_write_string(buf);
   va_end(ap);
-  
+  */
 }
 
+#endif
 
 
 //================================================================

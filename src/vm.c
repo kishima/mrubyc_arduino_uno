@@ -15,9 +15,6 @@
 
 #include "c_string.h"
 
-//#include <Arduino.h>
-//#include <avr/pgmspace.h>
-
 //Only one VM is available
 static mrb_mvm vm_body;
 
@@ -79,9 +76,8 @@ void mrbc_pop_callinfo(mrb_mvm *vm)
 //--------------------------------
 //  OPCODE
 //--------------------------------
-//#define SHOW_OPCODE
 #ifdef SHOW_OPCODE
-inline void show_register(mrb_value v){
+void show_register(mrb_value v){
   switch(v.tt){
     case MRB_TT_HANDLE: DEBUG_PRINT("HANDLE"); break;
     case MRB_TT_EMPTY: DEBUG_PRINT("EMPTY"); break;
@@ -176,7 +172,7 @@ void show_opcode_name(mrb_mvm *vm,uint32_t opcode){
     DEBUG_FPRINTLN("[UNKNOWN]");
     break;
   }
-  show_registers(vm->current_regs);
+  //show_registers(vm->current_regs);
 }
 #endif
 
@@ -435,6 +431,7 @@ inline static int op_send( mrb_mvm *vm, uint32_t code, mrb_value *regs )
   
   // Block param
   int bidx = ra + rc + 1;
+  int sendb = 0;
   switch( GET_OPCODE(code) ) {
   case OP_SEND:
     // set nil
@@ -446,28 +443,39 @@ inline static int op_send( mrb_mvm *vm, uint32_t code, mrb_value *regs )
     if( regs[bidx].tt != MRB_TT_NIL && regs[bidx].tt != MRB_TT_PROC ){
       return 0;
     }
+    sendb = 1;
     break;
     
   default:
     break;
   }
 
-  //DEBUG_FPRINTLN("find medhod");delay(500);
+  //DEBUG_FPRINTLN("find medhod");
   mrb_sym sym_id = get_irep_symbol_id(vm->pc_irep,rb);
-  //cprintf("find sym:%d ra=%d\n", sym_id, ra);
+  //cprintf("find class:%d sym:%d ra=%d\n", recv, sym_id, ra);
   mrb_proc *m = find_method(recv, sym_id);
   
-//  printf("method: %x\n", m);
+  //cprintf("method: %x %d\n", m, sendb);
   if( m == 0 ) {
-    cprintf("MethodNotFound %d\n", sym_id);
+    //cprintf("MethodNotFound %d\n", sym_id);
     return 0;
   }
   
-  if (IS_PGM(m)){ // 組み込み？ < 0x100
-    mrb_func_t func = find_c_funcs(m);
-    //cprintf("pgm %d %p\n",m,func);delay(500);
+  if (sendb) {
+    /*
+      mrbc_push_callinfo(vm, rc);
+      vm->pc_irep = 1;
+      vm->pc
+      return 0;
+    */
+     return 0; // not supported
+  }
+  if (IS_PGM(m)) { // 組み込み？ < 0x100
+  //  cprintf("irep: %d %d %d\n", m, vm->pc_irep, regs[bidx].i);
+    mrb_func_t func = find_c_funcs_by_no((int)m);
+    //cprintf("pgm %d %p\n", m, func);
     func(vm, regs + ra, rc);
-    int release_reg = ra+rc+1;
+    int release_reg = ra + rc + 1;
     while( release_reg <= bidx ) {
       // mrbc_release(&regs[release_reg]);
       release_reg++;
@@ -486,7 +494,7 @@ inline static int op_send( mrb_mvm *vm, uint32_t code, mrb_value *regs )
     }
     return 0;
   }
-  
+
   // m is Ruby method.
   // callinfo
   mrbc_push_callinfo(vm, rc);
@@ -494,6 +502,7 @@ inline static int op_send( mrb_mvm *vm, uint32_t code, mrb_value *regs )
   // target irep
   vm->pc = 0;
   vm->pc_irep = m->irep;
+//  vm->pc_irep = bidx; //?? 
   
   // new regs
   vm->current_regs += ra;
@@ -981,7 +990,7 @@ void run_vm(void){
   
   do {
     // get one bytecode
-    uint32_t code = read_bytecode(vm->pc_irep,vm->pc);
+    uint32_t code = read_bytecode(vm->pc_irep, vm->pc);
     code = bin_to_uint32(&code);
     vm->pc++;
     
@@ -990,7 +999,7 @@ void run_vm(void){
     
     // Dispatch
     uint32_t opcode = GET_OPCODE(code);
-cprintf("%x %x\n", code, opcode);
+//cprintf("%x %x\n", code, opcode);
 #ifdef SHOW_OPCODE
     show_opcode_name(vm,opcode);
 #endif
@@ -1050,7 +1059,7 @@ cprintf("%x %x\n", code, opcode);
       break;
     }
     #ifdef SHOW_OPCODE
-    hal_delay(500);
+//    hal_delay(500);
     #endif
   } while( !vm->flag_preemption );
   DEBUG_FPRINT("<VM END>\n");

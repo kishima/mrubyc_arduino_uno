@@ -133,9 +133,11 @@ int find_func_no_by_sym_id(const uint8_t* addr,mrb_sym target_sym_id){
   return 0;
 }
 
+/*
 mrb_func_t find_c_funcs(mrb_proc* proc){
   return find_c_funcs_by_no((int)proc);
 }
+*/
 
 xinline mrb_proc *find_static_procs(mrb_sym class_sym_id, mrb_sym sym_id){
   int addr=0;

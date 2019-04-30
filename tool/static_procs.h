@@ -1,5 +1,3 @@
-#include "../src/ext_conf.h"
-
 static const char* const basic_class_names[] = {
   "Object",
   "Proc",

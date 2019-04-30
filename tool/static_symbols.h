@@ -1,4 +1,3 @@
-#include "../src/ext_conf.h"
 
 static char* static_symbols[] = {
 //Class
@@ -13,10 +12,7 @@ static char* static_symbols[] = {
    "Array","",
    "Range","",
    "Hash","",
-   "Arduino","",
-#ifdef USE_RGB_LCD
-   "RGB_LCD","",
-#endif
+
   //methods and others
    "true","",
    "false","",

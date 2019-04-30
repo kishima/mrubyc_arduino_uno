@@ -1,15 +1,15 @@
 #include "typedef.h"
 
-int strlen(const char* s) {
+int __strlen(const char* s) {
 	int n = 0;
 	while (*s++)
 		n++;
 	return n;
 }
-void strcpy(char* buf, const char* src) {
+void __strcpy(char* buf, const char* src) {
 	while (*buf++ = *src++);
 }
-int strcmp(const char* buf1, const char* buf2) {
+int __strcmp(const char* buf1, const char* buf2) {
 	for (;;) {
 		int n = *buf1++;
 	    int c = n - *buf2++;
@@ -19,22 +19,25 @@ int strcmp(const char* buf1, const char* buf2) {
 			return 0;
 	}
 }
-int strspn(const char* s1, const char *s2) {
+int __strspn(const char* s1, const char *s2) {
 	for (int i = 0;; i++) {
 		if (s1[i] != s2[i])
 			return i;
 	}
 }
-char* strcat(char* s1, const char* s2) {
+char* __strcat(char* s1, const char* s2) {
 	char* s = s1;
 	while (*s++);
+	s--;
 	while (*s++ = *s2++);
 	return s1;
 }
-int atol(const char* s) {
+int __atol(const char* s) {
 	int flg = 0;
 	if (*s == '-') {
 		flg = 1;
+		s++;
+	} else if (*s == '+') {
 		s++;
 	}
 	int n = 0;
@@ -48,7 +51,7 @@ int atol(const char* s) {
 	return flg ? -n : n;
 }
 
-int memcmp(const uint8_t* buf1, const uint8_t* buf2, int len) {
+int __memcmp(const uint8_t* buf1, const uint8_t* buf2, int len) {
   for (int i = 0; i < len; i++) {
     int c = buf1[i] - buf2[i];
     if (c)
@@ -56,12 +59,12 @@ int memcmp(const uint8_t* buf1, const uint8_t* buf2, int len) {
   }
   return 0;
 }
-void memmove(void* buf1, const void* buf2, int len) {
+void __memmove(void* buf1, const void* buf2, int len) {
 	for (int i = 0; i < len; i++) {
 		*(char*)buf1++ = *(char*)buf2++;
 	}
 }
-void memset(void* p, uint8_t ch, int len) {
+void __memset(void* p, uint8_t ch, int len) {
 	for (int i = len; i > 0; i--)
 		*(char*)p++ = ch;
 }

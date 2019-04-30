@@ -1,10 +1,9 @@
-//#include <Arduino.h>
 #include "console.h"
 #include "hal.h"
 #include "debug.h"
 
 
-void init_hal(){
+void hal_init() {
 #ifdef MMRUBY_DEBUG_ENABLE
   //Serial.begin(SERIAL_FOR_STDIO_BAUDRATE);
   //delay(1000);

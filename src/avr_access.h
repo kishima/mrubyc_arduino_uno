@@ -24,6 +24,8 @@ void copy_symbol_str(char* buff, mrb_sym sym_id);
 
 //for class
 mrb_proc *find_static_procs(mrb_sym class_sym_id, mrb_sym sym_id);
-mrb_func_t find_c_funcs(mrb_proc* proc);
+//mrb_func_t find_c_funcs(mrb_proc* proc);
+xinline mrb_func_t find_c_funcs_by_no(short no);
+
 
 #endif
