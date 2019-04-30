@@ -1,6 +1,6 @@
 # mmruby for IchigoJam / IchigoCake
 
-This project is to run mruby/c on IchigoJam (LPC1114FN28/FDH28 by NXP) or IchigoCake (LPC1114FHN33 by NXP), which has 4KB/8KB RAM. (4KB version is TBD)
+This project is to run mruby/c on IchigoJam (LPC1114FN28/FDH28 by NXP) or IchigoCake (LPC1114FHN33 by NXP), which has 4KB/8KB RAM.
 "micro mruby" or "mmruby" is a subset of mruby/c with a lot of limitation.
 This project is based on "micro mruby for Arduino Uno".
 "micro mruby for Arduino Uno" is a subset of mruby/c with a lot of limitations.  
@@ -21,7 +21,7 @@ https://ichigojam.net/
 
 # Required environment
 
-* IchigoCake (IchigoJam TBD)
+* IchigoJam, IchigoLatte, IchigoCake or LPC1114
 * USB-Serial adapter
 * Complile environment for C (gcc, make)
 
@@ -32,6 +32,8 @@ https://ichigojam.net/
 ```
 $ make all write
 ```
+
+Edit Makefile to change platform ROM/RAM.
 
 ## Prepare a transcoder tool
 
@@ -78,4 +80,4 @@ void main() {
 $ make write
 ```
 
-To run it on IchigoCake! (IchigoJam TBD!)  
+To run it on IchigoJam!
