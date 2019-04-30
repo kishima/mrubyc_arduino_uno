@@ -1,6 +1,5 @@
-#include <stdint.h>
+#include "typedef.h"
 #include "debug.h"
-//#include <avr/pgmspace.h>
 
 #if 0
 const char string01[] PROGMEM = { "UNKNOWN ERROR" };

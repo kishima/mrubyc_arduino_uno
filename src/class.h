@@ -14,7 +14,7 @@
 #ifndef MRBC_SRC_CLASS_H_
 #define MRBC_SRC_CLASS_H_
 
-#include <stdint.h>
+//#include <stdint.h>
 #include "micro_vm.h"
 #include "value.h"
 

@@ -13,9 +13,9 @@
   </pre>
 */
 
-#include <stdlib.h>
 #include "console.h"
 #include "alloc.h"
+#include "memman.h"
 
 //#define CHECK_MEM_USAGE
 

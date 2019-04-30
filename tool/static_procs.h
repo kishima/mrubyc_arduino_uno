@@ -33,11 +33,12 @@ static const char* const static_procs[] = {
 
   // add by taisukef
   "Object","led","c_object_led",
+  "Object","btn","c_object_btn",
   "Object","wait","c_object_wait",
   "Object","out","c_object_out",
   "Object","in","c_object_in",
-  "Object","in","c_object_ana",
-  "Object","in","c_object_pwm",
+  "Object","ana","c_object_ana",
+  "Object","pwm","c_object_pwm",
   "Object","cls","c_object_cls",
   "Object","lc","c_object_lc",
   "Object","scr","c_object_scr",

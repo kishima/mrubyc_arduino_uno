@@ -1,0 +1,5508 @@
+
+obj/mmruby.axf:     file format elf32-littlearm
+
+Sections:
+Idx Name          Size      VMA       LMA       File off  Algn
+  0 .text         00001f67  00000000  00000000  00010000  2**2
+                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+  1 .data         00000000  10000000  10000000  00011f67  2**0
+                  CONTENTS, ALLOC, LOAD, DATA
+  2 .bss          000006ac  10000000  10000000  00020000  2**2
+                  ALLOC
+  3 .stack        00000000  100006b0  100006b0  00011f68  2**3
+                  CONTENTS
+  4 .debug_info   0000bb07  00000000  00000000  00011f68  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  5 .debug_abbrev 00002a5a  00000000  00000000  0001da6f  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  6 .debug_aranges 000006f0  00000000  00000000  000204c9  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  7 .debug_ranges 00000a88  00000000  00000000  00020bb9  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  8 .debug_line   00001e13  00000000  00000000  00021641  2**0
+                  CONTENTS, READONLY, DEBUGGING
+  9 .debug_str    00001dd4  00000000  00000000  00023454  2**0
+                  CONTENTS, READONLY, DEBUGGING
+ 10 .comment      0000007f  00000000  00000000  00025228  2**0
+                  CONTENTS, READONLY
+ 11 .ARM.attributes 00000031  00000000  00000000  000252a7  2**0
+                  CONTENTS, READONLY
+ 12 .debug_frame  0000122c  00000000  00000000  000252d8  2**2
+                  CONTENTS, READONLY, DEBUGGING
+ 13 .debug_loc    00005fe9  00000000  00000000  00026504  2**0
+                  CONTENTS, READONLY, DEBUGGING
+
+Disassembly of section .text:
+
+00000000 <vector>:
+       0:	00 10 00 10 f1 00 00 00 d1 00 00 00 d1 00 00 00     ................
+	...
+      2c:	d1 00 00 00 00 00 00 00 00 00 00 00 d1 00 00 00     ................
+      3c:	95 18 00 00 e1 00 00 00 e1 00 00 00 e1 00 00 00     ................
+      4c:	e1 00 00 00 e1 00 00 00 e1 00 00 00 e1 00 00 00     ................
+      5c:	e1 00 00 00 e1 00 00 00 e1 00 00 00 e1 00 00 00     ................
+      6c:	e1 00 00 00 e1 00 00 00 e1 00 00 00 e1 00 00 00     ................
+      7c:	e1 00 00 00 e1 00 00 00 e1 00 00 00 e1 00 00 00     ................
+      8c:	e1 00 00 00 e1 00 00 00 e1 00 00 00 00 00 00 00     ................
+      9c:	00 00 00 00 e1 00 00 00 e1 00 00 00 e1 00 00 00     ................
+      ac:	00 00 00 00 e1 00 00 00 e1 00 00 00 e1 00 00 00     ................
+      bc:	e1 00 00 00                                         ....
+
+000000c0 <main>:
+#include "mmruby_lpc1114.h"
+#include "LPC1100.h"
+#include "ext.h"
+
+void main() {
+      c0:	b510      	push	{r4, lr}
+	ext_init();
+      c2:	f001 fc15 	bl	18f0 <ext_init>
+	
+	mmruby_setup();
+      c6:	f001 f8d8 	bl	127a <mmruby_setup>
+	mmruby_run();
+      ca:	f001 f8e0 	bl	128e <mmruby_run>
+}
+      ce:	bd10      	pop	{r4, pc}
+
+000000d0 <Exception_Trap>:
+/ Unexpected Exception/IRQ Trap                                       /
+/--------------------------------------------------------------------*/
+
+void Exception_Trap (void)
+{
+	GPIO1DATA &= ~_BV(5);	// Blue
+      d0:	2120      	movs	r1, #32
+      d2:	4a02      	ldr	r2, [pc, #8]	; (dc <Exception_Trap+0xc>)
+      d4:	6813      	ldr	r3, [r2, #0]
+      d6:	438b      	bics	r3, r1
+      d8:	6013      	str	r3, [r2, #0]
+      da:	e7fe      	b.n	da <Exception_Trap+0xa>
+      dc:	50013ffc 	.word	0x50013ffc
+
+000000e0 <IRQ_Trap>:
+}
+
+
+void IRQ_Trap (void)
+{
+	GPIO2DATA &= ~_BV(0);	// Red
+      e0:	2101      	movs	r1, #1
+      e2:	4a02      	ldr	r2, [pc, #8]	; (ec <IRQ_Trap+0xc>)
+      e4:	6813      	ldr	r3, [r2, #0]
+      e6:	438b      	bics	r3, r1
+      e8:	6013      	str	r3, [r2, #0]
+      ea:	e7fe      	b.n	ea <IRQ_Trap+0xa>
+      ec:	50023ffc 	.word	0x50023ffc
+
+000000f0 <Reset_Handler>:
+	BODCTRL = 0x13;
+      f0:	2213      	movs	r2, #19
+	MAINCLKSEL = 0;		/* Select IRC as main clock */
+      f2:	2000      	movs	r0, #0
+	FLASHCFG = (FLASHCFG & 0xFFFFFFFC) | FLASH_WAIT;	/* Configure flash access timing */
+      f4:	2503      	movs	r5, #3
+	BODCTRL = 0x13;
+      f6:	4b20      	ldr	r3, [pc, #128]	; (178 <Reset_Handler+0x88>)
+	MAINCLKSEL = 0;		/* Select IRC as main clock */
+      f8:	4920      	ldr	r1, [pc, #128]	; (17c <Reset_Handler+0x8c>)
+	BODCTRL = 0x13;
+      fa:	601a      	str	r2, [r3, #0]
+	MAINCLKUEN = 0; MAINCLKUEN = 1;
+      fc:	4b20      	ldr	r3, [pc, #128]	; (180 <Reset_Handler+0x90>)
+      fe:	3a12      	subs	r2, #18
+	FLASHCFG = (FLASHCFG & 0xFFFFFFFC) | FLASH_WAIT;	/* Configure flash access timing */
+     100:	4e20      	ldr	r6, [pc, #128]	; (184 <Reset_Handler+0x94>)
+	MAINCLKSEL = 0;		/* Select IRC as main clock */
+     102:	6008      	str	r0, [r1, #0]
+	MAINCLKUEN = 0; MAINCLKUEN = 1;
+     104:	6018      	str	r0, [r3, #0]
+     106:	601a      	str	r2, [r3, #0]
+	FLASHCFG = (FLASHCFG & 0xFFFFFFFC) | FLASH_WAIT;	/* Configure flash access timing */
+     108:	6834      	ldr	r4, [r6, #0]
+     10a:	43ac      	bics	r4, r5
+     10c:	0025      	movs	r5, r4
+     10e:	2402      	movs	r4, #2
+     110:	432c      	orrs	r4, r5
+     112:	6034      	str	r4, [r6, #0]
+	SYSPLLCLKSEL = OSC_SEL;
+     114:	4c1c      	ldr	r4, [pc, #112]	; (188 <Reset_Handler+0x98>)
+	PDRUNCFG &= ~0x80;
+     116:	2580      	movs	r5, #128	; 0x80
+	SYSPLLCLKSEL = OSC_SEL;
+     118:	6020      	str	r0, [r4, #0]
+	SYSPLLCLKUEN = 0; SYSPLLCLKUEN = 1;
+     11a:	4c1c      	ldr	r4, [pc, #112]	; (18c <Reset_Handler+0x9c>)
+     11c:	6020      	str	r0, [r4, #0]
+     11e:	6022      	str	r2, [r4, #0]
+	SYSPLLCTRL = (PLL_M - 1) | (P_SEL << 6);
+     120:	2443      	movs	r4, #67	; 0x43
+     122:	481b      	ldr	r0, [pc, #108]	; (190 <Reset_Handler+0xa0>)
+     124:	6004      	str	r4, [r0, #0]
+	PDRUNCFG &= ~0x80;
+     126:	4c1b      	ldr	r4, [pc, #108]	; (194 <Reset_Handler+0xa4>)
+     128:	6820      	ldr	r0, [r4, #0]
+     12a:	43a8      	bics	r0, r5
+     12c:	6020      	str	r0, [r4, #0]
+     12e:	0008      	movs	r0, r1
+     130:	0019      	movs	r1, r3
+	while ((SYSPLLSTAT & 1) == 0) ;
+     132:	4c19      	ldr	r4, [pc, #100]	; (198 <Reset_Handler+0xa8>)
+     134:	6823      	ldr	r3, [r4, #0]
+     136:	4213      	tst	r3, r2
+     138:	d0fc      	beq.n	134 <Reset_Handler+0x44>
+	SYSAHBCLKDIV = MCLK / SYSCLK;	/* Select system clock divisor */
+     13a:	4b18      	ldr	r3, [pc, #96]	; (19c <Reset_Handler+0xac>)
+	for (s = _sidata, d = _sdata; d < _edata; *d++ = *s++) ;
+     13c:	4c18      	ldr	r4, [pc, #96]	; (1a0 <Reset_Handler+0xb0>)
+	SYSAHBCLKDIV = MCLK / SYSCLK;	/* Select system clock divisor */
+     13e:	601a      	str	r2, [r3, #0]
+	MAINCLKSEL = CLK_SEL;				/* Select desired main clock source */
+     140:	2303      	movs	r3, #3
+     142:	6003      	str	r3, [r0, #0]
+	MAINCLKUEN = 0; MAINCLKUEN = 1;
+     144:	2300      	movs	r3, #0
+     146:	600b      	str	r3, [r1, #0]
+     148:	600a      	str	r2, [r1, #0]
+	SYSAHBCLKCTRL = 0x1005F;		/* Enable clock for only SYS, ROM, RAM, FLASH, GPIO and IOCON */
+     14a:	4916      	ldr	r1, [pc, #88]	; (1a4 <Reset_Handler+0xb4>)
+     14c:	4a16      	ldr	r2, [pc, #88]	; (1a8 <Reset_Handler+0xb8>)
+	for (s = _sidata, d = _sdata; d < _edata; *d++ = *s++) ;
+     14e:	4817      	ldr	r0, [pc, #92]	; (1ac <Reset_Handler+0xbc>)
+	SYSAHBCLKCTRL = 0x1005F;		/* Enable clock for only SYS, ROM, RAM, FLASH, GPIO and IOCON */
+     150:	6011      	str	r1, [r2, #0]
+	for (s = _sidata, d = _sdata; d < _edata; *d++ = *s++) ;
+     152:	4917      	ldr	r1, [pc, #92]	; (1b0 <Reset_Handler+0xc0>)
+     154:	181a      	adds	r2, r3, r0
+     156:	428a      	cmp	r2, r1
+     158:	d307      	bcc.n	16a <Reset_Handler+0x7a>
+	for (d = _sbss; d < _ebss; *d++ = 0) ;
+     15a:	2100      	movs	r1, #0
+     15c:	4b15      	ldr	r3, [pc, #84]	; (1b4 <Reset_Handler+0xc4>)
+     15e:	4a16      	ldr	r2, [pc, #88]	; (1b8 <Reset_Handler+0xc8>)
+     160:	4293      	cmp	r3, r2
+     162:	d306      	bcc.n	172 <Reset_Handler+0x82>
+	main();		/* Start main() with MSP */
+     164:	f7ff ffac 	bl	c0 <main>
+     168:	e7fe      	b.n	168 <Reset_Handler+0x78>
+	for (s = _sidata, d = _sdata; d < _edata; *d++ = *s++) ;
+     16a:	58e5      	ldr	r5, [r4, r3]
+     16c:	3304      	adds	r3, #4
+     16e:	6015      	str	r5, [r2, #0]
+     170:	e7f0      	b.n	154 <Reset_Handler+0x64>
+	for (d = _sbss; d < _ebss; *d++ = 0) ;
+     172:	c302      	stmia	r3!, {r1}
+     174:	e7f4      	b.n	160 <Reset_Handler+0x70>
+     176:	46c0      	nop			; (mov r8, r8)
+     178:	40048150 	.word	0x40048150
+     17c:	40048070 	.word	0x40048070
+     180:	40048074 	.word	0x40048074
+     184:	4003c010 	.word	0x4003c010
+     188:	40048040 	.word	0x40048040
+     18c:	40048044 	.word	0x40048044
+     190:	40048008 	.word	0x40048008
+     194:	40048238 	.word	0x40048238
+     198:	4004800c 	.word	0x4004800c
+     19c:	40048078 	.word	0x40048078
+     1a0:	00001f68 	.word	0x00001f68
+     1a4:	0001005f 	.word	0x0001005f
+     1a8:	40048080 	.word	0x40048080
+     1ac:	10000000 	.word	0x10000000
+     1b0:	10000000 	.word	0x10000000
+     1b4:	10000000 	.word	0x10000000
+     1b8:	100006ac 	.word	0x100006ac
+
+000001bc <mrbc_alloc>:
+#ifdef CHECK_MEM_USAGE
+static int16_t alloc_mem_size=0;
+#endif
+
+void* mrbc_alloc(const mrb_mvm *vm, unsigned int size)
+{
+     1bc:	b510      	push	{r4, lr}
+  return mrbc_raw_alloc(size);
+}
+void * mrbc_raw_alloc(unsigned int size)
+{
+  void *p = malloc(size);
+     1be:	0008      	movs	r0, r1
+     1c0:	f001 fb02 	bl	17c8 <malloc>
+}
+     1c4:	bd10      	pop	{r4, pc}
+
+000001c6 <mrbc_raw_alloc>:
+{
+     1c6:	b510      	push	{r4, lr}
+  void *p = malloc(size);
+     1c8:	f001 fafe 	bl	17c8 <malloc>
+ alloc_mem_size += size;
+ cprintf(">>ALLOC %p:%d\n",p,size);
+ cprintf("alloc total=%d\n",alloc_mem_size);
+#endif
+  return p;
+}
+     1cc:	bd10      	pop	{r4, pc}
+
+000001ce <mrbc_raw_realloc>:
+{
+  return mrbc_raw_realloc(ptr,size);
+}
+
+void* mrbc_raw_realloc(void *ptr, unsigned int size)
+{
+     1ce:	b510      	push	{r4, lr}
+#ifdef CHECK_MEM_USAGE
+ alloc_mem_size += size;
+ cprintf(">>REALC %p:%d\n",ptr,size);
+ cprintf("alloc total=%d\n",alloc_mem_size);
+#endif
+  return realloc(ptr, size);
+     1d0:	f001 fb12 	bl	17f8 <realloc>
+}
+     1d4:	bd10      	pop	{r4, pc}
+
+000001d6 <mrbc_raw_free>:
+{
+  mrbc_raw_free(ptr);
+}
+
+void mrbc_raw_free(void *ptr)
+{
+     1d6:	b510      	push	{r4, lr}
+#ifdef CHECK_MEM_USAGE
+  cprintf(">>FREE  %p\n",ptr);
+#endif
+  free(ptr);
+     1d8:	f001 fb14 	bl	1804 <free>
+}
+     1dc:	bd10      	pop	{r4, pc}
+
+000001de <c_object_getiv>:
+     1de:	4770      	bx	lr
+
+000001e0 <c_object_setiv>:
+     1e0:	4770      	bx	lr
+	...
+
+000001e4 <mrbc_puts_sub>:
+
+int mrbc_puts_sub(mrb_value *v)
+{
+  int ret = 0;
+
+  switch( v->tt ){
+     1e4:	2100      	movs	r1, #0
+     1e6:	5641      	ldrsb	r1, [r0, r1]
+{
+     1e8:	b510      	push	{r4, lr}
+  switch( v->tt ){
+     1ea:	2917      	cmp	r1, #23
+     1ec:	d118      	bne.n	220 <mrbc_puts_sub+0x3c>
+//================================================================
+/*! get c-language string (char *)
+*/
+static inline char * mrbc_string_cstr(const mrb_value *v)
+{
+  return (char*)v->string->data;
+     1ee:	6843      	ldr	r3, [r0, #4]
+     1f0:	689c      	ldr	r4, [r3, #8]
+
+  @param str	str
+*/
+static inline void console_print(const char *str)
+{
+  hal_write(1, str, strlen(str));
+     1f2:	0020      	movs	r0, r4
+     1f4:	f001 fb16 	bl	1824 <strlen>
+     1f8:	0021      	movs	r1, r4
+     1fa:	0002      	movs	r2, r0
+     1fc:	2001      	movs	r0, #1
+     1fe:	f000 f95b 	bl	4b8 <hal_write>
+  } break;
+*/
+  case MRB_TT_STRING: {
+    const char *s = mrbc_string_cstr(v);
+    console_print(s);
+    if( strlen(s) != 0 && s[strlen(s)-1] == '\n' ) ret = 1;
+     202:	0020      	movs	r0, r4
+     204:	f001 fb0e 	bl	1824 <strlen>
+     208:	2800      	cmp	r0, #0
+     20a:	d008      	beq.n	21e <mrbc_puts_sub+0x3a>
+     20c:	0020      	movs	r0, r4
+     20e:	f001 fb09 	bl	1824 <strlen>
+     212:	1824      	adds	r4, r4, r0
+     214:	3c01      	subs	r4, #1
+     216:	7820      	ldrb	r0, [r4, #0]
+     218:	380a      	subs	r0, #10
+  int ret = 0;
+     21a:	4243      	negs	r3, r0
+     21c:	4158      	adcs	r0, r3
+    console_printf("MRB_TT_XX(%d)", v->tt);
+    break;
+  }
+
+  return ret;
+}
+     21e:	bd10      	pop	{r4, pc}
+    console_printf("MRB_TT_XX(%d)", v->tt);
+     220:	4802      	ldr	r0, [pc, #8]	; (22c <mrbc_puts_sub+0x48>)
+     222:	f001 f935 	bl	1490 <console_printf>
+  int ret = 0;
+     226:	2000      	movs	r0, #0
+  return ret;
+     228:	e7f9      	b.n	21e <mrbc_puts_sub+0x3a>
+     22a:	46c0      	nop			; (mov r8, r8)
+     22c:	00001b35 	.word	0x00001b35
+
+00000230 <c_puts>:
+
+void c_puts(mrb_mvm *vm, mrb_value v[], int argc)
+{
+     230:	b5f7      	push	{r0, r1, r2, r4, r5, r6, r7, lr}
+     232:	000e      	movs	r6, r1
+     234:	0015      	movs	r5, r2
+  int i;
+  for( i = 1; i <= argc; i++ ) {
+     236:	2401      	movs	r4, #1
+     238:	270a      	movs	r7, #10
+     23a:	42ac      	cmp	r4, r5
+     23c:	dd00      	ble.n	240 <c_puts+0x10>
+    if( mrbc_puts_sub( &v[i] ) == 0 ) console_putchar('\n');
+  }
+}
+     23e:	bdf7      	pop	{r0, r1, r2, r4, r5, r6, r7, pc}
+    if( mrbc_puts_sub( &v[i] ) == 0 ) console_putchar('\n');
+     240:	00e0      	lsls	r0, r4, #3
+     242:	1830      	adds	r0, r6, r0
+     244:	f7ff ffce 	bl	1e4 <mrbc_puts_sub>
+     248:	2800      	cmp	r0, #0
+     24a:	d106      	bne.n	25a <c_puts+0x2a>
+     24c:	466b      	mov	r3, sp
+  hal_write(1, &c, 1);
+     24e:	2201      	movs	r2, #1
+     250:	1dd9      	adds	r1, r3, #7
+     252:	0010      	movs	r0, r2
+     254:	700f      	strb	r7, [r1, #0]
+     256:	f000 f92f 	bl	4b8 <hal_write>
+  for( i = 1; i <= argc; i++ ) {
+     25a:	3401      	adds	r4, #1
+     25c:	e7ed      	b.n	23a <c_puts+0xa>
+
+0000025e <c_object_not>:
+
+
+void c_object_not(mrb_mvm *vm, mrb_value v[], int argc)
+{
+     25e:	b510      	push	{r4, lr}
+  SET_FALSE_RETURN();
+     260:	0008      	movs	r0, r1
+{
+     262:	000c      	movs	r4, r1
+  SET_FALSE_RETURN();
+     264:	f000 f989 	bl	57a <mrbc_release>
+     268:	2302      	movs	r3, #2
+     26a:	7023      	strb	r3, [r4, #0]
+}
+     26c:	bd10      	pop	{r4, pc}
+
+0000026e <c_object_neq>:
+
+// Object !=
+void c_object_neq(mrb_mvm *vm, mrb_value v[], int argc)
+{
+     26e:	b510      	push	{r4, lr}
+     270:	000c      	movs	r4, r1
+  int result = mrbc_compare(v, v+1);
+     272:	3108      	adds	r1, #8
+     274:	0020      	movs	r0, r4
+     276:	f000 f938 	bl	4ea <mrbc_compare>
+
+  if( result ) {
+     27a:	2800      	cmp	r0, #0
+     27c:	d005      	beq.n	28a <c_object_neq+0x1c>
+    SET_TRUE_RETURN();
+     27e:	0020      	movs	r0, r4
+     280:	f000 f97b 	bl	57a <mrbc_release>
+     284:	2303      	movs	r3, #3
+  } else {
+    SET_FALSE_RETURN();
+     286:	7023      	strb	r3, [r4, #0]
+  }
+}
+     288:	bd10      	pop	{r4, pc}
+    SET_FALSE_RETURN();
+     28a:	0020      	movs	r0, r4
+     28c:	f000 f975 	bl	57a <mrbc_release>
+     290:	2302      	movs	r3, #2
+     292:	e7f8      	b.n	286 <c_object_neq+0x18>
+
+00000294 <c_object_compare>:
+
+//================================================================
+/*! (operator) <=>
+ */
+void c_object_compare(mrb_mvm *vm, mrb_value v[], int argc)
+{
+     294:	b570      	push	{r4, r5, r6, lr}
+     296:	000c      	movs	r4, r1
+  int result = mrbc_compare( &v[0], &v[1] );
+     298:	3108      	adds	r1, #8
+     29a:	0020      	movs	r0, r4
+     29c:	f000 f925 	bl	4ea <mrbc_compare>
+     2a0:	0005      	movs	r5, r0
+
+  SET_INT_RETURN(result);
+     2a2:	0020      	movs	r0, r4
+     2a4:	f000 f969 	bl	57a <mrbc_release>
+     2a8:	2304      	movs	r3, #4
+     2aa:	80a5      	strh	r5, [r4, #4]
+     2ac:	7023      	strb	r3, [r4, #0]
+}
+     2ae:	bd70      	pop	{r4, r5, r6, pc}
+
+000002b0 <c_object_class>:
+
+
+// Object#class
+void c_object_class(mrb_mvm *vm, mrb_value v[], int argc)
+{
+     2b0:	b537      	push	{r0, r1, r2, r4, r5, lr}
+  mrb_class *cls = find_class_by_object( v );
+     2b2:	0008      	movs	r0, r1
+{
+     2b4:	000c      	movs	r4, r1
+  mrb_class *cls = find_class_by_object( v );
+     2b6:	f000 ff39 	bl	112c <find_class_by_object>
+  mrb_value value = mrbc_string_new_cstr(symid_to_str(cls->sym_id) );
+     2ba:	7800      	ldrb	r0, [r0, #0]
+     2bc:	f001 fa54 	bl	1768 <symid_to_str>
+     2c0:	466d      	mov	r5, sp
+     2c2:	0001      	movs	r1, r0
+     2c4:	0028      	movs	r0, r5
+     2c6:	f000 fa24 	bl	712 <mrbc_string_new_cstr>
+  SET_RETURN(value);
+     2ca:	0020      	movs	r0, r4
+     2cc:	f000 f955 	bl	57a <mrbc_release>
+     2d0:	cd0c      	ldmia	r5!, {r2, r3}
+     2d2:	c40c      	stmia	r4!, {r2, r3}
+}
+     2d4:	bd37      	pop	{r0, r1, r2, r4, r5, pc}
+	...
+
+000002d8 <c_object_attr_reader>:
+
+//================================================================
+/*! (class method) access method 'attr_reader'
+ */
+void c_object_attr_reader(mrb_mvm *vm, mrb_value v[], int argc)
+{
+     2d8:	b570      	push	{r4, r5, r6, lr}
+     2da:	000d      	movs	r5, r1
+     2dc:	0016      	movs	r6, r2
+  int i;
+  for( i = 1; i <= argc; i++ ) {
+     2de:	2401      	movs	r4, #1
+     2e0:	42b4      	cmp	r4, r6
+     2e2:	dd00      	ble.n	2e6 <c_object_attr_reader+0xe>
+
+    // define reader method
+    const char *name = mrbc_symbol_cstr(&v[i]);
+    mrbc_define_method(v[0].cls, name, c_object_getiv);
+  }
+}
+     2e4:	bd70      	pop	{r4, r5, r6, pc}
+     2e6:	00e3      	lsls	r3, r4, #3
+    if( v[i].tt != MRB_TT_SYMBOL ) continue;	// TypeError raise?
+     2e8:	56ea      	ldrsb	r2, [r5, r3]
+     2ea:	2a06      	cmp	r2, #6
+     2ec:	d108      	bne.n	300 <c_object_attr_reader+0x28>
+    const char *name = mrbc_symbol_cstr(&v[i]);
+     2ee:	18eb      	adds	r3, r5, r3
+void c_to_s(mrb_mvm *vm, mrb_value v[], int argc);
+void c_equal3(mrb_mvm *vm, mrb_value v[], int argc);
+
+static inline const char * mrbc_symbol_cstr(const mrb_value *v)
+{
+  return symid_to_str(v->i);
+     2f0:	7918      	ldrb	r0, [r3, #4]
+     2f2:	f001 fa39 	bl	1768 <symid_to_str>
+    mrbc_define_method(v[0].cls, name, c_object_getiv);
+     2f6:	4a03      	ldr	r2, [pc, #12]	; (304 <c_object_attr_reader+0x2c>)
+     2f8:	0001      	movs	r1, r0
+     2fa:	6868      	ldr	r0, [r5, #4]
+     2fc:	f000 ff9c 	bl	1238 <mrbc_define_method>
+  for( i = 1; i <= argc; i++ ) {
+     300:	3401      	adds	r4, #1
+     302:	e7ed      	b.n	2e0 <c_object_attr_reader+0x8>
+     304:	000001df 	.word	0x000001df
+
+00000308 <c_object_attr_accessor>:
+
+//================================================================
+/*! (class method) access method 'attr_accessor'
+ */
+void c_object_attr_accessor(mrb_mvm *vm, mrb_value v[], int argc)
+{
+     308:	b5f0      	push	{r4, r5, r6, r7, lr}
+     30a:	000e      	movs	r6, r1
+  int i;
+  for( i = 1; i <= argc; i++ ) {
+     30c:	2501      	movs	r5, #1
+{
+     30e:	b085      	sub	sp, #20
+     310:	9000      	str	r0, [sp, #0]
+     312:	9201      	str	r2, [sp, #4]
+  for( i = 1; i <= argc; i++ ) {
+     314:	9b01      	ldr	r3, [sp, #4]
+     316:	429d      	cmp	r5, r3
+     318:	dd01      	ble.n	31e <c_object_attr_accessor+0x16>
+    strcat(namebuf, "=");
+    mrbc_symbol_new(vm, namebuf);
+    mrbc_define_method(v[0].cls, namebuf, c_object_setiv);
+    mrbc_raw_free(namebuf);
+  }
+}
+     31a:	b005      	add	sp, #20
+     31c:	bdf0      	pop	{r4, r5, r6, r7, pc}
+     31e:	00eb      	lsls	r3, r5, #3
+    if( v[i].tt != MRB_TT_SYMBOL ) continue;	// TypeError raise?
+     320:	56f2      	ldrsb	r2, [r6, r3]
+     322:	2a06      	cmp	r2, #6
+     324:	d126      	bne.n	374 <c_object_attr_accessor+0x6c>
+    const char *name = mrbc_symbol_cstr(&v[i]);
+     326:	18f3      	adds	r3, r6, r3
+     328:	7918      	ldrb	r0, [r3, #4]
+     32a:	f001 fa1d 	bl	1768 <symid_to_str>
+     32e:	0007      	movs	r7, r0
+    mrbc_define_method(v[0].cls, name, c_object_getiv);
+     330:	0001      	movs	r1, r0
+     332:	4a11      	ldr	r2, [pc, #68]	; (378 <c_object_attr_accessor+0x70>)
+     334:	6870      	ldr	r0, [r6, #4]
+     336:	f000 ff7f 	bl	1238 <mrbc_define_method>
+    char *namebuf = (char*)mrbc_alloc(vm, strlen(name)+2);
+     33a:	0038      	movs	r0, r7
+     33c:	f001 fa72 	bl	1824 <strlen>
+     340:	1c81      	adds	r1, r0, #2
+     342:	9800      	ldr	r0, [sp, #0]
+     344:	f7ff ff3a 	bl	1bc <mrbc_alloc>
+     348:	1e04      	subs	r4, r0, #0
+    if( !namebuf ) return;
+     34a:	d0e6      	beq.n	31a <c_object_attr_accessor+0x12>
+    strcpy(namebuf, name);
+     34c:	0039      	movs	r1, r7
+     34e:	f001 fa72 	bl	1836 <strcpy>
+    strcat(namebuf, "=");
+     352:	490a      	ldr	r1, [pc, #40]	; (37c <c_object_attr_accessor+0x74>)
+     354:	0020      	movs	r0, r4
+     356:	f001 fa80 	bl	185a <strcat>
+    mrbc_symbol_new(vm, namebuf);
+     35a:	0022      	movs	r2, r4
+     35c:	9900      	ldr	r1, [sp, #0]
+     35e:	a802      	add	r0, sp, #8
+     360:	f001 f9d2 	bl	1708 <mrbc_symbol_new>
+    mrbc_define_method(v[0].cls, namebuf, c_object_setiv);
+     364:	6870      	ldr	r0, [r6, #4]
+     366:	4a06      	ldr	r2, [pc, #24]	; (380 <c_object_attr_accessor+0x78>)
+     368:	0021      	movs	r1, r4
+     36a:	f000 ff65 	bl	1238 <mrbc_define_method>
+    mrbc_raw_free(namebuf);
+     36e:	0020      	movs	r0, r4
+     370:	f7ff ff31 	bl	1d6 <mrbc_raw_free>
+  for( i = 1; i <= argc; i++ ) {
+     374:	3501      	adds	r5, #1
+     376:	e7cd      	b.n	314 <c_object_attr_accessor+0xc>
+     378:	000001df 	.word	0x000001df
+     37c:	00001b28 	.word	0x00001b28
+     380:	000001e1 	.word	0x000001e1
+
+00000384 <c_object_to_s>:
+*/
+static inline void mrbc_printf_init( mrb_printf *pf, char *buf, int size,
+				     const char *fstr )
+{
+  pf->p = pf->buf = buf;
+  pf->buf_end = buf + size - 1;
+     384:	2347      	movs	r3, #71	; 0x47
+
+//================================================================
+/*! (method) to_s
+ */
+void c_object_to_s(mrb_mvm *vm, mrb_value v[], int argc)
+{
+     386:	b570      	push	{r4, r5, r6, lr}
+     388:	b092      	sub	sp, #72	; 0x48
+  pf->p = pf->buf = buf;
+     38a:	ac03      	add	r4, sp, #12
+  pf->buf_end = buf + size - 1;
+     38c:	446b      	add	r3, sp
+     38e:	6063      	str	r3, [r4, #4]
+  pf->fstr = fstr;
+     390:	4b1b      	ldr	r3, [pc, #108]	; (400 <c_object_to_s+0x7c>)
+     392:	000d      	movs	r5, r1
+     394:	60e3      	str	r3, [r4, #12]
+  int i=0;
+  for(i=0;i<sizeof(pf->fmt);i++){
+     396:	2300      	movs	r3, #0
+    *(((char*)(&pf->fmt))+i)=0;
+     398:	0019      	movs	r1, r3
+  pf->p = pf->buf = buf;
+     39a:	ae0a      	add	r6, sp, #40	; 0x28
+     39c:	9603      	str	r6, [sp, #12]
+     39e:	60a6      	str	r6, [r4, #8]
+    *(((char*)(&pf->fmt))+i)=0;
+     3a0:	18e2      	adds	r2, r4, r3
+  for(i=0;i<sizeof(pf->fmt);i++){
+     3a2:	3301      	adds	r3, #1
+    *(((char*)(&pf->fmt))+i)=0;
+     3a4:	7411      	strb	r1, [r2, #16]
+  for(i=0;i<sizeof(pf->fmt);i++){
+     3a6:	2b0c      	cmp	r3, #12
+     3a8:	d1fa      	bne.n	3a0 <c_object_to_s+0x1c>
+
+  char buf[32];
+  mrb_printf pf;
+
+  mrbc_printf_init( &pf, buf, sizeof(buf), "#<%s:%08x>" );
+  while( mrbc_printf_main( &pf ) > 0 ) {
+     3aa:	0020      	movs	r0, r4
+     3ac:	f001 f87a 	bl	14a4 <mrbc_printf_main>
+     3b0:	2800      	cmp	r0, #0
+     3b2:	dc0e      	bgt.n	3d2 <c_object_to_s+0x4e>
+
+  @param  pf	pointer to mrb_printf
+*/
+static inline void mrbc_printf_end( mrb_printf *pf )
+{
+  *pf->p = '\0';
+     3b4:	2300      	movs	r3, #0
+      break;
+    }
+  }
+  mrbc_printf_end( &pf );
+
+  SET_RETURN( mrbc_string_new_cstr( buf ) );
+     3b6:	466c      	mov	r4, sp
+     3b8:	9a05      	ldr	r2, [sp, #20]
+     3ba:	0028      	movs	r0, r5
+     3bc:	7013      	strb	r3, [r2, #0]
+     3be:	f000 f8dc 	bl	57a <mrbc_release>
+     3c2:	0020      	movs	r0, r4
+     3c4:	0031      	movs	r1, r6
+     3c6:	f000 f9a4 	bl	712 <mrbc_string_new_cstr>
+     3ca:	cc0c      	ldmia	r4!, {r2, r3}
+     3cc:	c50c      	stmia	r5!, {r2, r3}
+}
+     3ce:	b012      	add	sp, #72	; 0x48
+     3d0:	bd70      	pop	{r4, r5, r6, pc}
+    switch(pf.fmt.type) {
+     3d2:	7c23      	ldrb	r3, [r4, #16]
+     3d4:	2b73      	cmp	r3, #115	; 0x73
+     3d6:	d007      	beq.n	3e8 <c_object_to_s+0x64>
+     3d8:	2b78      	cmp	r3, #120	; 0x78
+     3da:	d1e6      	bne.n	3aa <c_object_to_s+0x26>
+      mrbc_printf_int( &pf, (uintptr_t)v->instance, 16 );
+     3dc:	2210      	movs	r2, #16
+     3de:	6869      	ldr	r1, [r5, #4]
+     3e0:	0020      	movs	r0, r4
+     3e2:	f001 f863 	bl	14ac <mrbc_printf_int>
+      break;
+     3e6:	e7e0      	b.n	3aa <c_object_to_s+0x26>
+      mrbc_printf_str( &pf, symid_to_str(v->instance->cls->sym_id), ' ' );
+     3e8:	686b      	ldr	r3, [r5, #4]
+     3ea:	685b      	ldr	r3, [r3, #4]
+     3ec:	7818      	ldrb	r0, [r3, #0]
+     3ee:	f001 f9bb 	bl	1768 <symid_to_str>
+     3f2:	2220      	movs	r2, #32
+     3f4:	0001      	movs	r1, r0
+     3f6:	0020      	movs	r0, r4
+     3f8:	f001 f856 	bl	14a8 <mrbc_printf_str>
+      break;
+     3fc:	e7d5      	b.n	3aa <c_object_to_s+0x26>
+     3fe:	46c0      	nop			; (mov r8, r8)
+     400:	00001b2a 	.word	0x00001b2a
+
+00000404 <mrbc_init_class_object>:
+  SET_NIL_RETURN();
+}
+#endif
+
+
+void mrbc_init_class_object(){
+     404:	b510      	push	{r4, lr}
+  // Class
+  mrbc_class_object = mrbc_define_class((char*)MRBC_SSYM_Object, 0);
+     406:	2100      	movs	r1, #0
+     408:	2001      	movs	r0, #1
+     40a:	f000 feed 	bl	11e8 <mrbc_define_class>
+     40e:	4b01      	ldr	r3, [pc, #4]	; (414 <mrbc_init_class_object+0x10>)
+     410:	6018      	str	r0, [r3, #0]
+  mrbc_define_method(mrbc_class_object, "class", c_object_class);
+  mrbc_define_method(mrbc_class_object, "attr_reader", c_object_attr_reader);
+  mrbc_define_method(mrbc_class_object, "attr_accessor", c_object_attr_accessor);
+#endif
+  
+}
+     412:	bd10      	pop	{r4, pc}
+     414:	1000025c 	.word	0x1000025c
+
+00000418 <c_object_cls>:
+     418:	4770      	bx	lr
+
+0000041a <c_object_lc>:
+     41a:	4770      	bx	lr
+
+0000041c <c_object_scr>:
+void c_object_lc(mrb_mvm *vm, mrb_value v[], int argc) {
+  int32_t n = GET_INT_ARG(1);
+  int32_t m = GET_INT_ARG(2);
+//  printf("lc %d,%d\n", n, m);
+}
+void c_object_scr(mrb_mvm *vm, mrb_value v[], int argc) {
+     41c:	b510      	push	{r4, lr}
+  int32_t n = GET_INT_ARG(1);
+  int32_t m = GET_INT_ARG(2);
+//  printf("scr(%d,%d)\n", n, m);
+  SET_INT_RETURN(0);
+     41e:	0008      	movs	r0, r1
+void c_object_scr(mrb_mvm *vm, mrb_value v[], int argc) {
+     420:	000c      	movs	r4, r1
+  SET_INT_RETURN(0);
+     422:	f000 f8aa 	bl	57a <mrbc_release>
+     426:	2304      	movs	r3, #4
+     428:	7023      	strb	r3, [r4, #0]
+     42a:	2300      	movs	r3, #0
+     42c:	80a3      	strh	r3, [r4, #4]
+}
+     42e:	bd10      	pop	{r4, pc}
+
+00000430 <c_object_print>:
+     430:	4770      	bx	lr
+
+00000432 <c_object_rnd>:
+     432:	b510      	push	{r4, lr}
+     434:	0008      	movs	r0, r1
+     436:	000c      	movs	r4, r1
+     438:	f000 f89f 	bl	57a <mrbc_release>
+     43c:	2304      	movs	r3, #4
+     43e:	7023      	strb	r3, [r4, #0]
+     440:	2300      	movs	r3, #0
+     442:	80a3      	strh	r3, [r4, #4]
+     444:	bd10      	pop	{r4, pc}
+
+00000446 <c_object_inkey>:
+     446:	b510      	push	{r4, lr}
+     448:	0008      	movs	r0, r1
+     44a:	000c      	movs	r4, r1
+     44c:	f000 f895 	bl	57a <mrbc_release>
+     450:	2304      	movs	r3, #4
+     452:	7023      	strb	r3, [r4, #0]
+     454:	2300      	movs	r3, #0
+     456:	80a3      	strh	r3, [r4, #4]
+     458:	bd10      	pop	{r4, pc}
+
+0000045a <c_object_wait>:
+}
+void c_object_inkey(mrb_mvm *vm, mrb_value v[], int argc) {
+//  printf("inkey\n");
+  SET_INT_RETURN(0);
+}
+void c_object_wait(mrb_mvm *vm, mrb_value v[], int argc) {
+     45a:	b510      	push	{r4, lr}
+  int32_t n = GET_INT_ARG(1);
+     45c:	230c      	movs	r3, #12
+     45e:	5ec8      	ldrsh	r0, [r1, r3]
+  ext_wait(n);
+     460:	f001 fa38 	bl	18d4 <ext_wait>
+//  printf("wait %d\n", n);
+}
+     464:	bd10      	pop	{r4, pc}
+
+00000466 <c_object_led>:
+void c_object_led(mrb_mvm *vm, mrb_value v[], int argc) {
+     466:	b510      	push	{r4, lr}
+  int32_t n = GET_INT_ARG(1);
+     468:	230c      	movs	r3, #12
+     46a:	5ec8      	ldrsh	r0, [r1, r3]
+  ext_led(n);
+     46c:	f001 fa24 	bl	18b8 <ext_led>
+//  printf("led %d\n", n);
+}
+     470:	bd10      	pop	{r4, pc}
+
+00000472 <c_object_btn>:
+void c_object_btn(mrb_mvm *vm, mrb_value v[], int argc) {
+     472:	b510      	push	{r4, lr}
+  SET_INT_RETURN(ext_btn());
+     474:	0008      	movs	r0, r1
+void c_object_btn(mrb_mvm *vm, mrb_value v[], int argc) {
+     476:	000c      	movs	r4, r1
+  SET_INT_RETURN(ext_btn());
+     478:	f000 f87f 	bl	57a <mrbc_release>
+     47c:	2304      	movs	r3, #4
+     47e:	7023      	strb	r3, [r4, #0]
+     480:	f001 fa2e 	bl	18e0 <ext_btn>
+     484:	80a0      	strh	r0, [r4, #4]
+}
+     486:	bd10      	pop	{r4, pc}
+
+00000488 <c_object_out>:
+     488:	4770      	bx	lr
+
+0000048a <c_object_in>:
+     48a:	b510      	push	{r4, lr}
+     48c:	0008      	movs	r0, r1
+     48e:	000c      	movs	r4, r1
+     490:	f000 f873 	bl	57a <mrbc_release>
+     494:	2304      	movs	r3, #4
+     496:	7023      	strb	r3, [r4, #0]
+     498:	2300      	movs	r3, #0
+     49a:	80a3      	strh	r3, [r4, #4]
+     49c:	bd10      	pop	{r4, pc}
+
+0000049e <c_object_pwm>:
+     49e:	4770      	bx	lr
+
+000004a0 <c_object_ana>:
+     4a0:	b510      	push	{r4, lr}
+     4a2:	0008      	movs	r0, r1
+     4a4:	000c      	movs	r4, r1
+     4a6:	f000 f868 	bl	57a <mrbc_release>
+     4aa:	2304      	movs	r3, #4
+     4ac:	7023      	strb	r3, [r4, #0]
+     4ae:	2300      	movs	r3, #0
+     4b0:	80a3      	strh	r3, [r4, #4]
+     4b2:	bd10      	pop	{r4, pc}
+
+000004b4 <init_hal>:
+#ifdef MMRUBY_DEBUG_ENABLE
+  //Serial.begin(SERIAL_FOR_STDIO_BAUDRATE);
+  //delay(1000);
+  DEBUG_FPRINTLN("Debug Serial enabled");
+#endif
+}
+     4b4:	4770      	bx	lr
+
+000004b6 <hal_write_string>:
+}
+
+void hal_write_string(char* text){
+  //Serial.print(text);
+  DEBUG_PRINTLN(text);
+}
+     4b6:	4770      	bx	lr
+
+000004b8 <hal_write>:
+
+int hal_write(int fd, const void *buf, int nbytes){
+  char* t = (char*)buf;
+  char tbuf[2];
+  if(nbytes==1){ //for console_putchar()
+     4b8:	2a01      	cmp	r2, #1
+     4ba:	d003      	beq.n	4c4 <hal_write+0xc>
+    tbuf[0]=*t;
+    tbuf[1]='\0';
+    hal_write_string(tbuf);
+    return nbytes;
+  }
+  if(nbytes<CONSOLE_BUFF_SIZE-1) t[nbytes]='\0';//TODO: double check
+     4bc:	2a26      	cmp	r2, #38	; 0x26
+     4be:	dc01      	bgt.n	4c4 <hal_write+0xc>
+     4c0:	2300      	movs	r3, #0
+     4c2:	548b      	strb	r3, [r1, r2]
+  hal_write_string(t);
+  return nbytes;
+}
+     4c4:	0010      	movs	r0, r2
+     4c6:	4770      	bx	lr
+
+000004c8 <mrbc_rproc_alloc>:
+  return ptr;
+}
+
+
+mrb_proc *mrbc_rproc_alloc(const char *name)
+{
+     4c8:	b570      	push	{r4, r5, r6, lr}
+     4ca:	0005      	movs	r5, r0
+  mrb_proc *ptr = (mrb_proc *)mrbc_raw_alloc(sizeof(mrb_proc));
+     4cc:	2010      	movs	r0, #16
+     4ce:	f7ff fe7a 	bl	1c6 <mrbc_raw_alloc>
+     4d2:	1e04      	subs	r4, r0, #0
+  if( ptr ) {
+     4d4:	d007      	beq.n	4e6 <mrbc_rproc_alloc+0x1e>
+    ptr->ref_count = 1;
+     4d6:	2301      	movs	r3, #1
+     4d8:	8003      	strh	r3, [r0, #0]
+    ptr->sym_id = str_to_symid(name);
+     4da:	0028      	movs	r0, r5
+     4dc:	f001 f939 	bl	1752 <str_to_symid>
+    ptr->next = 0;
+     4e0:	2300      	movs	r3, #0
+    ptr->sym_id = str_to_symid(name);
+     4e2:	7120      	strb	r0, [r4, #4]
+    ptr->next = 0;
+     4e4:	60a3      	str	r3, [r4, #8]
+  }
+  return ptr;
+}
+     4e6:	0020      	movs	r0, r4
+     4e8:	bd70      	pop	{r4, r5, r6, pc}
+
+000004ea <mrbc_compare>:
+int mrbc_compare(const mrb_value *v1, const mrb_value *v2)
+{
+//  double d1, d2;
+
+  // if TT_XXX is different
+  if( v1->tt != v2->tt ) {
+     4ea:	2300      	movs	r3, #0
+     4ec:	2200      	movs	r2, #0
+     4ee:	56c3      	ldrsb	r3, [r0, r3]
+     4f0:	568a      	ldrsb	r2, [r1, r2]
+{
+     4f2:	b510      	push	{r4, lr}
+     4f4:	0004      	movs	r4, r0
+  if( v1->tt != v2->tt ) {
+     4f6:	4293      	cmp	r3, r2
+     4f8:	d00c      	beq.n	514 <mrbc_compare+0x2a>
+    // leak Empty?
+    if((v1->tt == MRB_TT_EMPTY && v2->tt == MRB_TT_NIL) ||
+     4fa:	2b00      	cmp	r3, #0
+     4fc:	d103      	bne.n	506 <mrbc_compare+0x1c>
+       (v1->tt == MRB_TT_NIL   && v2->tt == MRB_TT_EMPTY)) return 0;
+     4fe:	0018      	movs	r0, r3
+    if((v1->tt == MRB_TT_EMPTY && v2->tt == MRB_TT_NIL) ||
+     500:	2a01      	cmp	r2, #1
+     502:	d105      	bne.n	510 <mrbc_compare+0x26>
+    //return mrbc_hash_compare( v1, v2 );
+
+  default:
+    return 1;
+  }
+}
+     504:	bd10      	pop	{r4, pc}
+    if((v1->tt == MRB_TT_EMPTY && v2->tt == MRB_TT_NIL) ||
+     506:	2b01      	cmp	r3, #1
+     508:	d102      	bne.n	510 <mrbc_compare+0x26>
+       (v1->tt == MRB_TT_NIL   && v2->tt == MRB_TT_EMPTY)) return 0;
+     50a:	2000      	movs	r0, #0
+     50c:	4282      	cmp	r2, r0
+     50e:	d0f9      	beq.n	504 <mrbc_compare+0x1a>
+    return v1->tt - v2->tt;
+     510:	1a98      	subs	r0, r3, r2
+     512:	e7f7      	b.n	504 <mrbc_compare+0x1a>
+  switch( v1->tt ) {
+     514:	1e58      	subs	r0, r3, #1
+     516:	2814      	cmp	r0, #20
+     518:	d80c      	bhi.n	534 <mrbc_compare+0x4a>
+     51a:	f001 fa05 	bl	1928 <__gnu_thumb1_case_uqi>
+     51e:	2323      	.short	0x2323
+     520:	0d0b0d23 	.word	0x0d0b0d23
+     524:	0b0b0b13 	.word	0x0b0b0b13
+     528:	0b0b0b0b 	.word	0x0b0b0b0b
+     52c:	0b0b0b0b 	.word	0x0b0b0b0b
+     530:	130b      	.short	0x130b
+     532:	13          	.byte	0x13
+     533:	00          	.byte	0x00
+    return 1;
+     534:	2001      	movs	r0, #1
+     536:	e7e5      	b.n	504 <mrbc_compare+0x1a>
+    return v1->i - v2->i;
+     538:	2304      	movs	r3, #4
+     53a:	5ee0      	ldrsh	r0, [r4, r3]
+     53c:	2204      	movs	r2, #4
+     53e:	5e8b      	ldrsh	r3, [r1, r2]
+     540:	1ac0      	subs	r0, r0, r3
+     542:	e7df      	b.n	504 <mrbc_compare+0x1a>
+    return -1 + (v1->handle == v2->handle) + (v1->handle > v2->handle)*2;
+     544:	6862      	ldr	r2, [r4, #4]
+     546:	684b      	ldr	r3, [r1, #4]
+     548:	429a      	cmp	r2, r3
+     54a:	d005      	beq.n	558 <mrbc_compare+0x6e>
+     54c:	d806      	bhi.n	55c <mrbc_compare+0x72>
+     54e:	2301      	movs	r3, #1
+     550:	425b      	negs	r3, r3
+     552:	2000      	movs	r0, #0
+     554:	18c0      	adds	r0, r0, r3
+     556:	e7d5      	b.n	504 <mrbc_compare+0x1a>
+     558:	2300      	movs	r3, #0
+     55a:	e7fa      	b.n	552 <mrbc_compare+0x68>
+     55c:	2301      	movs	r3, #1
+     55e:	2002      	movs	r0, #2
+     560:	425b      	negs	r3, r3
+     562:	e7f7      	b.n	554 <mrbc_compare+0x6a>
+    return 0;
+     564:	2000      	movs	r0, #0
+     566:	e7cd      	b.n	504 <mrbc_compare+0x1a>
+
+00000568 <mrbc_dup>:
+
+  @param   v     Pointer to mrb_value
+*/
+void mrbc_dup(mrb_value *v)
+{
+  switch( v->tt ){
+     568:	7803      	ldrb	r3, [r0, #0]
+     56a:	3b14      	subs	r3, #20
+     56c:	2b05      	cmp	r3, #5
+     56e:	d803      	bhi.n	578 <mrbc_dup+0x10>
+  case MRB_TT_PROC:
+  case MRB_TT_ARRAY:
+  case MRB_TT_STRING:
+  case MRB_TT_RANGE:
+  case MRB_TT_HASH:
+    assert( v->instance->ref_count > 0 );
+     570:	6842      	ldr	r2, [r0, #4]
+    assert( v->instance->ref_count != 0xff );	// check max value.
+    v->instance->ref_count++;
+     572:	8813      	ldrh	r3, [r2, #0]
+     574:	3301      	adds	r3, #1
+     576:	8013      	strh	r3, [r2, #0]
+
+  default:
+    // Nothing
+    break;
+  }
+}
+     578:	4770      	bx	lr
+
+0000057a <mrbc_release>:
+  @param   v     Pointer to target mrb_value
+*/
+void mrbc_release(mrb_value *v)
+{
+  mrbc_dec_ref_counter(v);
+  v->tt = MRB_TT_EMPTY;
+     57a:	2300      	movs	r3, #0
+     57c:	7003      	strb	r3, [r0, #0]
+}
+     57e:	4770      	bx	lr
+
+00000580 <find_c_funcs_by_no>:
+
+const uint8_t mmruby_code_proc_table_Range[] PROGMEM = {
+  0
+};
+
+xinline mrb_func_t find_c_funcs_by_no(short no){
+     580:	3801      	subs	r0, #1
+     582:	b283      	uxth	r3, r0
+  mrb_func_t func=0;
+  switch(no){
+     584:	2000      	movs	r0, #0
+     586:	2b2d      	cmp	r3, #45	; 0x2d
+     588:	d802      	bhi.n	590 <find_c_funcs_by_no+0x10>
+     58a:	4a02      	ldr	r2, [pc, #8]	; (594 <find_c_funcs_by_no+0x14>)
+     58c:	009b      	lsls	r3, r3, #2
+     58e:	5898      	ldr	r0, [r3, r2]
+    case 45: func = c_to_s; break;
+    case 46: func = c_ineffect; break;
+    default: break;
+  }
+  return func;
+}
+     590:	4770      	bx	lr
+     592:	46c0      	nop			; (mov r8, r8)
+     594:	00001b44 	.word	0x00001b44
+
+00000598 <read_bytecode>:
+// MIREP_HEADER_SIZE == 4, CODE_LEN == 4
+uint32_t read_bytecode(mrb_irep_id irep_id, uint8_t pc){
+//  printf("%d %d %d\n", mmruby_code_irep_table[irep_id], mmruby_code_irep_000, pgm_read_word_near(&mmruby_code_irep_table[irep_id]) + MIREP_HEADER_SIZE + pc*CODE_LEN);
+  //return pgm_read_dword_near( pgm_read_word_near(&mmruby_code_irep_table[irep_id]) + MIREP_HEADER_SIZE + pc*CODE_LEN );
+  //return *(uint32_t*)(mmruby_code_irep_000 + MIREP_HEADER_SIZE + pc * CODE_LEN);
+  return *(uint32_t*)(mmruby_code_irep_table[irep_id] + MIREP_HEADER_SIZE + pc * CODE_LEN);
+     598:	008b      	lsls	r3, r1, #2
+     59a:	4902      	ldr	r1, [pc, #8]	; (5a4 <read_bytecode+0xc>)
+     59c:	18c9      	adds	r1, r1, r3
+     59e:	6848      	ldr	r0, [r1, #4]
+}
+     5a0:	4770      	bx	lr
+     5a2:	46c0      	nop			; (mov r8, r8)
+     5a4:	00001bfc 	.word	0x00001bfc
+
+000005a8 <get_irep_pool>:
+    p += size;
+  }
+  if(obj_size!=NULL) *obj_size = size;
+  memcpy_pgm2ram(buff, irep_addr + MIREP_HEADER_SIZE + code_len + obj_p, size);
+  return;
+}
+     5a8:	4770      	bx	lr
+	...
+
+000005ac <get_irep_irep_id>:
+//  short irep_addr = pgm_read_word_near(&mmruby_code_irep_table[irep_id]);
+  const uint8_t* irep_addr = mmruby_code_irep_table[irep_id];
+  uint8_t code_len = pgm_read_byte_near( irep_addr + MIREP_OFFSET_ILEN ) * CODE_LEN;
+  uint8_t plen = pgm_read_byte_near( irep_addr + MIREP_OFFSET_PLEN );
+  uint8_t slen = pgm_read_byte_near( irep_addr + MIREP_OFFSET_SLEN );
+  return pgm_read_byte_near( irep_addr + MIREP_HEADER_SIZE + code_len + plen + slen + no);
+     5ac:	4b02      	ldr	r3, [pc, #8]	; (5b8 <get_irep_irep_id+0xc>)
+     5ae:	1859      	adds	r1, r3, r1
+     5b0:	317a      	adds	r1, #122	; 0x7a
+     5b2:	7808      	ldrb	r0, [r1, #0]
+}
+     5b4:	4770      	bx	lr
+     5b6:	46c0      	nop			; (mov r8, r8)
+     5b8:	00001bfc 	.word	0x00001bfc
+
+000005bc <get_irep_symbol_id>:
+mrb_sym get_irep_symbol_id(mrb_irep_id irep_id, uint8_t no){
+  //short irep_addr = pgm_read_word_near(&mmruby_code_irep_table[irep_id]);
+  const uint8_t* irep_addr = mmruby_code_irep_table[irep_id];
+  uint8_t code_len = pgm_read_byte_near( irep_addr + MIREP_OFFSET_ILEN ) * CODE_LEN;
+  uint8_t plen = pgm_read_byte_near( irep_addr + MIREP_OFFSET_PLEN );
+  return pgm_read_byte_near( irep_addr + MIREP_HEADER_SIZE + code_len + plen + no);
+     5bc:	4b02      	ldr	r3, [pc, #8]	; (5c8 <get_irep_symbol_id+0xc>)
+     5be:	1859      	adds	r1, r3, r1
+     5c0:	3178      	adds	r1, #120	; 0x78
+     5c2:	7808      	ldrb	r0, [r1, #0]
+}
+     5c4:	4770      	bx	lr
+     5c6:	46c0      	nop			; (mov r8, r8)
+     5c8:	00001bfc 	.word	0x00001bfc
+
+000005cc <get_max_static_symbol_id>:
+
+uint8_t get_max_static_symbol_id(){
+  return pgm_read_byte_near(&mmruby_code_symbol_table_size);
+}
+     5cc:	2040      	movs	r0, #64	; 0x40
+     5ce:	4770      	bx	lr
+
+000005d0 <search_index_static>:
+
+mrb_sym search_index_static(const char *str){
+     5d0:	b570      	push	{r4, r5, r6, lr}
+     5d2:	0005      	movs	r5, r0
+  char buff[MAX_SYMBOL_LEN];
+  uint8_t max = pgm_read_byte_near(&mmruby_code_symbol_table_size);
+  int i;
+  for(i=0;i<max;i++){
+     5d4:	2400      	movs	r4, #0
+    //short addr = pgm_read_word_near(&mmruby_code_symbol_table[i]);
+    const char* addr = mmruby_code_symbol_table[i];
+//    strcpy_pgm2ram(buff, addr);
+//printf("search_index_static %s %s\n", str, addr); 
+    if(0 == strcmp(str, addr)){
+     5d6:	4a09      	ldr	r2, [pc, #36]	; (5fc <search_index_static+0x2c>)
+    const char* addr = mmruby_code_symbol_table[i];
+     5d8:	00a3      	lsls	r3, r4, #2
+    if(0 == strcmp(str, addr)){
+     5da:	58d1      	ldr	r1, [r2, r3]
+     5dc:	0028      	movs	r0, r5
+     5de:	f001 f931 	bl	1844 <strcmp>
+     5e2:	2800      	cmp	r0, #0
+     5e4:	d104      	bne.n	5f0 <search_index_static+0x20>
+      if(i==0)return INVALID_SYMBOL; //str is null char
+     5e6:	30ff      	adds	r0, #255	; 0xff
+     5e8:	2c00      	cmp	r4, #0
+     5ea:	d000      	beq.n	5ee <search_index_static+0x1e>
+      return i;
+     5ec:	b2e0      	uxtb	r0, r4
+    }
+  }
+  return INVALID_SYMBOL;
+}
+     5ee:	bd70      	pop	{r4, r5, r6, pc}
+  for(i=0;i<max;i++){
+     5f0:	3401      	adds	r4, #1
+     5f2:	2c40      	cmp	r4, #64	; 0x40
+     5f4:	d1ef      	bne.n	5d6 <search_index_static+0x6>
+      if(i==0)return INVALID_SYMBOL; //str is null char
+     5f6:	20ff      	movs	r0, #255	; 0xff
+     5f8:	e7f9      	b.n	5ee <search_index_static+0x1e>
+     5fa:	46c0      	nop			; (mov r8, r8)
+     5fc:	00001e1c 	.word	0x00001e1c
+
+00000600 <copy_symbol_str>:
+
+void copy_symbol_str(char* buff, mrb_sym sym_id){
+//  short addr = pgm_read_word_near(&mmruby_code_symbol_table[sym_id]);
+  const char* addr = mmruby_code_symbol_table[sym_id];
+     600:	4b05      	ldr	r3, [pc, #20]	; (618 <copy_symbol_str+0x18>)
+     602:	0089      	lsls	r1, r1, #2
+     604:	58c9      	ldr	r1, [r1, r3]
+  for(i=0;i<MAX_SYMBOL_LEN;i++){
+     606:	2300      	movs	r3, #0
+    char c = pgm_read_byte_near( pgm_p+i );
+     608:	5cca      	ldrb	r2, [r1, r3]
+    buff[i] = c;
+     60a:	54c2      	strb	r2, [r0, r3]
+    if(c=='\0') break;
+     60c:	2a00      	cmp	r2, #0
+     60e:	d002      	beq.n	616 <copy_symbol_str+0x16>
+  for(i=0;i<MAX_SYMBOL_LEN;i++){
+     610:	3301      	adds	r3, #1
+     612:	2b10      	cmp	r3, #16
+     614:	d1f8      	bne.n	608 <copy_symbol_str+0x8>
+  strcpy_pgm2ram(buff, addr);
+}
+     616:	4770      	bx	lr
+     618:	00001e1c 	.word	0x00001e1c
+
+0000061c <find_func_no_by_sym_id>:
+
+int find_func_no_by_sym_id(const uint8_t* addr,mrb_sym target_sym_id){
+     61c:	0002      	movs	r2, r0
+     61e:	b510      	push	{r4, lr}
+  int i=0;
+  uint8_t v=0;
+  while(1){
+    mrb_sym sym_id = pgm_read_byte_near( addr + i*2 );
+     620:	7813      	ldrb	r3, [r2, #0]
+     622:	1a14      	subs	r4, r2, r0
+    if(sym_id == target_sym_id) return (int)pgm_read_byte_near( addr + i*2 +1 ); //addr > 0
+     624:	428b      	cmp	r3, r1
+     626:	d102      	bne.n	62e <find_func_no_by_sym_id+0x12>
+     628:	1900      	adds	r0, r0, r4
+     62a:	7840      	ldrb	r0, [r0, #1]
+    if(sym_id == 0) return 0;
+    i++;
+  }
+  return 0;
+}
+     62c:	bd10      	pop	{r4, pc}
+     62e:	3202      	adds	r2, #2
+    if(sym_id == 0) return 0;
+     630:	2b00      	cmp	r3, #0
+     632:	d1f5      	bne.n	620 <find_func_no_by_sym_id+0x4>
+     634:	0018      	movs	r0, r3
+     636:	e7f9      	b.n	62c <find_func_no_by_sym_id+0x10>
+
+00000638 <find_c_funcs>:
+
+mrb_func_t find_c_funcs(mrb_proc* proc){
+     638:	b510      	push	{r4, lr}
+  return find_c_funcs_by_no((int)proc);
+     63a:	b200      	sxth	r0, r0
+     63c:	f7ff ffa0 	bl	580 <find_c_funcs_by_no>
+}
+     640:	bd10      	pop	{r4, pc}
+	...
+
+00000644 <find_static_procs>:
+
+xinline mrb_proc *find_static_procs(mrb_sym class_sym_id, mrb_sym sym_id){
+  int addr=0;
+  //cprintf(" class %d %d\n",class_sym_id,sym_id);
+  switch(class_sym_id){
+     644:	1e43      	subs	r3, r0, #1
+xinline mrb_proc *find_static_procs(mrb_sym class_sym_id, mrb_sym sym_id){
+     646:	b510      	push	{r4, lr}
+  case MRBC_SSYM_RGB_LCD:
+    addr = find_func_no_by_sym_id( mmruby_code_proc_table_RGB_LCD , sym_id);
+    break;
+#endif
+  default:
+    addr=0;
+     648:	2000      	movs	r0, #0
+  switch(class_sym_id){
+     64a:	2b09      	cmp	r3, #9
+     64c:	d80a      	bhi.n	664 <find_static_procs+0x20>
+     64e:	0018      	movs	r0, r3
+     650:	f001 f96a 	bl	1928 <__gnu_thumb1_case_uqi>
+     654:	090f1505 	.word	0x090f1505
+     658:	17130d0b 	.word	0x17130d0b
+     65c:	1911      	.short	0x1911
+    addr = find_func_no_by_sym_id( mmruby_code_proc_table_Object , sym_id);
+     65e:	480b      	ldr	r0, [pc, #44]	; (68c <find_static_procs+0x48>)
+    addr = find_func_no_by_sym_id( mmruby_code_proc_table_Range , sym_id);
+     660:	f7ff ffdc 	bl	61c <find_func_no_by_sym_id>
+    break;
+  }
+
+  return (mrb_proc*)(addr);
+}
+     664:	bd10      	pop	{r4, pc}
+    addr = find_func_no_by_sym_id( mmruby_code_proc_table_Proc , sym_id);
+     666:	480a      	ldr	r0, [pc, #40]	; (690 <find_static_procs+0x4c>)
+     668:	e7fa      	b.n	660 <find_static_procs+0x1c>
+    addr = find_func_no_by_sym_id( mmruby_code_proc_table_False , sym_id);
+     66a:	480a      	ldr	r0, [pc, #40]	; (694 <find_static_procs+0x50>)
+     66c:	e7f8      	b.n	660 <find_static_procs+0x1c>
+    addr = find_func_no_by_sym_id( mmruby_code_proc_table_True , sym_id);
+     66e:	480a      	ldr	r0, [pc, #40]	; (698 <find_static_procs+0x54>)
+     670:	e7f6      	b.n	660 <find_static_procs+0x1c>
+    addr = find_func_no_by_sym_id( mmruby_code_proc_table_Nil , sym_id);
+     672:	480a      	ldr	r0, [pc, #40]	; (69c <find_static_procs+0x58>)
+     674:	e7f4      	b.n	660 <find_static_procs+0x1c>
+    addr = find_func_no_by_sym_id( mmruby_code_proc_table_Array , sym_id);
+     676:	480a      	ldr	r0, [pc, #40]	; (6a0 <find_static_procs+0x5c>)
+     678:	e7f2      	b.n	660 <find_static_procs+0x1c>
+    addr = find_func_no_by_sym_id( mmruby_code_proc_table_Fixnum , sym_id);
+     67a:	480a      	ldr	r0, [pc, #40]	; (6a4 <find_static_procs+0x60>)
+     67c:	e7f0      	b.n	660 <find_static_procs+0x1c>
+    addr = find_func_no_by_sym_id( mmruby_code_proc_table_String , sym_id);
+     67e:	480a      	ldr	r0, [pc, #40]	; (6a8 <find_static_procs+0x64>)
+     680:	e7ee      	b.n	660 <find_static_procs+0x1c>
+    addr = find_func_no_by_sym_id( mmruby_code_proc_table_Symbol , sym_id);
+     682:	480a      	ldr	r0, [pc, #40]	; (6ac <find_static_procs+0x68>)
+     684:	e7ec      	b.n	660 <find_static_procs+0x1c>
+    addr = find_func_no_by_sym_id( mmruby_code_proc_table_Range , sym_id);
+     686:	480a      	ldr	r0, [pc, #40]	; (6b0 <find_static_procs+0x6c>)
+     688:	e7ea      	b.n	660 <find_static_procs+0x1c>
+     68a:	46c0      	nop			; (mov r8, r8)
+     68c:	00001c9c 	.word	0x00001c9c
+     690:	00001cc7 	.word	0x00001cc7
+     694:	00001c77 	.word	0x00001c77
+     698:	00001cd9 	.word	0x00001cd9
+     69c:	00001c99 	.word	0x00001c99
+     6a0:	00001c76 	.word	0x00001c76
+     6a4:	00001c7a 	.word	0x00001c7a
+     6a8:	00001ccd 	.word	0x00001ccd
+     6ac:	00001cd6 	.word	0x00001cd6
+     6b0:	00001ccc 	.word	0x00001ccc
+
+000006b4 <mrbc_string_new>:
+  @param  src	source string or NULL
+  @param  len	source length
+  @return 	string object
+*/
+mrb_value mrbc_string_new(const void *src, int len)
+{
+     6b4:	b5f7      	push	{r0, r1, r2, r4, r5, r6, r7, lr}
+     6b6:	0017      	movs	r7, r2
+     6b8:	9101      	str	r1, [sp, #4]
+  mrb_value value = {.tt = MRB_TT_STRING};
+     6ba:	2208      	movs	r2, #8
+     6bc:	2100      	movs	r1, #0
+{
+     6be:	0005      	movs	r5, r0
+  mrb_value value = {.tt = MRB_TT_STRING};
+     6c0:	f001 f8e1 	bl	1886 <memset>
+
+  /*
+    Allocate handle and string buffer.
+  */
+  mrb_string *h;
+  h = (mrb_string *)mrbc_raw_alloc(sizeof(mrb_string));
+     6c4:	200c      	movs	r0, #12
+     6c6:	f7ff fd7e 	bl	1c6 <mrbc_raw_alloc>
+     6ca:	1e04      	subs	r4, r0, #0
+  if( !h ) return value;		// ENOMEM
+     6cc:	d103      	bne.n	6d6 <mrbc_string_new+0x22>
+
+  uint8_t *str = (uint8_t*)mrbc_raw_alloc(len+1);
+  if( !str ) {				// ENOMEM
+    mrbc_raw_free( h );
+    return value;
+     6ce:	2317      	movs	r3, #23
+     6d0:	702b      	strb	r3, [r5, #0]
+    str[len] = '\0';
+  }
+
+  value.string = h;
+  return value;
+}
+     6d2:	0028      	movs	r0, r5
+     6d4:	bdfe      	pop	{r1, r2, r3, r4, r5, r6, r7, pc}
+  uint8_t *str = (uint8_t*)mrbc_raw_alloc(len+1);
+     6d6:	1c78      	adds	r0, r7, #1
+     6d8:	f7ff fd75 	bl	1c6 <mrbc_raw_alloc>
+     6dc:	1e06      	subs	r6, r0, #0
+  if( !str ) {				// ENOMEM
+     6de:	d103      	bne.n	6e8 <mrbc_string_new+0x34>
+    mrbc_raw_free( h );
+     6e0:	0020      	movs	r0, r4
+     6e2:	f7ff fd78 	bl	1d6 <mrbc_raw_free>
+     6e6:	e7f2      	b.n	6ce <mrbc_string_new+0x1a>
+  h->ref_count = 1;
+     6e8:	2301      	movs	r3, #1
+     6ea:	8023      	strh	r3, [r4, #0]
+  h->tt = MRB_TT_STRING;	// TODO: for DEBUG
+     6ec:	3316      	adds	r3, #22
+     6ee:	70a3      	strb	r3, [r4, #2]
+  if( src == NULL ) {
+     6f0:	9b01      	ldr	r3, [sp, #4]
+  h->size = len;
+     6f2:	80a7      	strh	r7, [r4, #4]
+  h->data = str;
+     6f4:	60a0      	str	r0, [r4, #8]
+  if( src == NULL ) {
+     6f6:	2b00      	cmp	r3, #0
+     6f8:	d104      	bne.n	704 <mrbc_string_new+0x50>
+    str[0] = '\0';
+     6fa:	7003      	strb	r3, [r0, #0]
+  return value;
+     6fc:	2317      	movs	r3, #23
+     6fe:	606c      	str	r4, [r5, #4]
+     700:	702b      	strb	r3, [r5, #0]
+     702:	e7e6      	b.n	6d2 <mrbc_string_new+0x1e>
+    memcpy( str, src, len );
+     704:	003a      	movs	r2, r7
+     706:	9901      	ldr	r1, [sp, #4]
+     708:	f001 f8b4 	bl	1874 <memmove>
+    str[len] = '\0';
+     70c:	2300      	movs	r3, #0
+     70e:	55f3      	strb	r3, [r6, r7]
+     710:	e7f4      	b.n	6fc <mrbc_string_new+0x48>
+
+00000712 <mrbc_string_new_cstr>:
+  @param  src	source string or NULL
+  @return 	string object
+*/
+mrb_value mrbc_string_new_cstr(const char *src)
+{
+  return mrbc_string_new(src, (src ? strlen(src) : 0));
+     712:	2200      	movs	r2, #0
+{
+     714:	b570      	push	{r4, r5, r6, lr}
+     716:	0005      	movs	r5, r0
+     718:	000c      	movs	r4, r1
+  return mrbc_string_new(src, (src ? strlen(src) : 0));
+     71a:	4291      	cmp	r1, r2
+     71c:	d003      	beq.n	726 <mrbc_string_new_cstr+0x14>
+     71e:	0008      	movs	r0, r1
+     720:	f001 f880 	bl	1824 <strlen>
+     724:	0002      	movs	r2, r0
+     726:	0028      	movs	r0, r5
+     728:	0021      	movs	r1, r4
+     72a:	f7ff ffc3 	bl	6b4 <mrbc_string_new>
+}
+     72e:	0028      	movs	r0, r5
+     730:	bd70      	pop	{r4, r5, r6, pc}
+
+00000732 <mrbc_string_add>:
+  @param  s1	pointer to target value 1
+  @param  s2	pointer to target value 2
+  @return	new string as s1 + s2
+*/
+mrb_value mrbc_string_add(mrb_value *s1, mrb_value *s2)
+{
+     732:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
+     734:	0005      	movs	r5, r0
+  mrb_string *h1 = s1->string;
+     736:	684c      	ldr	r4, [r1, #4]
+  mrb_string *h2 = s2->string;
+     738:	6856      	ldr	r6, [r2, #4]
+
+  mrb_value value = mrbc_string_new(NULL, h1->size + h2->size);
+     73a:	88a2      	ldrh	r2, [r4, #4]
+     73c:	88b3      	ldrh	r3, [r6, #4]
+     73e:	2100      	movs	r1, #0
+     740:	18d2      	adds	r2, r2, r3
+     742:	f7ff ffb7 	bl	6b4 <mrbc_string_new>
+     746:	686f      	ldr	r7, [r5, #4]
+  if( value.string == NULL ) return value;		// ENOMEM
+     748:	2f00      	cmp	r7, #0
+     74a:	d00c      	beq.n	766 <mrbc_string_add+0x34>
+
+  memcpy( value.string->data,            h1->data, h1->size );
+     74c:	88a2      	ldrh	r2, [r4, #4]
+     74e:	68a1      	ldr	r1, [r4, #8]
+     750:	68b8      	ldr	r0, [r7, #8]
+     752:	f001 f88f 	bl	1874 <memmove>
+  memcpy( value.string->data + h1->size, h2->data, h2->size + 1 );
+     756:	88b2      	ldrh	r2, [r6, #4]
+     758:	88a3      	ldrh	r3, [r4, #4]
+     75a:	68b8      	ldr	r0, [r7, #8]
+     75c:	3201      	adds	r2, #1
+     75e:	18c0      	adds	r0, r0, r3
+     760:	68b1      	ldr	r1, [r6, #8]
+     762:	f001 f887 	bl	1874 <memmove>
+
+  return value;
+}
+     766:	0028      	movs	r0, r5
+     768:	bdf8      	pop	{r3, r4, r5, r6, r7, pc}
+	...
+
+0000076c <mrbc_init_class_string>:
+//================================================================
+/*! initialize
+*/
+void mrbc_init_class_string()
+{
+  mrbc_class_string = mrbc_define_class((char*)MRBC_SSYM_String, mrbc_class_object);
+     76c:	4b04      	ldr	r3, [pc, #16]	; (780 <mrbc_init_class_string+0x14>)
+{
+     76e:	b510      	push	{r4, lr}
+  mrbc_class_string = mrbc_define_class((char*)MRBC_SSYM_String, mrbc_class_object);
+     770:	6819      	ldr	r1, [r3, #0]
+     772:	2002      	movs	r0, #2
+     774:	f000 fd38 	bl	11e8 <mrbc_define_class>
+     778:	4b02      	ldr	r3, [pc, #8]	; (784 <mrbc_init_class_string+0x18>)
+     77a:	6018      	str	r0, [r3, #0]
+  mrbc_define_method(mrbc_class_string, "to_sym",	c_string_to_sym);
+  mrbc_define_method(mrbc_class_string, "intern",	c_string_to_sym);
+                     
+  mrbc_define_method(mrbc_class_object, "sprintf",	c_object_sprintf);
+#endif
+}
+     77c:	bd10      	pop	{r4, pc}
+     77e:	46c0      	nop			; (mov r8, r8)
+     780:	1000025c 	.word	0x1000025c
+     784:	1000024c 	.word	0x1000024c
+
+00000788 <init_vm>:
+static mrb_mvm vm_body;
+
+void init_vm(void){
+  mrb_mvm* vm = &vm_body;
+  //initialize VM
+  memset(vm,0,sizeof(mrb_mvm));
+     788:	229a      	movs	r2, #154	; 0x9a
+void init_vm(void){
+     78a:	b570      	push	{r4, r5, r6, lr}
+  memset(vm,0,sizeof(mrb_mvm));
+     78c:	4c0d      	ldr	r4, [pc, #52]	; (7c4 <init_vm+0x3c>)
+     78e:	0052      	lsls	r2, r2, #1
+     790:	0020      	movs	r0, r4
+     792:	2100      	movs	r1, #0
+     794:	f001 f877 	bl	1886 <memset>
+
+  //set self
+  vm->pc_irep = vm->irep;
+     798:	7823      	ldrb	r3, [r4, #0]
+  vm->pc = 0;
+  vm->current_regs = vm->regs;
+     79a:	4a0b      	ldr	r2, [pc, #44]	; (7c8 <init_vm+0x40>)
+  vm->pc_irep = vm->irep;
+     79c:	7063      	strb	r3, [r4, #1]
+  vm->current_regs = vm->regs;
+     79e:	0023      	movs	r3, r4
+     7a0:	3308      	adds	r3, #8
+     7a2:	67da      	str	r2, [r3, #124]	; 0x7c
+
+  // set self to reg[0]
+  vm->regs[0].tt = MRB_TT_CLASS;
+     7a4:	2307      	movs	r3, #7
+  vm->pc = 0;
+     7a6:	2100      	movs	r1, #0
+  vm->regs[0].cls = mrbc_class_object;
+     7a8:	4d08      	ldr	r5, [pc, #32]	; (7cc <init_vm+0x44>)
+  vm->regs[0].tt = MRB_TT_CLASS;
+     7aa:	7123      	strb	r3, [r4, #4]
+  vm->regs[0].cls = mrbc_class_object;
+     7ac:	682b      	ldr	r3, [r5, #0]
+ 
+  memset(vm->callinfo, 0, sizeof(vm->callinfo));
+     7ae:	22a0      	movs	r2, #160	; 0xa0
+  vm->regs[0].cls = mrbc_class_object;
+     7b0:	60a3      	str	r3, [r4, #8]
+  memset(vm->callinfo, 0, sizeof(vm->callinfo));
+     7b2:	4807      	ldr	r0, [pc, #28]	; (7d0 <init_vm+0x48>)
+  vm->pc = 0;
+     7b4:	8061      	strh	r1, [r4, #2]
+  memset(vm->callinfo, 0, sizeof(vm->callinfo));
+     7b6:	f001 f866 	bl	1886 <memset>
+
+  // target_class
+  vm->target_class = mrbc_class_object;
+     7ba:	682b      	ldr	r3, [r5, #0]
+     7bc:	34fc      	adds	r4, #252	; 0xfc
+     7be:	6323      	str	r3, [r4, #48]	; 0x30
+
+}
+     7c0:	bd70      	pop	{r4, r5, r6, pc}
+     7c2:	46c0      	nop			; (mov r8, r8)
+     7c4:	10000000 	.word	0x10000000
+     7c8:	10000004 	.word	0x10000004
+     7cc:	1000025c 	.word	0x1000025c
+     7d0:	1000008c 	.word	0x1000008c
+
+000007d4 <mrbc_push_callinfo>:
+/*!@brief
+  Push current status to callinfo stack
+*/
+void mrbc_push_callinfo(mrb_mvm *vm, int n_args)
+{
+  mrb_callinfo *callinfo = vm->callinfo + vm->callinfo_top;
+     7d4:	0002      	movs	r2, r0
+{
+     7d6:	b530      	push	{r4, r5, lr}
+  mrb_callinfo *callinfo = vm->callinfo + vm->callinfo_top;
+     7d8:	0003      	movs	r3, r0
+     7da:	0005      	movs	r5, r0
+     7dc:	3288      	adds	r2, #136	; 0x88
+     7de:	8814      	ldrh	r4, [r2, #0]
+     7e0:	3508      	adds	r5, #8
+     7e2:	0124      	lsls	r4, r4, #4
+     7e4:	338c      	adds	r3, #140	; 0x8c
+     7e6:	191b      	adds	r3, r3, r4
+  callinfo->current_regs = vm->current_regs;
+     7e8:	6fec      	ldr	r4, [r5, #124]	; 0x7c
+     7ea:	605c      	str	r4, [r3, #4]
+  callinfo->pc_irep = vm->pc_irep;
+     7ec:	7844      	ldrb	r4, [r0, #1]
+     7ee:	701c      	strb	r4, [r3, #0]
+  callinfo->pc = vm->pc;
+     7f0:	8844      	ldrh	r4, [r0, #2]
+  callinfo->n_args = n_args;
+     7f2:	7319      	strb	r1, [r3, #12]
+  callinfo->target_class = vm->target_class;
+     7f4:	30fc      	adds	r0, #252	; 0xfc
+     7f6:	6b01      	ldr	r1, [r0, #48]	; 0x30
+  callinfo->pc = vm->pc;
+     7f8:	805c      	strh	r4, [r3, #2]
+  callinfo->target_class = vm->target_class;
+     7fa:	6099      	str	r1, [r3, #8]
+  vm->callinfo_top++;
+     7fc:	8813      	ldrh	r3, [r2, #0]
+     7fe:	3301      	adds	r3, #1
+     800:	8013      	strh	r3, [r2, #0]
+}
+     802:	bd30      	pop	{r4, r5, pc}
+
+00000804 <op_send.constprop.47>:
+  return 0;
+}
+
+inline static int op_send( mrb_mvm *vm, uint32_t code, mrb_value *regs )
+{
+  int ra = GETARG_A(code);
+     804:	0dc3      	lsrs	r3, r0, #23
+     806:	469c      	mov	ip, r3
+inline static int op_send( mrb_mvm *vm, uint32_t code, mrb_value *regs )
+     808:	b5f0      	push	{r4, r5, r6, r7, lr}
+  int rb = GETARG_B(code);  // index of method sym
+     80a:	0247      	lsls	r7, r0, #9
+inline static int op_send( mrb_mvm *vm, uint32_t code, mrb_value *regs )
+     80c:	b087      	sub	sp, #28
+  int rb = GETARG_B(code);  // index of method sym
+     80e:	0dfb      	lsrs	r3, r7, #23
+     810:	9303      	str	r3, [sp, #12]
+  int rc = GETARG_C(code);  // number of params
+  mrb_value recv = regs[ra];
+     812:	4663      	mov	r3, ip
+  int rc = GETARG_C(code);  // number of params
+     814:	227f      	movs	r2, #127	; 0x7f
+  mrb_value recv = regs[ra];
+     816:	00dc      	lsls	r4, r3, #3
+     818:	9402      	str	r4, [sp, #8]
+     81a:	ad04      	add	r5, sp, #16
+     81c:	190c      	adds	r4, r1, r4
+     81e:	9401      	str	r4, [sp, #4]
+     820:	002c      	movs	r4, r5
+  int rc = GETARG_C(code);  // number of params
+     822:	09c6      	lsrs	r6, r0, #7
+     824:	4016      	ands	r6, r2
+  mrb_value recv = regs[ra];
+     826:	9a01      	ldr	r2, [sp, #4]
+     828:	ca88      	ldmia	r2!, {r3, r7}
+     82a:	c488      	stmia	r4!, {r3, r7}
+  
+  // Block param
+  int bidx = ra + rc + 1;
+     82c:	4663      	mov	r3, ip
+  switch( GET_OPCODE(code) ) {
+     82e:	227f      	movs	r2, #127	; 0x7f
+  int bidx = ra + rc + 1;
+     830:	199b      	adds	r3, r3, r6
+     832:	3301      	adds	r3, #1
+  switch( GET_OPCODE(code) ) {
+     834:	4010      	ands	r0, r2
+     836:	2820      	cmp	r0, #32
+     838:	d014      	beq.n	864 <op_send.constprop.47+0x60>
+     83a:	2821      	cmp	r0, #33	; 0x21
+     83c:	d01a      	beq.n	874 <op_send.constprop.47+0x70>
+  default:
+    break;
+  }
+
+  //DEBUG_FPRINTLN("find medhod");delay(500);
+  mrb_sym sym_id = get_irep_symbol_id(vm->pc_irep,rb);
+     83e:	466b      	mov	r3, sp
+     840:	4c20      	ldr	r4, [pc, #128]	; (8c4 <op_send.constprop.47+0xc0>)
+     842:	7b19      	ldrb	r1, [r3, #12]
+     844:	7860      	ldrb	r0, [r4, #1]
+     846:	f7ff feb9 	bl	5bc <get_irep_symbol_id>
+  //cprintf("find sym:%d ra=%d\n", sym_id, ra);
+  mrb_proc *m = find_method(recv, sym_id);
+     84a:	6869      	ldr	r1, [r5, #4]
+     84c:	0002      	movs	r2, r0
+  mrb_sym sym_id = get_irep_symbol_id(vm->pc_irep,rb);
+     84e:	0007      	movs	r7, r0
+  mrb_proc *m = find_method(recv, sym_id);
+     850:	9804      	ldr	r0, [sp, #16]
+     852:	f000 fcad 	bl	11b0 <find_method>
+     856:	1e05      	subs	r5, r0, #0
+  
+//  printf("method: %x\n", m);
+  if( m == 0 ) {
+     858:	d115      	bne.n	886 <op_send.constprop.47+0x82>
+    cprintf("MethodNotFound %d\n", sym_id);
+     85a:	0039      	movs	r1, r7
+     85c:	481a      	ldr	r0, [pc, #104]	; (8c8 <op_send.constprop.47+0xc4>)
+     85e:	f000 fe17 	bl	1490 <console_printf>
+     862:	e00d      	b.n	880 <op_send.constprop.47+0x7c>
+    mrbc_release( &regs[bidx] );
+     864:	00db      	lsls	r3, r3, #3
+     866:	18cc      	adds	r4, r1, r3
+     868:	0020      	movs	r0, r4
+     86a:	f7ff fe86 	bl	57a <mrbc_release>
+    regs[bidx].tt = MRB_TT_NIL;
+     86e:	2301      	movs	r3, #1
+     870:	7023      	strb	r3, [r4, #0]
+     872:	e7e4      	b.n	83e <op_send.constprop.47+0x3a>
+    if( regs[bidx].tt != MRB_TT_NIL && regs[bidx].tt != MRB_TT_PROC ){
+     874:	00db      	lsls	r3, r3, #3
+     876:	565b      	ldrsb	r3, [r3, r1]
+     878:	2b01      	cmp	r3, #1
+     87a:	d0e0      	beq.n	83e <op_send.constprop.47+0x3a>
+     87c:	2b15      	cmp	r3, #21
+     87e:	d0de      	beq.n	83e <op_send.constprop.47+0x3a>
+  vm->pc_irep = m->irep;
+  
+  // new regs
+  vm->current_regs += ra;
+  return 0;
+}
+     880:	2000      	movs	r0, #0
+     882:	b007      	add	sp, #28
+     884:	bdf0      	pop	{r4, r5, r6, r7, pc}
+  if (IS_PGM(m)){ // 組み込み？ < 0x100
+     886:	28ff      	cmp	r0, #255	; 0xff
+     888:	dc07      	bgt.n	89a <op_send.constprop.47+0x96>
+    mrb_func_t func = find_c_funcs(m);
+     88a:	f7ff fed5 	bl	638 <find_c_funcs>
+     88e:	0003      	movs	r3, r0
+    m->func(vm, regs + ra, rc);
+     890:	0032      	movs	r2, r6
+     892:	9901      	ldr	r1, [sp, #4]
+     894:	0020      	movs	r0, r4
+     896:	4798      	blx	r3
+     898:	e7f2      	b.n	880 <op_send.constprop.47+0x7c>
+  if( m->c_func ) {
+     89a:	2301      	movs	r3, #1
+     89c:	78c7      	ldrb	r7, [r0, #3]
+     89e:	401f      	ands	r7, r3
+     8a0:	d001      	beq.n	8a6 <op_send.constprop.47+0xa2>
+    m->func(vm, regs + ra, rc);
+     8a2:	68c3      	ldr	r3, [r0, #12]
+     8a4:	e7f4      	b.n	890 <op_send.constprop.47+0x8c>
+  mrbc_push_callinfo(vm, rc);
+     8a6:	0020      	movs	r0, r4
+     8a8:	0031      	movs	r1, r6
+     8aa:	f7ff ff93 	bl	7d4 <mrbc_push_callinfo>
+  vm->pc = 0;
+     8ae:	8067      	strh	r7, [r4, #2]
+  vm->pc_irep = m->irep;
+     8b0:	7b2b      	ldrb	r3, [r5, #12]
+     8b2:	7063      	strb	r3, [r4, #1]
+  vm->current_regs += ra;
+     8b4:	3408      	adds	r4, #8
+     8b6:	6fe2      	ldr	r2, [r4, #124]	; 0x7c
+     8b8:	9b02      	ldr	r3, [sp, #8]
+     8ba:	4694      	mov	ip, r2
+     8bc:	4463      	add	r3, ip
+     8be:	67e3      	str	r3, [r4, #124]	; 0x7c
+     8c0:	e7de      	b.n	880 <op_send.constprop.47+0x7c>
+     8c2:	46c0      	nop			; (mov r8, r8)
+     8c4:	10000000 	.word	0x10000000
+     8c8:	00001f1c 	.word	0x00001f1c
+
+000008cc <run_vm>:
+  
+  vm->flag_preemption = 1;
+  return -1;
+}
+
+void run_vm(void){
+     8cc:	b5f0      	push	{r4, r5, r6, r7, lr}
+     8ce:	b08f      	sub	sp, #60	; 0x3c
+  mrb_mvm *vm = &vm_body;
+  int ret = 0;
+  
+  do {
+    // get one bytecode
+    uint32_t code = read_bytecode(vm->pc_irep,vm->pc);
+     8d0:	4db8      	ldr	r5, [pc, #736]	; (bb4 <run_vm+0x2e8>)
+    
+    // regs
+    mrb_value *regs = vm->current_regs;
+    
+    // Dispatch
+    uint32_t opcode = GET_OPCODE(code);
+     8d2:	277f      	movs	r7, #127	; 0x7f
+    uint32_t code = read_bytecode(vm->pc_irep,vm->pc);
+     8d4:	78a9      	ldrb	r1, [r5, #2]
+     8d6:	7868      	ldrb	r0, [r5, #1]
+     8d8:	f7ff fe5e 	bl	598 <read_bytecode>
+    vm->pc++;
+     8dc:	886b      	ldrh	r3, [r5, #2]
+     8de:	ba04      	rev	r4, r0
+     8e0:	3301      	adds	r3, #1
+     8e2:	806b      	strh	r3, [r5, #2]
+    mrb_value *regs = vm->current_regs;
+     8e4:	002b      	movs	r3, r5
+    uint32_t opcode = GET_OPCODE(code);
+     8e6:	4027      	ands	r7, r4
+    mrb_value *regs = vm->current_regs;
+     8e8:	3308      	adds	r3, #8
+cprintf("%x %x\n", code, opcode);
+     8ea:	003a      	movs	r2, r7
+     8ec:	0021      	movs	r1, r4
+     8ee:	48b2      	ldr	r0, [pc, #712]	; (bb8 <run_vm+0x2ec>)
+    mrb_value *regs = vm->current_regs;
+     8f0:	6fde      	ldr	r6, [r3, #124]	; 0x7c
+cprintf("%x %x\n", code, opcode);
+     8f2:	f000 fdcd 	bl	1490 <console_printf>
+#ifdef SHOW_OPCODE
+    show_opcode_name(vm,opcode);
+#endif
+
+    switch( opcode ) {
+     8f6:	2f50      	cmp	r7, #80	; 0x50
+     8f8:	d900      	bls.n	8fc <run_vm+0x30>
+     8fa:	e372      	b.n	fe2 <run_vm+0x716>
+     8fc:	0038      	movs	r0, r7
+     8fe:	f001 f81d 	bl	193c <__gnu_thumb1_case_uhi>
+     902:	0089      	.short	0x0089
+     904:	005c0051 	.word	0x005c0051
+     908:	007a006d 	.word	0x007a006d
+     90c:	009f0096 	.word	0x009f0096
+     910:	00b300ab 	.word	0x00b300ab
+     914:	00cf00bb 	.word	0x00cf00bb
+     918:	03700370 	.word	0x03700370
+     91c:	00e800dc 	.word	0x00e800dc
+     920:	03700370 	.word	0x03700370
+     924:	010000ee 	.word	0x010000ee
+     928:	03700370 	.word	0x03700370
+     92c:	0127010b 	.word	0x0127010b
+     930:	013b0141 	.word	0x013b0141
+     934:	03700148 	.word	0x03700148
+     938:	03700370 	.word	0x03700370
+     93c:	03700370 	.word	0x03700370
+     940:	01be0370 	.word	0x01be0370
+     944:	037001be 	.word	0x037001be
+     948:	0370014e 	.word	0x0370014e
+     94c:	01650370 	.word	0x01650370
+     950:	03700370 	.word	0x03700370
+     954:	0370017a 	.word	0x0370017a
+     958:	01ac019e 	.word	0x01ac019e
+     95c:	01d101c3 	.word	0x01d101c3
+     960:	01f201e4 	.word	0x01f201e4
+     964:	021b0205 	.word	0x021b0205
+     968:	02460230 	.word	0x02460230
+     96c:	0274025e 	.word	0x0274025e
+     970:	03700089 	.word	0x03700089
+     974:	03700370 	.word	0x03700370
+     978:	03700370 	.word	0x03700370
+     97c:	02ad0290 	.word	0x02ad0290
+     980:	02e40370 	.word	0x02e40370
+     984:	03700089 	.word	0x03700089
+     988:	03700089 	.word	0x03700089
+     98c:	03340305 	.word	0x03340305
+     990:	035f0370 	.word	0x035f0370
+     994:	036b0370 	.word	0x036b0370
+     998:	03700370 	.word	0x03700370
+     99c:	03700370 	.word	0x03700370
+     9a0:	036b0370 	.word	0x036b0370
+  int ra = GETARG_A(code);
+     9a4:	0de5      	lsrs	r5, r4, #23
+  mrbc_release(&regs[ra]);
+     9a6:	00ed      	lsls	r5, r5, #3
+     9a8:	1975      	adds	r5, r6, r5
+     9aa:	0028      	movs	r0, r5
+     9ac:	f7ff fde5 	bl	57a <mrbc_release>
+  int rb = GETARG_B(code);
+     9b0:	0264      	lsls	r4, r4, #9
+  int ra = GETARG_A(code);
+     9b2:	0de4      	lsrs	r4, r4, #23
+  mrbc_dup( &regs[ra] );
+     9b4:	00e4      	lsls	r4, r4, #3
+     9b6:	1936      	adds	r6, r6, r4
+     9b8:	e048      	b.n	a4c <run_vm+0x180>
+  int ra = GETARG_A(code);
+     9ba:	0de1      	lsrs	r1, r4, #23
+  mrbc_release(&regs[ra]);
+     9bc:	00c9      	lsls	r1, r1, #3
+     9be:	1876      	adds	r6, r6, r1
+     9c0:	0030      	movs	r0, r6
+  int rb = GETARG_Bx(code);
+     9c2:	09e4      	lsrs	r4, r4, #7
+  mrbc_release(&regs[ra]);
+     9c4:	f7ff fdd9 	bl	57a <mrbc_release>
+  get_irep_pool((uint8_t*)&regs[ra],NULL,vm->pc_irep,rb);
+     9c8:	b2e3      	uxtb	r3, r4
+     9ca:	786a      	ldrb	r2, [r5, #1]
+     9cc:	2100      	movs	r1, #0
+     9ce:	0030      	movs	r0, r6
+     9d0:	f7ff fdea 	bl	5a8 <get_irep_pool>
+  regs[ra] = val;
+     9d4:	ab08      	add	r3, sp, #32
+     9d6:	cb06      	ldmia	r3!, {r1, r2}
+     9d8:	c606      	stmia	r6!, {r1, r2}
+     9da:	e01b      	b.n	a14 <run_vm+0x148>
+  int ra = GETARG_A(code);
+     9dc:	0de1      	lsrs	r1, r4, #23
+  mrbc_release(&regs[ra]);
+     9de:	00c9      	lsls	r1, r1, #3
+     9e0:	1876      	adds	r6, r6, r1
+     9e2:	0030      	movs	r0, r6
+     9e4:	f7ff fdc9 	bl	57a <mrbc_release>
+  regs[ra].tt = MRB_TT_FIXNUM;
+     9e8:	2304      	movs	r3, #4
+     9ea:	7033      	strb	r3, [r6, #0]
+  regs[ra].i = GETARG_sBx(code);
+     9ec:	4b73      	ldr	r3, [pc, #460]	; (bbc <run_vm+0x2f0>)
+     9ee:	09e4      	lsrs	r4, r4, #7
+     9f0:	18e4      	adds	r4, r4, r3
+    regs[ra].i += GETARG_C(code);
+     9f2:	80b4      	strh	r4, [r6, #4]
+     9f4:	e00e      	b.n	a14 <run_vm+0x148>
+  int rb = GETARG_Bx(code);
+     9f6:	09e1      	lsrs	r1, r4, #7
+  mrb_sym sym_id = get_irep_symbol_id(vm->pc_irep,rb);
+     9f8:	b2c9      	uxtb	r1, r1
+     9fa:	7868      	ldrb	r0, [r5, #1]
+     9fc:	f7ff fdde 	bl	5bc <get_irep_symbol_id>
+  int ra = GETARG_A(code);
+     a00:	0de4      	lsrs	r4, r4, #23
+  mrbc_release(&regs[ra]);
+     a02:	00e4      	lsls	r4, r4, #3
+     a04:	1936      	adds	r6, r6, r4
+  mrb_sym sym_id = get_irep_symbol_id(vm->pc_irep,rb);
+     a06:	0005      	movs	r5, r0
+  mrbc_release(&regs[ra]);
+     a08:	0030      	movs	r0, r6
+     a0a:	f7ff fdb6 	bl	57a <mrbc_release>
+  regs[ra].tt = MRB_TT_SYMBOL;
+     a0e:	2306      	movs	r3, #6
+  regs[ra].i = sym_id;
+     a10:	80b5      	strh	r5, [r6, #4]
+  regs[ra].tt = MRB_TT_SYMBOL;
+     a12:	7033      	strb	r3, [r6, #0]
+      break;
+    }
+    #ifdef SHOW_OPCODE
+    hal_delay(500);
+    #endif
+  } while( !vm->flag_preemption );
+     a14:	2298      	movs	r2, #152	; 0x98
+     a16:	4b67      	ldr	r3, [pc, #412]	; (bb4 <run_vm+0x2e8>)
+     a18:	0052      	lsls	r2, r2, #1
+     a1a:	569a      	ldrsb	r2, [r3, r2]
+     a1c:	2a00      	cmp	r2, #0
+     a1e:	d100      	bne.n	a22 <run_vm+0x156>
+     a20:	e756      	b.n	8d0 <run_vm+0x4>
+  DEBUG_FPRINT("<VM END>\n");
+  
+  vm->flag_preemption = 0;
+     a22:	2198      	movs	r1, #152	; 0x98
+     a24:	2200      	movs	r2, #0
+     a26:	0049      	lsls	r1, r1, #1
+     a28:	545a      	strb	r2, [r3, r1]
+  
+  return;
+}
+     a2a:	b00f      	add	sp, #60	; 0x3c
+     a2c:	bdf0      	pop	{r4, r5, r6, r7, pc}
+  int ra = GETARG_A(code);
+     a2e:	0de4      	lsrs	r4, r4, #23
+  mrbc_release(&regs[ra]);
+     a30:	00e4      	lsls	r4, r4, #3
+     a32:	1936      	adds	r6, r6, r4
+     a34:	0030      	movs	r0, r6
+     a36:	f7ff fda0 	bl	57a <mrbc_release>
+  regs[ra].tt = MRB_TT_NIL;
+     a3a:	2301      	movs	r3, #1
+  regs[ra].tt = MRB_TT_TRUE;
+     a3c:	7033      	strb	r3, [r6, #0]
+     a3e:	e7e9      	b.n	a14 <run_vm+0x148>
+  int ra = GETARG_A(code);
+     a40:	0de5      	lsrs	r5, r4, #23
+  mrbc_release(&regs[ra]);
+     a42:	00ed      	lsls	r5, r5, #3
+     a44:	1975      	adds	r5, r6, r5
+     a46:	0028      	movs	r0, r5
+     a48:	f7ff fd97 	bl	57a <mrbc_release>
+  mrbc_dup(&regs[0]);       // TODO: Need?
+     a4c:	0030      	movs	r0, r6
+     a4e:	f7ff fd8b 	bl	568 <mrbc_dup>
+  regs[ra] = regs[0];
+     a52:	ce0c      	ldmia	r6!, {r2, r3}
+     a54:	c50c      	stmia	r5!, {r2, r3}
+     a56:	e7dd      	b.n	a14 <run_vm+0x148>
+  int ra = GETARG_A(code);
+     a58:	0de4      	lsrs	r4, r4, #23
+  mrbc_release(&regs[ra]);
+     a5a:	00e4      	lsls	r4, r4, #3
+     a5c:	1936      	adds	r6, r6, r4
+     a5e:	0030      	movs	r0, r6
+     a60:	f7ff fd8b 	bl	57a <mrbc_release>
+  regs[ra].tt = MRB_TT_TRUE;
+     a64:	2303      	movs	r3, #3
+     a66:	e7e9      	b.n	a3c <run_vm+0x170>
+  int ra = GETARG_A(code);
+     a68:	0de4      	lsrs	r4, r4, #23
+  mrbc_release(&regs[ra]);
+     a6a:	00e4      	lsls	r4, r4, #3
+     a6c:	1936      	adds	r6, r6, r4
+     a6e:	0030      	movs	r0, r6
+     a70:	f7ff fd83 	bl	57a <mrbc_release>
+  regs[ra].tt = MRB_TT_FALSE;
+     a74:	2302      	movs	r3, #2
+     a76:	e7e1      	b.n	a3c <run_vm+0x170>
+  int rb = GETARG_Bx(code);
+     a78:	09e1      	lsrs	r1, r4, #7
+  mrb_sym sym_id = get_irep_symbol_id(vm->pc_irep,rb);
+     a7a:	b2c9      	uxtb	r1, r1
+     a7c:	7868      	ldrb	r0, [r5, #1]
+     a7e:	f7ff fd9d 	bl	5bc <get_irep_symbol_id>
+     a82:	0005      	movs	r5, r0
+  int ra = GETARG_A(code);
+     a84:	0de4      	lsrs	r4, r4, #23
+  mrbc_release(&regs[ra]);
+     a86:	00e4      	lsls	r4, r4, #3
+     a88:	1936      	adds	r6, r6, r4
+     a8a:	0030      	movs	r0, r6
+  regs[ra] = global_object_get(sym_id);
+     a8c:	ac02      	add	r4, sp, #8
+  mrbc_release(&regs[ra]);
+     a8e:	f7ff fd74 	bl	57a <mrbc_release>
+  regs[ra] = global_object_get(sym_id);
+     a92:	0029      	movs	r1, r5
+     a94:	0020      	movs	r0, r4
+     a96:	f000 fd79 	bl	158c <global_object_get>
+  regs[ra] = const_object_get(sym_id);
+     a9a:	cc0c      	ldmia	r4!, {r2, r3}
+     a9c:	c60c      	stmia	r6!, {r2, r3}
+     a9e:	e7b9      	b.n	a14 <run_vm+0x148>
+  int rb = GETARG_Bx(code);
+     aa0:	09e1      	lsrs	r1, r4, #7
+  int ra = GETARG_A(code);
+     aa2:	0de4      	lsrs	r4, r4, #23
+  mrb_sym sym_id = get_irep_symbol_id(vm->pc_irep,rb);
+     aa4:	b2c9      	uxtb	r1, r1
+     aa6:	7868      	ldrb	r0, [r5, #1]
+  global_object_add(sym_id, regs[ra]);
+     aa8:	00e4      	lsls	r4, r4, #3
+  mrb_sym sym_id = get_irep_symbol_id(vm->pc_irep,rb);
+     aaa:	f7ff fd87 	bl	5bc <get_irep_symbol_id>
+  global_object_add(sym_id, regs[ra]);
+     aae:	59a1      	ldr	r1, [r4, r6]
+     ab0:	1934      	adds	r4, r6, r4
+     ab2:	6862      	ldr	r2, [r4, #4]
+     ab4:	f000 fd18 	bl	14e8 <global_object_add>
+     ab8:	e7ac      	b.n	a14 <run_vm+0x148>
+  int rb = GETARG_Bx(code);
+     aba:	09e1      	lsrs	r1, r4, #7
+  int ra = GETARG_A(code);
+     abc:	0de4      	lsrs	r4, r4, #23
+  mrbc_release(&regs[ra]);
+     abe:	00e4      	lsls	r4, r4, #3
+  mrb_sym sym_id = get_irep_symbol_id(vm->pc_irep,rb);
+     ac0:	b2c9      	uxtb	r1, r1
+     ac2:	7868      	ldrb	r0, [r5, #1]
+  mrbc_release(&regs[ra]);
+     ac4:	1936      	adds	r6, r6, r4
+  mrb_sym sym_id = get_irep_symbol_id(vm->pc_irep,rb);
+     ac6:	f7ff fd79 	bl	5bc <get_irep_symbol_id>
+  mrbc_release(&regs[ra]);
+     aca:	0030      	movs	r0, r6
+     acc:	f7ff fd55 	bl	57a <mrbc_release>
+     ad0:	e780      	b.n	9d4 <run_vm+0x108>
+  int rb = GETARG_Bx(code);
+     ad2:	09e4      	lsrs	r4, r4, #7
+  mrb_sym sym_id = get_irep_symbol_id(vm->pc_irep,rb);
+     ad4:	b2e1      	uxtb	r1, r4
+     ad6:	7868      	ldrb	r0, [r5, #1]
+     ad8:	f7ff fd70 	bl	5bc <get_irep_symbol_id>
+     adc:	e79a      	b.n	a14 <run_vm+0x148>
+  int rb = GETARG_Bx(code);
+     ade:	09e1      	lsrs	r1, r4, #7
+  mrb_sym sym_id = get_irep_symbol_id(vm->pc_irep,rb);
+     ae0:	b2c9      	uxtb	r1, r1
+     ae2:	7868      	ldrb	r0, [r5, #1]
+     ae4:	f7ff fd6a 	bl	5bc <get_irep_symbol_id>
+     ae8:	0005      	movs	r5, r0
+  int ra = GETARG_A(code);
+     aea:	0de4      	lsrs	r4, r4, #23
+  mrbc_release(&regs[ra]);
+     aec:	00e4      	lsls	r4, r4, #3
+     aee:	1936      	adds	r6, r6, r4
+     af0:	0030      	movs	r0, r6
+  regs[ra] = const_object_get(sym_id);
+     af2:	ac02      	add	r4, sp, #8
+  mrbc_release(&regs[ra]);
+     af4:	f7ff fd41 	bl	57a <mrbc_release>
+  regs[ra] = const_object_get(sym_id);
+     af8:	0029      	movs	r1, r5
+     afa:	0020      	movs	r0, r4
+     afc:	f000 fd6a 	bl	15d4 <const_object_get>
+     b00:	e7cb      	b.n	a9a <run_vm+0x1ce>
+  int rb = GETARG_Bx(code);
+     b02:	09e1      	lsrs	r1, r4, #7
+  mrb_sym sym_id = get_irep_symbol_id(vm->pc_irep,rb);
+     b04:	b2c9      	uxtb	r1, r1
+     b06:	7868      	ldrb	r0, [r5, #1]
+     b08:	f7ff fd58 	bl	5bc <get_irep_symbol_id>
+  int ra = GETARG_A(code);
+     b0c:	0de1      	lsrs	r1, r4, #23
+  const_object_add(sym_id, &regs[ra]);
+     b0e:	00c9      	lsls	r1, r1, #3
+     b10:	1871      	adds	r1, r6, r1
+     b12:	f000 fd13 	bl	153c <const_object_add>
+     b16:	e77d      	b.n	a14 <run_vm+0x148>
+  int rc = GETARG_C(code);   // UP
+     b18:	217f      	movs	r1, #127	; 0x7f
+  mrb_callinfo *callinfo = vm->callinfo + vm->callinfo_top - 2 - rc;
+     b1a:	3588      	adds	r5, #136	; 0x88
+  int rc = GETARG_C(code);   // UP
+     b1c:	09e2      	lsrs	r2, r4, #7
+  mrb_callinfo *callinfo = vm->callinfo + vm->callinfo_top - 2 - rc;
+     b1e:	882b      	ldrh	r3, [r5, #0]
+  int rc = GETARG_C(code);   // UP
+     b20:	400a      	ands	r2, r1
+  mrb_callinfo *callinfo = vm->callinfo + vm->callinfo_top - 2 - rc;
+     b22:	4927      	ldr	r1, [pc, #156]	; (bc0 <run_vm+0x2f4>)
+     b24:	185b      	adds	r3, r3, r1
+  int ra = GETARG_A(code);
+     b26:	0de1      	lsrs	r1, r4, #23
+  mrb_callinfo *callinfo = vm->callinfo + vm->callinfo_top - 2 - rc;
+     b28:	1a9b      	subs	r3, r3, r2
+  mrbc_release( &regs[ra] );
+     b2a:	00c9      	lsls	r1, r1, #3
+  mrb_value *up_regs = callinfo->current_regs;
+     b2c:	4a25      	ldr	r2, [pc, #148]	; (bc4 <run_vm+0x2f8>)
+  mrbc_release( &regs[ra] );
+     b2e:	1876      	adds	r6, r6, r1
+  mrb_value *up_regs = callinfo->current_regs;
+     b30:	011b      	lsls	r3, r3, #4
+     b32:	189b      	adds	r3, r3, r2
+  mrbc_release( &regs[ra] );
+     b34:	0030      	movs	r0, r6
+  mrb_value *up_regs = callinfo->current_regs;
+     b36:	685d      	ldr	r5, [r3, #4]
+  mrbc_release( &regs[ra] );
+     b38:	f7ff fd1f 	bl	57a <mrbc_release>
+  int rb = GETARG_B(code);
+     b3c:	0264      	lsls	r4, r4, #9
+     b3e:	0de4      	lsrs	r4, r4, #23
+  mrbc_dup( &up_regs[rb] );
+     b40:	00e4      	lsls	r4, r4, #3
+     b42:	192d      	adds	r5, r5, r4
+  mrbc_dup( stack );
+     b44:	0028      	movs	r0, r5
+     b46:	f7ff fd0f 	bl	568 <mrbc_dup>
+  regs[ra] = stack[0];
+     b4a:	cd0c      	ldmia	r5!, {r2, r3}
+     b4c:	c60c      	stmia	r6!, {r2, r3}
+     b4e:	e761      	b.n	a14 <run_vm+0x148>
+  int rc = GETARG_C(code);   // UP
+     b50:	217f      	movs	r1, #127	; 0x7f
+  mrb_callinfo *callinfo = vm->callinfo + vm->callinfo_top - 2 - rc;
+     b52:	3588      	adds	r5, #136	; 0x88
+  int rc = GETARG_C(code);   // UP
+     b54:	09e2      	lsrs	r2, r4, #7
+     b56:	400a      	ands	r2, r1
+  mrb_callinfo *callinfo = vm->callinfo + vm->callinfo_top - 2 - rc;
+     b58:	882b      	ldrh	r3, [r5, #0]
+     b5a:	4919      	ldr	r1, [pc, #100]	; (bc0 <run_vm+0x2f4>)
+  int rb = GETARG_B(code);
+     b5c:	0265      	lsls	r5, r4, #9
+  mrb_callinfo *callinfo = vm->callinfo + vm->callinfo_top - 2 - rc;
+     b5e:	185b      	adds	r3, r3, r1
+     b60:	1a9b      	subs	r3, r3, r2
+  mrb_value *up_regs = callinfo->current_regs;
+     b62:	4a18      	ldr	r2, [pc, #96]	; (bc4 <run_vm+0x2f8>)
+     b64:	011b      	lsls	r3, r3, #4
+     b66:	189b      	adds	r3, r3, r2
+  mrbc_release( &up_regs[rb] );
+     b68:	685b      	ldr	r3, [r3, #4]
+  int rb = GETARG_B(code);
+     b6a:	0ded      	lsrs	r5, r5, #23
+  mrbc_release( &up_regs[rb] );
+     b6c:	00ed      	lsls	r5, r5, #3
+     b6e:	195d      	adds	r5, r3, r5
+     b70:	0028      	movs	r0, r5
+     b72:	f7ff fd02 	bl	57a <mrbc_release>
+     b76:	e71c      	b.n	9b2 <run_vm+0xe6>
+  if( regs[GETARG_A(code)].tt > MRB_TT_FALSE ) {
+     b78:	0de3      	lsrs	r3, r4, #23
+     b7a:	00db      	lsls	r3, r3, #3
+     b7c:	579b      	ldrsb	r3, [r3, r6]
+     b7e:	2b02      	cmp	r3, #2
+     b80:	dc00      	bgt.n	b84 <run_vm+0x2b8>
+     b82:	e747      	b.n	a14 <run_vm+0x148>
+    vm->pc += GETARG_sBx(code) - 1;
+     b84:	886a      	ldrh	r2, [r5, #2]
+     b86:	4b10      	ldr	r3, [pc, #64]	; (bc8 <run_vm+0x2fc>)
+     b88:	09e4      	lsrs	r4, r4, #7
+     b8a:	18d2      	adds	r2, r2, r3
+     b8c:	1914      	adds	r4, r2, r4
+     b8e:	806c      	strh	r4, [r5, #2]
+     b90:	e740      	b.n	a14 <run_vm+0x148>
+  if( regs[GETARG_A(code)].tt <= MRB_TT_FALSE ) {
+     b92:	0de3      	lsrs	r3, r4, #23
+     b94:	00db      	lsls	r3, r3, #3
+     b96:	579b      	ldrsb	r3, [r3, r6]
+     b98:	2b02      	cmp	r3, #2
+     b9a:	ddf3      	ble.n	b84 <run_vm+0x2b8>
+     b9c:	e73a      	b.n	a14 <run_vm+0x148>
+  mrbc_push_callinfo(vm, 0);
+     b9e:	2100      	movs	r1, #0
+     ba0:	0028      	movs	r0, r5
+     ba2:	f7ff fe17 	bl	7d4 <mrbc_push_callinfo>
+  vm->pc = 0;
+     ba6:	2300      	movs	r3, #0
+     ba8:	806b      	strh	r3, [r5, #2]
+  vm->pc_irep = regs[0].proc->irep;
+     baa:	6873      	ldr	r3, [r6, #4]
+     bac:	7b1b      	ldrb	r3, [r3, #12]
+     bae:	706b      	strb	r3, [r5, #1]
+     bb0:	e730      	b.n	a14 <run_vm+0x148>
+     bb2:	46c0      	nop			; (mov r8, r8)
+     bb4:	10000000 	.word	0x10000000
+     bb8:	00001f2f 	.word	0x00001f2f
+     bbc:	ffff8001 	.word	0xffff8001
+     bc0:	0ffffffe 	.word	0x0ffffffe
+     bc4:	1000008c 	.word	0x1000008c
+     bc8:	ffff8000 	.word	0xffff8000
+  int def_args = (enter_param >> 13) & 0x1f;  // default args
+     bcc:	261f      	movs	r6, #31
+     bce:	0d23      	lsrs	r3, r4, #20
+  if( def_args > 0 ){
+     bd0:	4233      	tst	r3, r6
+     bd2:	d100      	bne.n	bd6 <run_vm+0x30a>
+     bd4:	e71e      	b.n	a14 <run_vm+0x148>
+  mrb_callinfo *callinfo = vm->callinfo + vm->callinfo_top - 1;
+     bd6:	002b      	movs	r3, r5
+     bd8:	3388      	adds	r3, #136	; 0x88
+     bda:	881a      	ldrh	r2, [r3, #0]
+     bdc:	4bc7      	ldr	r3, [pc, #796]	; (efc <run_vm+0x630>)
+    vm->pc += callinfo->n_args - args;
+     bde:	8868      	ldrh	r0, [r5, #2]
+  mrb_callinfo *callinfo = vm->callinfo + vm->callinfo_top - 1;
+     be0:	18d2      	adds	r2, r2, r3
+    vm->pc += callinfo->n_args - args;
+     be2:	4bc7      	ldr	r3, [pc, #796]	; (f00 <run_vm+0x634>)
+     be4:	0112      	lsls	r2, r2, #4
+     be6:	18d2      	adds	r2, r2, r3
+     be8:	7b12      	ldrb	r2, [r2, #12]
+  int args = (enter_param >> 18) & 0x1f;      // given args
+     bea:	0e64      	lsrs	r4, r4, #25
+    vm->pc += callinfo->n_args - args;
+     bec:	1812      	adds	r2, r2, r0
+  int args = (enter_param >> 18) & 0x1f;      // given args
+     bee:	4026      	ands	r6, r4
+    vm->pc += callinfo->n_args - args;
+     bf0:	1b92      	subs	r2, r2, r6
+     bf2:	806a      	strh	r2, [r5, #2]
+     bf4:	e70e      	b.n	a14 <run_vm+0x148>
+  mrb_value v = regs[ra];
+     bf6:	af08      	add	r7, sp, #32
+     bf8:	003b      	movs	r3, r7
+  int ra = GETARG_A(code);
+     bfa:	0de4      	lsrs	r4, r4, #23
+  mrb_value v = regs[ra];
+     bfc:	00e4      	lsls	r4, r4, #3
+     bfe:	1934      	adds	r4, r6, r4
+     c00:	cc06      	ldmia	r4!, {r1, r2}
+     c02:	c306      	stmia	r3!, {r1, r2}
+  mrbc_dup(&v);
+     c04:	0038      	movs	r0, r7
+     c06:	f7ff fcaf 	bl	568 <mrbc_dup>
+  mrbc_release(&regs[0]);
+     c0a:	0030      	movs	r0, r6
+     c0c:	f7ff fcb5 	bl	57a <mrbc_release>
+  vm->callinfo_top--;
+     c10:	0029      	movs	r1, r5
+  regs[0] = v;
+     c12:	cf0c      	ldmia	r7!, {r2, r3}
+     c14:	c60c      	stmia	r6!, {r2, r3}
+  vm->callinfo_top--;
+     c16:	002a      	movs	r2, r5
+     c18:	3188      	adds	r1, #136	; 0x88
+     c1a:	880b      	ldrh	r3, [r1, #0]
+     c1c:	3208      	adds	r2, #8
+     c1e:	3b01      	subs	r3, #1
+     c20:	b29b      	uxth	r3, r3
+     c22:	800b      	strh	r3, [r1, #0]
+  mrb_callinfo *callinfo = vm->callinfo + vm->callinfo_top;
+     c24:	49b6      	ldr	r1, [pc, #728]	; (f00 <run_vm+0x634>)
+     c26:	011b      	lsls	r3, r3, #4
+     c28:	185b      	adds	r3, r3, r1
+  vm->current_regs = callinfo->current_regs;
+     c2a:	6859      	ldr	r1, [r3, #4]
+     c2c:	67d1      	str	r1, [r2, #124]	; 0x7c
+  vm->pc_irep = callinfo->pc_irep;
+     c2e:	781a      	ldrb	r2, [r3, #0]
+     c30:	706a      	strb	r2, [r5, #1]
+  vm->pc = callinfo->pc;
+     c32:	885a      	ldrh	r2, [r3, #2]
+  vm->target_class = callinfo->target_class;
+     c34:	689b      	ldr	r3, [r3, #8]
+  vm->pc = callinfo->pc;
+     c36:	806a      	strh	r2, [r5, #2]
+  vm->target_class = callinfo->target_class;
+     c38:	35fc      	adds	r5, #252	; 0xfc
+     c3a:	632b      	str	r3, [r5, #48]	; 0x30
+     c3c:	e6ea      	b.n	a14 <run_vm+0x148>
+  if( stack[0].tt == MRB_TT_NIL ){
+     c3e:	2308      	movs	r3, #8
+  mrb_value *stack = regs + 1;
+     c40:	0035      	movs	r5, r6
+  if( stack[0].tt == MRB_TT_NIL ){
+     c42:	56f3      	ldrsb	r3, [r6, r3]
+  int ra = GETARG_A(code);
+     c44:	0de4      	lsrs	r4, r4, #23
+  mrb_value *stack = regs + 1;
+     c46:	3508      	adds	r5, #8
+  if( stack[0].tt == MRB_TT_NIL ){
+     c48:	2b01      	cmp	r3, #1
+     c4a:	d100      	bne.n	c4e <run_vm+0x382>
+     c4c:	e6e2      	b.n	a14 <run_vm+0x148>
+  mrbc_release(&regs[ra]);
+     c4e:	00e4      	lsls	r4, r4, #3
+     c50:	1936      	adds	r6, r6, r4
+     c52:	0030      	movs	r0, r6
+     c54:	f7ff fc91 	bl	57a <mrbc_release>
+     c58:	e774      	b.n	b44 <run_vm+0x278>
+  if( regs[ra].tt == MRB_TT_FIXNUM ) {
+     c5a:	2100      	movs	r1, #0
+  int ra = GETARG_A(code);
+     c5c:	0de3      	lsrs	r3, r4, #23
+  if( regs[ra].tt == MRB_TT_FIXNUM ) {
+     c5e:	00db      	lsls	r3, r3, #3
+     c60:	18f2      	adds	r2, r6, r3
+     c62:	5651      	ldrsb	r1, [r2, r1]
+     c64:	2904      	cmp	r1, #4
+     c66:	d10a      	bne.n	c7e <run_vm+0x3b2>
+    if( regs[ra+1].tt == MRB_TT_FIXNUM ) {	// in case of Fixnum, Fixnum
+     c68:	2100      	movs	r1, #0
+     c6a:	3308      	adds	r3, #8
+     c6c:	18f3      	adds	r3, r6, r3
+     c6e:	5659      	ldrsb	r1, [r3, r1]
+     c70:	2904      	cmp	r1, #4
+     c72:	d104      	bne.n	c7e <run_vm+0x3b2>
+      regs[ra].i += regs[ra+1].i;
+     c74:	8891      	ldrh	r1, [r2, #4]
+     c76:	889b      	ldrh	r3, [r3, #4]
+     c78:	18cb      	adds	r3, r1, r3
+      regs[ra].i -= regs[ra+1].i;
+     c7a:	8093      	strh	r3, [r2, #4]
+     c7c:	e6ca      	b.n	a14 <run_vm+0x148>
+  op_send(vm, code, regs);
+     c7e:	0031      	movs	r1, r6
+     c80:	0020      	movs	r0, r4
+     c82:	f7ff fdbf 	bl	804 <op_send.constprop.47>
+     c86:	e6c5      	b.n	a14 <run_vm+0x148>
+  if( regs[ra].tt == MRB_TT_FIXNUM ) {
+     c88:	2300      	movs	r3, #0
+  int ra = GETARG_A(code);
+     c8a:	0de1      	lsrs	r1, r4, #23
+  if( regs[ra].tt == MRB_TT_FIXNUM ) {
+     c8c:	00c9      	lsls	r1, r1, #3
+     c8e:	1876      	adds	r6, r6, r1
+     c90:	56f3      	ldrsb	r3, [r6, r3]
+     c92:	2b04      	cmp	r3, #4
+     c94:	d000      	beq.n	c98 <run_vm+0x3cc>
+     c96:	e6bd      	b.n	a14 <run_vm+0x148>
+    regs[ra].i += GETARG_C(code);
+     c98:	09e4      	lsrs	r4, r4, #7
+     c9a:	337b      	adds	r3, #123	; 0x7b
+     c9c:	88b0      	ldrh	r0, [r6, #4]
+     c9e:	401c      	ands	r4, r3
+     ca0:	1824      	adds	r4, r4, r0
+     ca2:	e6a6      	b.n	9f2 <run_vm+0x126>
+  if( regs[ra].tt == MRB_TT_FIXNUM ) {
+     ca4:	2300      	movs	r3, #0
+  int ra = GETARG_A(code);
+     ca6:	0de5      	lsrs	r5, r4, #23
+  if( regs[ra].tt == MRB_TT_FIXNUM ) {
+     ca8:	00ed      	lsls	r5, r5, #3
+     caa:	1972      	adds	r2, r6, r5
+     cac:	56d3      	ldrsb	r3, [r2, r3]
+     cae:	3508      	adds	r5, #8
+     cb0:	1975      	adds	r5, r6, r5
+     cb2:	2b04      	cmp	r3, #4
+     cb4:	d000      	beq.n	cb8 <run_vm+0x3ec>
+     cb6:	e0ac      	b.n	e12 <run_vm+0x546>
+    if( regs[ra+1].tt == MRB_TT_FIXNUM ) {	// in case of Fixnum, Fixnum
+     cb8:	2300      	movs	r3, #0
+     cba:	56eb      	ldrsb	r3, [r5, r3]
+     cbc:	2b04      	cmp	r3, #4
+     cbe:	d000      	beq.n	cc2 <run_vm+0x3f6>
+     cc0:	e0a7      	b.n	e12 <run_vm+0x546>
+      regs[ra].i -= regs[ra+1].i;
+     cc2:	8893      	ldrh	r3, [r2, #4]
+     cc4:	88a9      	ldrh	r1, [r5, #4]
+     cc6:	1a5b      	subs	r3, r3, r1
+     cc8:	e7d7      	b.n	c7a <run_vm+0x3ae>
+  if( regs[ra].tt == MRB_TT_FIXNUM ) {
+     cca:	2300      	movs	r3, #0
+  int ra = GETARG_A(code);
+     ccc:	0de1      	lsrs	r1, r4, #23
+  if( regs[ra].tt == MRB_TT_FIXNUM ) {
+     cce:	00c9      	lsls	r1, r1, #3
+     cd0:	1876      	adds	r6, r6, r1
+     cd2:	56f3      	ldrsb	r3, [r6, r3]
+     cd4:	2b04      	cmp	r3, #4
+     cd6:	d000      	beq.n	cda <run_vm+0x40e>
+     cd8:	e69c      	b.n	a14 <run_vm+0x148>
+    regs[ra].i -= GETARG_C(code);
+     cda:	09e4      	lsrs	r4, r4, #7
+     cdc:	337b      	adds	r3, #123	; 0x7b
+     cde:	88b2      	ldrh	r2, [r6, #4]
+     ce0:	401c      	ands	r4, r3
+     ce2:	1b14      	subs	r4, r2, r4
+     ce4:	e685      	b.n	9f2 <run_vm+0x126>
+  if( regs[ra].tt == MRB_TT_FIXNUM ) {
+     ce6:	2300      	movs	r3, #0
+  int ra = GETARG_A(code);
+     ce8:	0de5      	lsrs	r5, r4, #23
+  if( regs[ra].tt == MRB_TT_FIXNUM ) {
+     cea:	00ed      	lsls	r5, r5, #3
+     cec:	1972      	adds	r2, r6, r5
+     cee:	56d3      	ldrsb	r3, [r2, r3]
+     cf0:	3508      	adds	r5, #8
+     cf2:	1975      	adds	r5, r6, r5
+     cf4:	2b04      	cmp	r3, #4
+     cf6:	d000      	beq.n	cfa <run_vm+0x42e>
+     cf8:	e08b      	b.n	e12 <run_vm+0x546>
+    if( regs[ra+1].tt == MRB_TT_FIXNUM ) {	// in case of Fixnum, Fixnum
+     cfa:	2300      	movs	r3, #0
+     cfc:	56eb      	ldrsb	r3, [r5, r3]
+     cfe:	2b04      	cmp	r3, #4
+     d00:	d000      	beq.n	d04 <run_vm+0x438>
+     d02:	e086      	b.n	e12 <run_vm+0x546>
+      regs[ra].i *= regs[ra+1].i;
+     d04:	8893      	ldrh	r3, [r2, #4]
+     d06:	88a9      	ldrh	r1, [r5, #4]
+     d08:	434b      	muls	r3, r1
+     d0a:	e7b6      	b.n	c7a <run_vm+0x3ae>
+  if( regs[ra].tt == MRB_TT_FIXNUM ) {
+     d0c:	2300      	movs	r3, #0
+  int ra = GETARG_A(code);
+     d0e:	0de5      	lsrs	r5, r4, #23
+  if( regs[ra].tt == MRB_TT_FIXNUM ) {
+     d10:	00ed      	lsls	r5, r5, #3
+     d12:	1977      	adds	r7, r6, r5
+     d14:	56fb      	ldrsb	r3, [r7, r3]
+     d16:	3508      	adds	r5, #8
+     d18:	1975      	adds	r5, r6, r5
+     d1a:	2b04      	cmp	r3, #4
+     d1c:	d000      	beq.n	d20 <run_vm+0x454>
+     d1e:	e078      	b.n	e12 <run_vm+0x546>
+    if( regs[ra+1].tt == MRB_TT_FIXNUM ) {	// in case of Fixnum, Fixnum
+     d20:	2300      	movs	r3, #0
+     d22:	56eb      	ldrsb	r3, [r5, r3]
+     d24:	2b04      	cmp	r3, #4
+     d26:	d174      	bne.n	e12 <run_vm+0x546>
+      regs[ra].i /= regs[ra+1].i;
+     d28:	2304      	movs	r3, #4
+     d2a:	5ef8      	ldrsh	r0, [r7, r3]
+     d2c:	2304      	movs	r3, #4
+     d2e:	5ee9      	ldrsh	r1, [r5, r3]
+     d30:	f000 fe0e 	bl	1950 <__divsi3>
+     d34:	80b8      	strh	r0, [r7, #4]
+     d36:	e66d      	b.n	a14 <run_vm+0x148>
+  int ra = GETARG_A(code);
+     d38:	0de4      	lsrs	r4, r4, #23
+  int result = mrbc_compare(&regs[ra], &regs[ra+1]);
+     d3a:	00e4      	lsls	r4, r4, #3
+     d3c:	1935      	adds	r5, r6, r4
+     d3e:	3408      	adds	r4, #8
+     d40:	1936      	adds	r6, r6, r4
+     d42:	0031      	movs	r1, r6
+     d44:	0028      	movs	r0, r5
+     d46:	f7ff fbd0 	bl	4ea <mrbc_compare>
+     d4a:	0004      	movs	r4, r0
+  regs[ra].tt = result ? MRB_TT_FALSE : MRB_TT_TRUE;
+     d4c:	4263      	negs	r3, r4
+     d4e:	415c      	adcs	r4, r3
+  mrbc_release(&regs[ra+1]);
+     d50:	0030      	movs	r0, r6
+     d52:	f7ff fc12 	bl	57a <mrbc_release>
+  regs[ra].tt = result ? MRB_TT_FALSE : MRB_TT_TRUE;
+     d56:	3402      	adds	r4, #2
+  mrbc_release(&regs[ra]);
+     d58:	0028      	movs	r0, r5
+     d5a:	f7ff fc0e 	bl	57a <mrbc_release>
+  regs[ra].tt = result ? MRB_TT_FALSE : MRB_TT_TRUE;
+     d5e:	702c      	strb	r4, [r5, #0]
+     d60:	e658      	b.n	a14 <run_vm+0x148>
+  if( regs[ra].tt == MRB_TT_FIXNUM ) {
+     d62:	2200      	movs	r2, #0
+  int ra = GETARG_A(code);
+     d64:	0de5      	lsrs	r5, r4, #23
+  if( regs[ra].tt == MRB_TT_FIXNUM ) {
+     d66:	00ed      	lsls	r5, r5, #3
+     d68:	1973      	adds	r3, r6, r5
+     d6a:	569a      	ldrsb	r2, [r3, r2]
+     d6c:	3508      	adds	r5, #8
+     d6e:	1975      	adds	r5, r6, r5
+     d70:	2a04      	cmp	r2, #4
+     d72:	d14e      	bne.n	e12 <run_vm+0x546>
+    if( regs[ra+1].tt == MRB_TT_FIXNUM ) {
+     d74:	2200      	movs	r2, #0
+     d76:	56aa      	ldrsb	r2, [r5, r2]
+     d78:	2a04      	cmp	r2, #4
+     d7a:	d14a      	bne.n	e12 <run_vm+0x546>
+  regs[ra].tt = result ? MRB_TT_TRUE : MRB_TT_FALSE;
+     d7c:	2204      	movs	r2, #4
+     d7e:	5e98      	ldrsh	r0, [r3, r2]
+     d80:	2204      	movs	r2, #4
+     d82:	5ea9      	ldrsh	r1, [r5, r2]
+     d84:	2202      	movs	r2, #2
+     d86:	4288      	cmp	r0, r1
+     d88:	da2d      	bge.n	de6 <run_vm+0x51a>
+  regs[ra].tt = result ? MRB_TT_TRUE : MRB_TT_FALSE;
+     d8a:	3201      	adds	r2, #1
+     d8c:	e02b      	b.n	de6 <run_vm+0x51a>
+  if( regs[ra].tt == MRB_TT_FIXNUM ) {
+     d8e:	2300      	movs	r3, #0
+  int ra = GETARG_A(code);
+     d90:	0de5      	lsrs	r5, r4, #23
+  if( regs[ra].tt == MRB_TT_FIXNUM ) {
+     d92:	00ed      	lsls	r5, r5, #3
+     d94:	1972      	adds	r2, r6, r5
+     d96:	56d3      	ldrsb	r3, [r2, r3]
+     d98:	3508      	adds	r5, #8
+     d9a:	1975      	adds	r5, r6, r5
+     d9c:	2b04      	cmp	r3, #4
+     d9e:	d138      	bne.n	e12 <run_vm+0x546>
+    if( regs[ra+1].tt == MRB_TT_FIXNUM ) {
+     da0:	2300      	movs	r3, #0
+     da2:	56eb      	ldrsb	r3, [r5, r3]
+     da4:	2b04      	cmp	r3, #4
+     da6:	d134      	bne.n	e12 <run_vm+0x546>
+  regs[ra].tt = result ? MRB_TT_TRUE : MRB_TT_FALSE;
+     da8:	2304      	movs	r3, #4
+     daa:	5ee8      	ldrsh	r0, [r5, r3]
+     dac:	2304      	movs	r3, #4
+     dae:	5ed1      	ldrsh	r1, [r2, r3]
+     db0:	17c4      	asrs	r4, r0, #31
+     db2:	0fcb      	lsrs	r3, r1, #31
+  regs[ra].tt = result ? MRB_TT_TRUE : MRB_TT_FALSE;
+     db4:	4288      	cmp	r0, r1
+     db6:	4163      	adcs	r3, r4
+     db8:	3302      	adds	r3, #2
+    regs[ra+1].tt = MRB_TT_EMPTY;
+     dba:	7013      	strb	r3, [r2, #0]
+     dbc:	e62a      	b.n	a14 <run_vm+0x148>
+  if( regs[ra].tt == MRB_TT_FIXNUM ) {
+     dbe:	2200      	movs	r2, #0
+  int ra = GETARG_A(code);
+     dc0:	0de5      	lsrs	r5, r4, #23
+  if( regs[ra].tt == MRB_TT_FIXNUM ) {
+     dc2:	00ed      	lsls	r5, r5, #3
+     dc4:	1973      	adds	r3, r6, r5
+     dc6:	569a      	ldrsb	r2, [r3, r2]
+     dc8:	3508      	adds	r5, #8
+     dca:	1975      	adds	r5, r6, r5
+     dcc:	2a04      	cmp	r2, #4
+     dce:	d120      	bne.n	e12 <run_vm+0x546>
+    if( regs[ra+1].tt == MRB_TT_FIXNUM ) {
+     dd0:	2200      	movs	r2, #0
+     dd2:	56aa      	ldrsb	r2, [r5, r2]
+     dd4:	2a04      	cmp	r2, #4
+     dd6:	d11c      	bne.n	e12 <run_vm+0x546>
+  regs[ra].tt = result ? MRB_TT_TRUE : MRB_TT_FALSE;
+     dd8:	2204      	movs	r2, #4
+     dda:	5e98      	ldrsh	r0, [r3, r2]
+     ddc:	2204      	movs	r2, #4
+     dde:	5ea9      	ldrsh	r1, [r5, r2]
+     de0:	2202      	movs	r2, #2
+     de2:	4288      	cmp	r0, r1
+     de4:	dcd1      	bgt.n	d8a <run_vm+0x4be>
+     de6:	701a      	strb	r2, [r3, #0]
+     de8:	e614      	b.n	a14 <run_vm+0x148>
+  if( regs[ra].tt == MRB_TT_FIXNUM ) {
+     dea:	2300      	movs	r3, #0
+  int ra = GETARG_A(code);
+     dec:	0de5      	lsrs	r5, r4, #23
+  if( regs[ra].tt == MRB_TT_FIXNUM ) {
+     dee:	00ed      	lsls	r5, r5, #3
+     df0:	1972      	adds	r2, r6, r5
+     df2:	56d3      	ldrsb	r3, [r2, r3]
+     df4:	3508      	adds	r5, #8
+     df6:	1975      	adds	r5, r6, r5
+     df8:	2b04      	cmp	r3, #4
+     dfa:	d10a      	bne.n	e12 <run_vm+0x546>
+    if( regs[ra+1].tt == MRB_TT_FIXNUM ) {
+     dfc:	2300      	movs	r3, #0
+     dfe:	56eb      	ldrsb	r3, [r5, r3]
+     e00:	2b04      	cmp	r3, #4
+     e02:	d106      	bne.n	e12 <run_vm+0x546>
+  regs[ra].tt = result ? MRB_TT_TRUE : MRB_TT_FALSE;
+     e04:	2304      	movs	r3, #4
+     e06:	5ee9      	ldrsh	r1, [r5, r3]
+     e08:	2304      	movs	r3, #4
+     e0a:	5ed0      	ldrsh	r0, [r2, r3]
+     e0c:	0fcc      	lsrs	r4, r1, #31
+     e0e:	17c3      	asrs	r3, r0, #31
+     e10:	e7d0      	b.n	db4 <run_vm+0x4e8>
+  op_send(vm, code, regs);
+     e12:	0031      	movs	r1, r6
+     e14:	0020      	movs	r0, r4
+     e16:	f7ff fcf5 	bl	804 <op_send.constprop.47>
+  mrbc_release(&regs[ra+1]);
+     e1a:	0028      	movs	r0, r5
+     e1c:	f7ff fbad 	bl	57a <mrbc_release>
+     e20:	e5f8      	b.n	a14 <run_vm+0x148>
+  uint16_t obj_size=0;
+     e22:	270e      	movs	r7, #14
+     e24:	ab02      	add	r3, sp, #8
+     e26:	18ff      	adds	r7, r7, r3
+     e28:	2300      	movs	r3, #0
+		  case OP_STRING:     ret = op_string    (vm, code, regs); break;
+     e2a:	786a      	ldrb	r2, [r5, #1]
+  int ra = GETARG_A(code);
+     e2c:	0de5      	lsrs	r5, r4, #23
+  int rb = GETARG_Bx(code);
+     e2e:	09e4      	lsrs	r4, r4, #7
+  uint16_t obj_size=0;
+     e30:	803b      	strh	r3, [r7, #0]
+  get_irep_pool(str,&obj_size,vm->pc_irep,rb);
+     e32:	0039      	movs	r1, r7
+     e34:	b2e3      	uxtb	r3, r4
+     e36:	a808      	add	r0, sp, #32
+  mrb_value value = mrbc_string_new(str, obj_size);
+     e38:	ac06      	add	r4, sp, #24
+  get_irep_pool(str,&obj_size,vm->pc_irep,rb);
+     e3a:	f7ff fbb5 	bl	5a8 <get_irep_pool>
+  mrb_value value = mrbc_string_new(str, obj_size);
+     e3e:	883a      	ldrh	r2, [r7, #0]
+     e40:	a908      	add	r1, sp, #32
+     e42:	0020      	movs	r0, r4
+     e44:	f7ff fc36 	bl	6b4 <mrbc_string_new>
+  if( value.string == NULL ) return -1;
+     e48:	6863      	ldr	r3, [r4, #4]
+     e4a:	2b00      	cmp	r3, #0
+     e4c:	d100      	bne.n	e50 <run_vm+0x584>
+     e4e:	e5e1      	b.n	a14 <run_vm+0x148>
+  mrbc_release(&regs[ra]);
+     e50:	00ed      	lsls	r5, r5, #3
+     e52:	1976      	adds	r6, r6, r5
+     e54:	0030      	movs	r0, r6
+     e56:	f7ff fb90 	bl	57a <mrbc_release>
+     e5a:	e61e      	b.n	a9a <run_vm+0x1ce>
+  int rb = GETARG_B(code);
+     e5c:	0261      	lsls	r1, r4, #9
+     e5e:	0dcb      	lsrs	r3, r1, #23
+  mrb_sym sym_id = str_to_symid("to_s");
+     e60:	4828      	ldr	r0, [pc, #160]	; (f04 <run_vm+0x638>)
+  int rb = GETARG_B(code);
+     e62:	9301      	str	r3, [sp, #4]
+  mrb_sym sym_id = str_to_symid("to_s");
+     e64:	f000 fc75 	bl	1752 <str_to_symid>
+  int ra = GETARG_A(code);
+     e68:	0de4      	lsrs	r4, r4, #23
+  m = find_method(regs[ra], sym_id);
+     e6a:	00e4      	lsls	r4, r4, #3
+     e6c:	1934      	adds	r4, r6, r4
+  mrb_sym sym_id = str_to_symid("to_s");
+     e6e:	0007      	movs	r7, r0
+  m = find_method(regs[ra], sym_id);
+     e70:	0002      	movs	r2, r0
+     e72:	6861      	ldr	r1, [r4, #4]
+     e74:	6820      	ldr	r0, [r4, #0]
+     e76:	f000 f99b 	bl	11b0 <find_method>
+  if( m && m->c_func ){
+     e7a:	2800      	cmp	r0, #0
+     e7c:	d007      	beq.n	e8e <run_vm+0x5c2>
+     e7e:	78c3      	ldrb	r3, [r0, #3]
+     e80:	07db      	lsls	r3, r3, #31
+     e82:	d504      	bpl.n	e8e <run_vm+0x5c2>
+    m->func(vm, regs+ra, 0);
+     e84:	68c3      	ldr	r3, [r0, #12]
+     e86:	2200      	movs	r2, #0
+     e88:	0021      	movs	r1, r4
+     e8a:	0028      	movs	r0, r5
+     e8c:	4798      	blx	r3
+  m = find_method(regs[rb], sym_id);
+     e8e:	9b01      	ldr	r3, [sp, #4]
+     e90:	003a      	movs	r2, r7
+     e92:	00d9      	lsls	r1, r3, #3
+     e94:	1876      	adds	r6, r6, r1
+     e96:	6830      	ldr	r0, [r6, #0]
+     e98:	6871      	ldr	r1, [r6, #4]
+     e9a:	f000 f989 	bl	11b0 <find_method>
+  if( m && m->c_func ){
+     e9e:	2800      	cmp	r0, #0
+     ea0:	d007      	beq.n	eb2 <run_vm+0x5e6>
+     ea2:	78c3      	ldrb	r3, [r0, #3]
+     ea4:	07db      	lsls	r3, r3, #31
+     ea6:	d504      	bpl.n	eb2 <run_vm+0x5e6>
+    m->func(vm, regs+rb, 0);
+     ea8:	68c3      	ldr	r3, [r0, #12]
+     eaa:	2200      	movs	r2, #0
+     eac:	0031      	movs	r1, r6
+     eae:	0028      	movs	r0, r5
+     eb0:	4798      	blx	r3
+  mrb_value v = mrbc_string_add(&regs[ra], &regs[rb]);
+     eb2:	ad08      	add	r5, sp, #32
+     eb4:	0032      	movs	r2, r6
+     eb6:	0021      	movs	r1, r4
+     eb8:	0028      	movs	r0, r5
+     eba:	f7ff fc3a 	bl	732 <mrbc_string_add>
+  mrbc_release(&regs[ra]);
+     ebe:	0020      	movs	r0, r4
+     ec0:	f7ff fb5b 	bl	57a <mrbc_release>
+  regs[ra] = v;
+     ec4:	cd0c      	ldmia	r5!, {r2, r3}
+     ec6:	c40c      	stmia	r4!, {r2, r3}
+     ec8:	e5a4      	b.n	a14 <run_vm+0x148>
+  mrb_proc *proc = mrbc_rproc_alloc("()");
+     eca:	480f      	ldr	r0, [pc, #60]	; (f08 <run_vm+0x63c>)
+     ecc:	f7ff fafc 	bl	4c8 <mrbc_rproc_alloc>
+  proc->c_func = 0;
+     ed0:	2201      	movs	r2, #1
+     ed2:	78c3      	ldrb	r3, [r0, #3]
+  int rb = GETARG_Bz(code);      // sequence position in irep list
+     ed4:	03e1      	lsls	r1, r4, #15
+  proc->c_func = 0;
+     ed6:	4393      	bics	r3, r2
+     ed8:	70c3      	strb	r3, [r0, #3]
+  mrb_proc *proc = mrbc_rproc_alloc("()");
+     eda:	0007      	movs	r7, r0
+  proc->irep = get_irep_irep_id(vm->pc_irep,rb);
+     edc:	0e09      	lsrs	r1, r1, #24
+     ede:	7868      	ldrb	r0, [r5, #1]
+     ee0:	f7ff fb64 	bl	5ac <get_irep_irep_id>
+  int ra = GETARG_A(code);
+     ee4:	0de4      	lsrs	r4, r4, #23
+  mrbc_release(&regs[ra]);
+     ee6:	00e4      	lsls	r4, r4, #3
+     ee8:	1934      	adds	r4, r6, r4
+  proc->irep = get_irep_irep_id(vm->pc_irep,rb);
+     eea:	7338      	strb	r0, [r7, #12]
+  mrbc_release(&regs[ra]);
+     eec:	0020      	movs	r0, r4
+     eee:	f7ff fb44 	bl	57a <mrbc_release>
+  regs[ra].tt = MRB_TT_PROC;
+     ef2:	2315      	movs	r3, #21
+  regs[ra].proc = proc;
+     ef4:	6067      	str	r7, [r4, #4]
+  regs[ra].tt = MRB_TT_PROC;
+     ef6:	7023      	strb	r3, [r4, #0]
+     ef8:	e58c      	b.n	a14 <run_vm+0x148>
+     efa:	46c0      	nop			; (mov r8, r8)
+     efc:	0fffffff 	.word	0x0fffffff
+     f00:	1000008c 	.word	0x1000008c
+     f04:	00001f36 	.word	0x00001f36
+     f08:	00001f3b 	.word	0x00001f3b
+  mrb_callinfo *callinfo = vm->callinfo + vm->callinfo_top;
+     f0c:	4d3e      	ldr	r5, [pc, #248]	; (1008 <run_vm+0x73c>)
+  int ra = GETARG_A(code);
+     f0e:	0de3      	lsrs	r3, r4, #23
+  mrb_callinfo *callinfo = vm->callinfo + vm->callinfo_top;
+     f10:	0028      	movs	r0, r5
+  mrb_value recv = regs[ra];
+     f12:	00db      	lsls	r3, r3, #3
+     f14:	9301      	str	r3, [sp, #4]
+     f16:	18f6      	adds	r6, r6, r3
+     f18:	ab08      	add	r3, sp, #32
+     f1a:	ce06      	ldmia	r6!, {r1, r2}
+     f1c:	c306      	stmia	r3!, {r1, r2}
+  mrb_callinfo *callinfo = vm->callinfo + vm->callinfo_top;
+     f1e:	002e      	movs	r6, r5
+  callinfo->target_class = vm->target_class;
+     f20:	002f      	movs	r7, r5
+  mrb_callinfo *callinfo = vm->callinfo + vm->callinfo_top;
+     f22:	3088      	adds	r0, #136	; 0x88
+     f24:	8803      	ldrh	r3, [r0, #0]
+     f26:	4a39      	ldr	r2, [pc, #228]	; (100c <run_vm+0x740>)
+     f28:	3608      	adds	r6, #8
+     f2a:	0119      	lsls	r1, r3, #4
+     f2c:	188a      	adds	r2, r1, r2
+  callinfo->current_regs = vm->current_regs;
+     f2e:	6ff1      	ldr	r1, [r6, #124]	; 0x7c
+  callinfo->target_class = vm->target_class;
+     f30:	37fc      	adds	r7, #252	; 0xfc
+  callinfo->current_regs = vm->current_regs;
+     f32:	6051      	str	r1, [r2, #4]
+  callinfo->pc_irep = vm->pc_irep;
+     f34:	7869      	ldrb	r1, [r5, #1]
+  vm->callinfo_top++;
+     f36:	3301      	adds	r3, #1
+  callinfo->pc_irep = vm->pc_irep;
+     f38:	7011      	strb	r1, [r2, #0]
+  callinfo->pc = vm->pc;
+     f3a:	8869      	ldrh	r1, [r5, #2]
+  int rb = GETARG_Bx(code);
+     f3c:	09e4      	lsrs	r4, r4, #7
+  callinfo->pc = vm->pc;
+     f3e:	8051      	strh	r1, [r2, #2]
+  callinfo->target_class = vm->target_class;
+     f40:	6b39      	ldr	r1, [r7, #48]	; 0x30
+     f42:	6091      	str	r1, [r2, #8]
+  callinfo->n_args = 0;
+     f44:	2100      	movs	r1, #0
+     f46:	7311      	strb	r1, [r2, #12]
+  vm->pc = 0;
+     f48:	8069      	strh	r1, [r5, #2]
+  vm->callinfo_top++;
+     f4a:	8003      	strh	r3, [r0, #0]
+  vm->pc_irep = get_irep_irep_id(vm->irep,rb);
+     f4c:	b2e1      	uxtb	r1, r4
+     f4e:	7828      	ldrb	r0, [r5, #0]
+     f50:	f7ff fb2c 	bl	5ac <get_irep_irep_id>
+  vm->current_regs += ra;
+     f54:	6ff2      	ldr	r2, [r6, #124]	; 0x7c
+     f56:	9b01      	ldr	r3, [sp, #4]
+     f58:	4694      	mov	ip, r2
+  vm->pc_irep = get_irep_irep_id(vm->irep,rb);
+     f5a:	7068      	strb	r0, [r5, #1]
+  vm->current_regs += ra;
+     f5c:	4463      	add	r3, ip
+  vm->target_class = find_class_by_object(&recv);
+     f5e:	a808      	add	r0, sp, #32
+  vm->current_regs += ra;
+     f60:	67f3      	str	r3, [r6, #124]	; 0x7c
+  vm->target_class = find_class_by_object(&recv);
+     f62:	f000 f8e3 	bl	112c <find_class_by_object>
+     f66:	6338      	str	r0, [r7, #48]	; 0x30
+     f68:	e554      	b.n	a14 <run_vm+0x148>
+  if( regs[ra].tt == MRB_TT_CLASS ) {
+     f6a:	2200      	movs	r2, #0
+  int ra = GETARG_A(code);
+     f6c:	0de1      	lsrs	r1, r4, #23
+  if( regs[ra].tt == MRB_TT_CLASS ) {
+     f6e:	00c9      	lsls	r1, r1, #3
+     f70:	1873      	adds	r3, r6, r1
+     f72:	569a      	ldrsb	r2, [r3, r2]
+     f74:	2a07      	cmp	r2, #7
+     f76:	d000      	beq.n	f7a <run_vm+0x6ae>
+     f78:	e54c      	b.n	a14 <run_vm+0x148>
+  mrb_proc *proc = regs[ra+1].proc;
+     f7a:	3108      	adds	r1, #8
+     f7c:	1872      	adds	r2, r6, r1
+  int rb = GETARG_B(code);
+     f7e:	02a1      	lsls	r1, r4, #10
+    mrb_sym sym_id = get_irep_symbol_id(cur_irep,rb);
+     f80:	0e09      	lsrs	r1, r1, #24
+     f82:	7868      	ldrb	r0, [r5, #1]
+    mrb_class *cls = regs[ra].cls;
+     f84:	685f      	ldr	r7, [r3, #4]
+  mrb_proc *proc = regs[ra+1].proc;
+     f86:	9201      	str	r2, [sp, #4]
+     f88:	6856      	ldr	r6, [r2, #4]
+    mrb_sym sym_id = get_irep_symbol_id(cur_irep,rb);
+     f8a:	f7ff fb17 	bl	5bc <get_irep_symbol_id>
+    void *pp = &cls->procs;
+     f8e:	003b      	movs	r3, r7
+    mrb_sym sym_id = get_irep_symbol_id(cur_irep,rb);
+     f90:	0004      	movs	r4, r0
+    mrb_proc *p = cls->procs;
+     f92:	68ba      	ldr	r2, [r7, #8]
+    void *pp = &cls->procs;
+     f94:	3308      	adds	r3, #8
+    while( p != NULL ) {
+     f96:	2a00      	cmp	r2, #0
+     f98:	d10a      	bne.n	fb0 <run_vm+0x6e4>
+    proc->c_func = 0;
+     f9a:	2201      	movs	r2, #1
+     f9c:	78f3      	ldrb	r3, [r6, #3]
+    proc->sym_id = sym_id;
+     f9e:	7134      	strb	r4, [r6, #4]
+    proc->c_func = 0;
+     fa0:	4393      	bics	r3, r2
+     fa2:	70f3      	strb	r3, [r6, #3]
+    proc->next = cls->procs;
+     fa4:	68bb      	ldr	r3, [r7, #8]
+    regs[ra+1].tt = MRB_TT_EMPTY;
+     fa6:	9a01      	ldr	r2, [sp, #4]
+    proc->next = cls->procs;
+     fa8:	60b3      	str	r3, [r6, #8]
+    cls->procs = proc;
+     faa:	60be      	str	r6, [r7, #8]
+    regs[ra+1].tt = MRB_TT_EMPTY;
+     fac:	2300      	movs	r3, #0
+     fae:	e704      	b.n	dba <run_vm+0x4ee>
+      if( p->sym_id == sym_id ) break;
+     fb0:	7910      	ldrb	r0, [r2, #4]
+     fb2:	6891      	ldr	r1, [r2, #8]
+     fb4:	42a0      	cmp	r0, r4
+     fb6:	d019      	beq.n	fec <run_vm+0x720>
+      pp = &p->next;
+     fb8:	0013      	movs	r3, r2
+     fba:	000a      	movs	r2, r1
+     fbc:	3308      	adds	r3, #8
+     fbe:	e7ea      	b.n	f96 <run_vm+0x6ca>
+  int ra = GETARG_A(code);
+     fc0:	0de4      	lsrs	r4, r4, #23
+  mrbc_release(&regs[ra]);
+     fc2:	00e4      	lsls	r4, r4, #3
+     fc4:	1936      	adds	r6, r6, r4
+     fc6:	0030      	movs	r0, r6
+     fc8:	f7ff fad7 	bl	57a <mrbc_release>
+  regs[ra].tt = MRB_TT_CLASS;
+     fcc:	2307      	movs	r3, #7
+  regs[ra].cls = vm->target_class;
+     fce:	35fc      	adds	r5, #252	; 0xfc
+  regs[ra].tt = MRB_TT_CLASS;
+     fd0:	7033      	strb	r3, [r6, #0]
+  regs[ra].cls = vm->target_class;
+     fd2:	6b2b      	ldr	r3, [r5, #48]	; 0x30
+     fd4:	6073      	str	r3, [r6, #4]
+     fd6:	e51d      	b.n	a14 <run_vm+0x148>
+  vm->flag_preemption = 1;
+     fd8:	2298      	movs	r2, #152	; 0x98
+     fda:	2301      	movs	r3, #1
+     fdc:	0052      	lsls	r2, r2, #1
+     fde:	54ab      	strb	r3, [r5, r2]
+      case OP_STOP:       ret = op_stop      (vm, code, regs); break;
+     fe0:	e518      	b.n	a14 <run_vm+0x148>
+        cprintf("UNKNOWN >> %02X\n",opcode);
+     fe2:	0039      	movs	r1, r7
+     fe4:	480a      	ldr	r0, [pc, #40]	; (1010 <run_vm+0x744>)
+     fe6:	f000 fa53 	bl	1490 <console_printf>
+      break;
+     fea:	e513      	b.n	a14 <run_vm+0x148>
+      *((mrb_proc**)pp) = p->next;
+     fec:	6019      	str	r1, [r3, #0]
+      if( !p->c_func ) {
+     fee:	2101      	movs	r1, #1
+     ff0:	78d3      	ldrb	r3, [r2, #3]
+     ff2:	400b      	ands	r3, r1
+     ff4:	d1d1      	bne.n	f9a <run_vm+0x6ce>
+        mrb_value v = {.tt = MRB_TT_PROC};
+     ff6:	9308      	str	r3, [sp, #32]
+     ff8:	2315      	movs	r3, #21
+     ffa:	a808      	add	r0, sp, #32
+     ffc:	7003      	strb	r3, [r0, #0]
+        v.proc = p;
+     ffe:	6042      	str	r2, [r0, #4]
+        mrbc_release(&v);
+    1000:	f7ff fabb 	bl	57a <mrbc_release>
+    1004:	e7c9      	b.n	f9a <run_vm+0x6ce>
+    1006:	46c0      	nop			; (mov r8, r8)
+    1008:	10000000 	.word	0x10000000
+    100c:	1000008c 	.word	0x1000008c
+    1010:	00001f3e 	.word	0x00001f3e
+
+00001014 <c_proc_call>:
+#include "avr_access.h"
+#include "symbol_ids.h"
+
+/* Proc class */
+void c_proc_call(mrb_mvm *vm, mrb_value v[], int argc)
+{
+    1014:	b570      	push	{r4, r5, r6, lr}
+    1016:	000d      	movs	r5, r1
+  // push callinfo, but not release regs
+  mrbc_push_callinfo(vm, argc);
+    1018:	0011      	movs	r1, r2
+{
+    101a:	0004      	movs	r4, r0
+  mrbc_push_callinfo(vm, argc);
+    101c:	f7ff fbda 	bl	7d4 <mrbc_push_callinfo>
+
+  // target irep
+  vm->pc = 0;
+    1020:	2300      	movs	r3, #0
+    1022:	8063      	strh	r3, [r4, #2]
+  vm->pc_irep = v[0].proc->irep;
+    1024:	686b      	ldr	r3, [r5, #4]
+    1026:	7b1b      	ldrb	r3, [r3, #12]
+    1028:	7063      	strb	r3, [r4, #1]
+
+  vm->current_regs = v;
+    102a:	3408      	adds	r4, #8
+    102c:	67e5      	str	r5, [r4, #124]	; 0x7c
+}
+    102e:	bd70      	pop	{r4, r5, r6, pc}
+
+00001030 <c_proc_to_s>:
+  pf->buf_end = buf + size - 1;
+    1030:	2347      	movs	r3, #71	; 0x47
+
+void c_proc_to_s(mrb_mvm *vm, mrb_value v[], int argc)
+{
+    1032:	b570      	push	{r4, r5, r6, lr}
+    1034:	b092      	sub	sp, #72	; 0x48
+    1036:	446b      	add	r3, sp
+    1038:	9304      	str	r3, [sp, #16]
+  pf->fstr = fstr;
+    103a:	4b14      	ldr	r3, [pc, #80]	; (108c <c_proc_to_s+0x5c>)
+    103c:	000c      	movs	r4, r1
+    103e:	9306      	str	r3, [sp, #24]
+  for(i=0;i<sizeof(pf->fmt);i++){
+    1040:	2300      	movs	r3, #0
+    *(((char*)(&pf->fmt))+i)=0;
+    1042:	0019      	movs	r1, r3
+  pf->p = pf->buf = buf;
+    1044:	ae0a      	add	r6, sp, #40	; 0x28
+    1046:	9603      	str	r6, [sp, #12]
+    1048:	9605      	str	r6, [sp, #20]
+    *(((char*)(&pf->fmt))+i)=0;
+    104a:	aa03      	add	r2, sp, #12
+    104c:	18d2      	adds	r2, r2, r3
+  for(i=0;i<sizeof(pf->fmt);i++){
+    104e:	3301      	adds	r3, #1
+    *(((char*)(&pf->fmt))+i)=0;
+    1050:	7411      	strb	r1, [r2, #16]
+  for(i=0;i<sizeof(pf->fmt);i++){
+    1052:	2b0c      	cmp	r3, #12
+    1054:	d1f9      	bne.n	104a <c_proc_to_s+0x1a>
+  // (NOTE) address part assumes 32bit. but enough for this.
+  char buf[32];
+  mrb_printf pf;
+
+  mrbc_printf_init( &pf, buf, sizeof(buf), "<#Proc:%08x>" );
+  while( mrbc_printf_main( &pf ) > 0 ) {
+    1056:	a803      	add	r0, sp, #12
+    1058:	f000 fa24 	bl	14a4 <mrbc_printf_main>
+    105c:	2800      	cmp	r0, #0
+    105e:	dc0e      	bgt.n	107e <c_proc_to_s+0x4e>
+  *pf->p = '\0';
+    1060:	2300      	movs	r3, #0
+    mrbc_printf_int( &pf, (uintptr_t)v->proc, 16 );
+  }
+  mrbc_printf_end( &pf );
+
+  SET_RETURN( mrbc_string_new_cstr( buf ) );
+    1062:	466d      	mov	r5, sp
+    1064:	9a05      	ldr	r2, [sp, #20]
+    1066:	0020      	movs	r0, r4
+    1068:	7013      	strb	r3, [r2, #0]
+    106a:	f7ff fa86 	bl	57a <mrbc_release>
+    106e:	0028      	movs	r0, r5
+    1070:	0031      	movs	r1, r6
+    1072:	f7ff fb4e 	bl	712 <mrbc_string_new_cstr>
+    1076:	cd0c      	ldmia	r5!, {r2, r3}
+    1078:	c40c      	stmia	r4!, {r2, r3}
+}
+    107a:	b012      	add	sp, #72	; 0x48
+    107c:	bd70      	pop	{r4, r5, r6, pc}
+    mrbc_printf_int( &pf, (uintptr_t)v->proc, 16 );
+    107e:	2210      	movs	r2, #16
+    1080:	6861      	ldr	r1, [r4, #4]
+    1082:	a803      	add	r0, sp, #12
+    1084:	f000 fa12 	bl	14ac <mrbc_printf_int>
+    1088:	e7e5      	b.n	1056 <c_proc_to_s+0x26>
+    108a:	46c0      	nop			; (mov r8, r8)
+    108c:	00001f55 	.word	0x00001f55
+
+00001090 <c_nil_to_s>:
+
+/* Nil class */
+void c_nil_to_s(mrb_mvm *vm, mrb_value v[], int argc)
+{
+    1090:	b537      	push	{r0, r1, r2, r4, r5, lr}
+  v[0] = mrbc_string_new( NULL, 0);
+    1092:	2200      	movs	r2, #0
+    1094:	466c      	mov	r4, sp
+{
+    1096:	000d      	movs	r5, r1
+  v[0] = mrbc_string_new( NULL, 0);
+    1098:	0020      	movs	r0, r4
+    109a:	0011      	movs	r1, r2
+    109c:	f7ff fb0a 	bl	6b4 <mrbc_string_new>
+    10a0:	cc0c      	ldmia	r4!, {r2, r3}
+    10a2:	c50c      	stmia	r5!, {r2, r3}
+}
+    10a4:	bd37      	pop	{r0, r1, r2, r4, r5, pc}
+	...
+
+000010a8 <c_false_to_s>:
+
+/* False class */
+void c_false_to_s(mrb_mvm *vm, mrb_value v[], int argc)
+{
+    10a8:	b537      	push	{r0, r1, r2, r4, r5, lr}
+  v[0] = mrbc_string_new_cstr( "false");
+    10aa:	466c      	mov	r4, sp
+{
+    10ac:	000d      	movs	r5, r1
+  v[0] = mrbc_string_new_cstr( "false");
+    10ae:	0020      	movs	r0, r4
+    10b0:	4902      	ldr	r1, [pc, #8]	; (10bc <c_false_to_s+0x14>)
+    10b2:	f7ff fb2e 	bl	712 <mrbc_string_new_cstr>
+    10b6:	cc0c      	ldmia	r4!, {r2, r3}
+    10b8:	c50c      	stmia	r5!, {r2, r3}
+}
+    10ba:	bd37      	pop	{r0, r1, r2, r4, r5, pc}
+    10bc:	00001f4f 	.word	0x00001f4f
+
+000010c0 <c_true_to_s>:
+
+/* True class */
+void c_true_to_s(mrb_mvm *vm, mrb_value v[], int argc)
+{
+    10c0:	b537      	push	{r0, r1, r2, r4, r5, lr}
+  v[0] = mrbc_string_new_cstr( "true");
+    10c2:	466c      	mov	r4, sp
+{
+    10c4:	000d      	movs	r5, r1
+  v[0] = mrbc_string_new_cstr( "true");
+    10c6:	0020      	movs	r0, r4
+    10c8:	4902      	ldr	r1, [pc, #8]	; (10d4 <c_true_to_s+0x14>)
+    10ca:	f7ff fb22 	bl	712 <mrbc_string_new_cstr>
+    10ce:	cc0c      	ldmia	r4!, {r2, r3}
+    10d0:	c50c      	stmia	r5!, {r2, r3}
+}
+    10d2:	bd37      	pop	{r0, r1, r2, r4, r5, pc}
+    10d4:	00001f62 	.word	0x00001f62
+
+000010d8 <mrbc_init_class_proc>:
+
+
+void mrbc_init_class_proc(void){
+    10d8:	b510      	push	{r4, lr}
+  mrbc_class_proc = mrbc_define_class((char*)MRBC_SSYM_Proc, 0);
+    10da:	2100      	movs	r1, #0
+    10dc:	2004      	movs	r0, #4
+    10de:	f000 f883 	bl	11e8 <mrbc_define_class>
+    10e2:	4b01      	ldr	r3, [pc, #4]	; (10e8 <mrbc_init_class_proc+0x10>)
+    10e4:	6018      	str	r0, [r3, #0]
+}
+    10e6:	bd10      	pop	{r4, pc}
+    10e8:	10000244 	.word	0x10000244
+
+000010ec <mrbc_init_class_nil>:
+
+void mrbc_init_class_nil(void){
+    10ec:	b510      	push	{r4, lr}
+  mrbc_class_nil = mrbc_define_class((char*)MRBC_SSYM_Nil, 0);
+    10ee:	2100      	movs	r1, #0
+    10f0:	2003      	movs	r0, #3
+    10f2:	f000 f879 	bl	11e8 <mrbc_define_class>
+    10f6:	4b01      	ldr	r3, [pc, #4]	; (10fc <mrbc_init_class_nil+0x10>)
+    10f8:	6018      	str	r0, [r3, #0]
+}
+    10fa:	bd10      	pop	{r4, pc}
+    10fc:	10000260 	.word	0x10000260
+
+00001100 <mrbc_init_class_false>:
+
+void mrbc_init_class_false(void){
+    1100:	b510      	push	{r4, lr}
+  mrbc_class_false = mrbc_define_class((char*)MRBC_SSYM_False, 0);
+    1102:	2100      	movs	r1, #0
+    1104:	2005      	movs	r0, #5
+    1106:	f000 f86f 	bl	11e8 <mrbc_define_class>
+    110a:	4b01      	ldr	r3, [pc, #4]	; (1110 <mrbc_init_class_false+0x10>)
+    110c:	6018      	str	r0, [r3, #0]
+}
+    110e:	bd10      	pop	{r4, pc}
+    1110:	10000250 	.word	0x10000250
+
+00001114 <mrbc_init_class_true>:
+
+void mrbc_init_class_true(void){
+    1114:	b510      	push	{r4, lr}
+  mrbc_class_true = mrbc_define_class((char*)MRBC_SSYM_True, 0);
+    1116:	2100      	movs	r1, #0
+    1118:	2006      	movs	r0, #6
+    111a:	f000 f865 	bl	11e8 <mrbc_define_class>
+    111e:	4b01      	ldr	r3, [pc, #4]	; (1124 <mrbc_init_class_true+0x10>)
+    1120:	6018      	str	r0, [r3, #0]
+  //methods
+  // - to_s
+}
+    1122:	bd10      	pop	{r4, pc}
+    1124:	10000248 	.word	0x10000248
+
+00001128 <c_ineffect>:
+/* Common */
+
+void c_ineffect(mrb_mvm *vm, mrb_value v[], int argc)
+{
+  // nothing to do.
+}
+    1128:	4770      	bx	lr
+	...
+
+0000112c <find_class_by_object>:
+
+/* Util Function */
+mrb_class *find_class_by_object(mrb_object *obj)
+{
+    112c:	0003      	movs	r3, r0
+  mrb_class *cls;
+
+  switch( obj->tt ) {
+    112e:	2000      	movs	r0, #0
+    1130:	5618      	ldrsb	r0, [r3, r0]
+{
+    1132:	b500      	push	{lr}
+  switch( obj->tt ) {
+    1134:	3801      	subs	r0, #1
+    1136:	2817      	cmp	r0, #23
+    1138:	d823      	bhi.n	1182 <find_class_by_object+0x56>
+    113a:	f000 fbf5 	bl	1928 <__gnu_thumb1_case_uqi>
+    113e:	0f11      	.short	0x0f11
+    1140:	1522130c 	.word	0x1522130c
+    1144:	22222218 	.word	0x22222218
+    1148:	22222222 	.word	0x22222222
+    114c:	22222222 	.word	0x22222222
+    1150:	1c1a1722 	.word	0x1c1a1722
+    1154:	201e      	.short	0x201e
+  case MRB_TT_TRUE:   cls = mrbc_class_true;    break;
+    1156:	4b0c      	ldr	r3, [pc, #48]	; (1188 <find_class_by_object+0x5c>)
+  case MRB_TT_ARRAY:  cls = mrbc_class_array;   break;
+  case MRB_TT_STRING: cls = mrbc_class_string;  break;
+  case MRB_TT_RANGE:  cls = mrbc_class_range;   break;
+  //TODO?
+  //case MRB_TT_HASH:	cls = mrbc_class_hash;		break;
+  default: cls = mrbc_class_object; break;
+    1158:	6818      	ldr	r0, [r3, #0]
+  }
+
+  return cls;
+    115a:	e009      	b.n	1170 <find_class_by_object+0x44>
+  case MRB_TT_FALSE:  cls = mrbc_class_false;   break;
+    115c:	4b0b      	ldr	r3, [pc, #44]	; (118c <find_class_by_object+0x60>)
+    115e:	e7fb      	b.n	1158 <find_class_by_object+0x2c>
+  case MRB_TT_NIL:    cls = mrbc_class_nil;     break;
+    1160:	4b0b      	ldr	r3, [pc, #44]	; (1190 <find_class_by_object+0x64>)
+    1162:	e7f9      	b.n	1158 <find_class_by_object+0x2c>
+  case MRB_TT_FIXNUM: cls = mrbc_class_fixnum;  break;
+    1164:	4b0b      	ldr	r3, [pc, #44]	; (1194 <find_class_by_object+0x68>)
+    1166:	e7f7      	b.n	1158 <find_class_by_object+0x2c>
+  case MRB_TT_SYMBOL: cls = mrbc_class_symbol;  break;
+    1168:	4b0b      	ldr	r3, [pc, #44]	; (1198 <find_class_by_object+0x6c>)
+    116a:	e7f5      	b.n	1158 <find_class_by_object+0x2c>
+  case MRB_TT_OBJECT: cls = obj->instance->cls; break;
+    116c:	685b      	ldr	r3, [r3, #4]
+  case MRB_TT_CLASS:  cls = obj->cls;           break;
+    116e:	6858      	ldr	r0, [r3, #4]
+}
+    1170:	bd00      	pop	{pc}
+  case MRB_TT_PROC:   cls = mrbc_class_proc;    break;
+    1172:	4b0a      	ldr	r3, [pc, #40]	; (119c <find_class_by_object+0x70>)
+    1174:	e7f0      	b.n	1158 <find_class_by_object+0x2c>
+  case MRB_TT_ARRAY:  cls = mrbc_class_array;   break;
+    1176:	4b0a      	ldr	r3, [pc, #40]	; (11a0 <find_class_by_object+0x74>)
+    1178:	e7ee      	b.n	1158 <find_class_by_object+0x2c>
+  case MRB_TT_STRING: cls = mrbc_class_string;  break;
+    117a:	4b0a      	ldr	r3, [pc, #40]	; (11a4 <find_class_by_object+0x78>)
+    117c:	e7ec      	b.n	1158 <find_class_by_object+0x2c>
+  case MRB_TT_RANGE:  cls = mrbc_class_range;   break;
+    117e:	4b0a      	ldr	r3, [pc, #40]	; (11a8 <find_class_by_object+0x7c>)
+    1180:	e7ea      	b.n	1158 <find_class_by_object+0x2c>
+  default: cls = mrbc_class_object; break;
+    1182:	4b0a      	ldr	r3, [pc, #40]	; (11ac <find_class_by_object+0x80>)
+    1184:	e7e8      	b.n	1158 <find_class_by_object+0x2c>
+    1186:	46c0      	nop			; (mov r8, r8)
+    1188:	10000248 	.word	0x10000248
+    118c:	10000250 	.word	0x10000250
+    1190:	10000260 	.word	0x10000260
+    1194:	10000264 	.word	0x10000264
+    1198:	10000258 	.word	0x10000258
+    119c:	10000244 	.word	0x10000244
+    11a0:	10000254 	.word	0x10000254
+    11a4:	1000024c 	.word	0x1000024c
+    11a8:	10000268 	.word	0x10000268
+    11ac:	1000025c 	.word	0x1000025c
+
+000011b0 <find_method>:
+
+mrb_proc *find_method(mrb_value recv, mrb_sym sym_id)
+{
+    11b0:	b537      	push	{r0, r1, r2, r4, r5, lr}
+    11b2:	9000      	str	r0, [sp, #0]
+//  printf("find_method %d %d\n", recv, sym_id);
+  mrb_class *cls = find_class_by_object(&recv);
+    11b4:	4668      	mov	r0, sp
+{
+    11b6:	9101      	str	r1, [sp, #4]
+    11b8:	0015      	movs	r5, r2
+  mrb_class *cls = find_class_by_object(&recv);
+    11ba:	f7ff ffb7 	bl	112c <find_class_by_object>
+    11be:	0004      	movs	r4, r0
+  //cprintf("cls=%p\n",cls);
+
+  while( cls != 0 ) {
+    11c0:	2c00      	cmp	r4, #0
+    11c2:	d101      	bne.n	11c8 <find_method+0x18>
+      }
+      proc = proc->next;
+    }
+    cls = cls->super;
+  }
+  return 0;
+    11c4:	0020      	movs	r0, r4
+}
+    11c6:	bd3e      	pop	{r1, r2, r3, r4, r5, pc}
+    mrb_proc* proc = find_static_procs(cls->sym_id,sym_id);
+    11c8:	7820      	ldrb	r0, [r4, #0]
+    11ca:	0029      	movs	r1, r5
+    11cc:	f7ff fa3a 	bl	644 <find_static_procs>
+    if(0!=proc) return proc;
+    11d0:	2800      	cmp	r0, #0
+    11d2:	d1f8      	bne.n	11c6 <find_method+0x16>
+    proc = cls->procs;
+    11d4:	68a0      	ldr	r0, [r4, #8]
+    while( proc != 0 ) {
+    11d6:	2800      	cmp	r0, #0
+    11d8:	d101      	bne.n	11de <find_method+0x2e>
+    cls = cls->super;
+    11da:	6864      	ldr	r4, [r4, #4]
+    11dc:	e7f0      	b.n	11c0 <find_method+0x10>
+      if( proc->sym_id == sym_id ) {
+    11de:	7903      	ldrb	r3, [r0, #4]
+    11e0:	42ab      	cmp	r3, r5
+    11e2:	d0f0      	beq.n	11c6 <find_method+0x16>
+      proc = proc->next;
+    11e4:	6880      	ldr	r0, [r0, #8]
+    11e6:	e7f6      	b.n	11d6 <find_method+0x26>
+
+000011e8 <mrbc_define_class>:
+
+mrb_class * mrbc_define_class(const char *name, mrb_class *super)
+{
+    11e8:	b57f      	push	{r0, r1, r2, r3, r4, r5, r6, lr}
+    11ea:	000e      	movs	r6, r1
+  //DEBUG_FPRINTLN("define class");
+  mrb_class *cls;
+  mrb_sym sym_id;
+  if((int)name < 0xFF){ //direct sym_id 
+    sym_id = (mrb_sym)((int)name);
+    11ec:	b2c5      	uxtb	r5, r0
+  if((int)name < 0xFF){ //direct sym_id 
+    11ee:	28fe      	cmp	r0, #254	; 0xfe
+    11f0:	dd02      	ble.n	11f8 <mrbc_define_class+0x10>
+  }else{
+    sym_id = str_to_symid(name);
+    11f2:	f000 faae 	bl	1752 <str_to_symid>
+    11f6:	0005      	movs	r5, r0
+  }
+  mrb_object obj = const_object_get(sym_id);
+    11f8:	0029      	movs	r1, r5
+    11fa:	4668      	mov	r0, sp
+    11fc:	f000 f9ea 	bl	15d4 <const_object_get>
+    1200:	466b      	mov	r3, sp
+    1202:	781b      	ldrb	r3, [r3, #0]
+    1204:	b25b      	sxtb	r3, r3
+
+  // create a new class?
+  if( obj.tt == MRB_TT_NIL ) {
+    1206:	2b01      	cmp	r3, #1
+    1208:	d114      	bne.n	1234 <mrbc_define_class+0x4c>
+    cls = (mrb_class*)mrbc_alloc( 0, sizeof(mrb_class) );
+    120a:	210c      	movs	r1, #12
+    120c:	2000      	movs	r0, #0
+    120e:	f7fe ffd5 	bl	1bc <mrbc_alloc>
+    1212:	1e04      	subs	r4, r0, #0
+    if( !cls ) return cls;	// ENOMEM
+    1214:	d00b      	beq.n	122e <mrbc_define_class+0x46>
+
+    cls->sym_id = sym_id;
+    cls->super = super;
+    cls->procs = 0;
+    1216:	2300      	movs	r3, #0
+
+    // register to global constant.
+    mrb_value v = {.tt = MRB_TT_CLASS};
+    1218:	a902      	add	r1, sp, #8
+    cls->sym_id = sym_id;
+    121a:	7005      	strb	r5, [r0, #0]
+    cls->super = super;
+    121c:	6046      	str	r6, [r0, #4]
+    cls->procs = 0;
+    121e:	6083      	str	r3, [r0, #8]
+    mrb_value v = {.tt = MRB_TT_CLASS};
+    1220:	9302      	str	r3, [sp, #8]
+    v.cls = cls;
+    1222:	6048      	str	r0, [r1, #4]
+    mrb_value v = {.tt = MRB_TT_CLASS};
+    1224:	3307      	adds	r3, #7
+    const_object_add(sym_id, &v);
+    1226:	0028      	movs	r0, r5
+    mrb_value v = {.tt = MRB_TT_CLASS};
+    1228:	700b      	strb	r3, [r1, #0]
+    const_object_add(sym_id, &v);
+    122a:	f000 f987 	bl	153c <const_object_add>
+
+  // already?
+  if( obj.tt == MRB_TT_CLASS ) {
+    return obj.cls;
+  }
+}
+    122e:	0020      	movs	r0, r4
+    1230:	b004      	add	sp, #16
+    1232:	bd70      	pop	{r4, r5, r6, pc}
+    return obj.cls;
+    1234:	9c01      	ldr	r4, [sp, #4]
+    1236:	e7fa      	b.n	122e <mrbc_define_class+0x46>
+
+00001238 <mrbc_define_method>:
+
+void mrbc_define_method(mrb_class *cls, const char *name, mrb_func_t cfunc)
+{
+    1238:	b570      	push	{r4, r5, r6, lr}
+    123a:	0004      	movs	r4, r0
+  //DEBUG_FPRINTLN("--- define method");
+  mrb_proc *rproc = mrbc_rproc_alloc(name);
+    123c:	0008      	movs	r0, r1
+{
+    123e:	0015      	movs	r5, r2
+  mrb_proc *rproc = mrbc_rproc_alloc(name);
+    1240:	f7ff f942 	bl	4c8 <mrbc_rproc_alloc>
+  rproc->c_func = 1;  // c-func
+    1244:	2301      	movs	r3, #1
+    1246:	78c2      	ldrb	r2, [r0, #3]
+    1248:	4313      	orrs	r3, r2
+    124a:	70c3      	strb	r3, [r0, #3]
+  rproc->next = cls->procs;
+    124c:	68a3      	ldr	r3, [r4, #8]
+    124e:	6083      	str	r3, [r0, #8]
+  cls->procs = rproc;
+    1250:	60a0      	str	r0, [r4, #8]
+  rproc->func = cfunc;
+    1252:	60c5      	str	r5, [r0, #12]
+}
+    1254:	bd70      	pop	{r4, r5, r6, pc}
+
+00001256 <mrbc_init_class>:
+
+void mrbc_init_class(void)
+{
+    1256:	b510      	push	{r4, lr}
+  //basic
+  mrbc_init_class_object();
+    1258:	f7ff f8d4 	bl	404 <mrbc_init_class_object>
+  mrbc_init_class_string();
+    125c:	f7ff fa86 	bl	76c <mrbc_init_class_string>
+  mrbc_init_class_fixnum();
+    1260:	f000 f908 	bl	1474 <mrbc_init_class_fixnum>
+  mrbc_init_class_nil();
+    1264:	f7ff ff42 	bl	10ec <mrbc_init_class_nil>
+  mrbc_init_class_proc();
+    1268:	f7ff ff36 	bl	10d8 <mrbc_init_class_proc>
+  mrbc_init_class_false();
+    126c:	f7ff ff48 	bl	1100 <mrbc_init_class_false>
+  mrbc_init_class_true();
+    1270:	f7ff ff50 	bl	1114 <mrbc_init_class_true>
+
+  mrbc_init_class_symbol();
+    1274:	f000 fa9e 	bl	17b4 <mrbc_init_class_symbol>
+  mrbc_init_class_range(0);
+  //mrbc_init_class_hash(0);
+#endif
+
+  
+}
+    1278:	bd10      	pop	{r4, pc}
+
+0000127a <mmruby_setup>:
+#include "debug.h"
+#include "console.h"
+
+//#include <stdio.h>
+
+void mmruby_setup(){
+    127a:	b510      	push	{r4, lr}
+  init_hal();
+    127c:	f7ff f91a 	bl	4b4 <init_hal>
+  init_symbol_table();
+    1280:	f000 f9cc 	bl	161c <init_symbol_table>
+  mrbc_init_class();
+    1284:	f7ff ffe7 	bl	1256 <mrbc_init_class>
+  init_vm();
+    1288:	f7ff fa7e 	bl	788 <init_vm>
+}
+    128c:	bd10      	pop	{r4, pc}
+
+0000128e <mmruby_run>:
+
+void mmruby_run(void){
+    128e:	b510      	push	{r4, lr}
+  run_vm();
+    1290:	f7ff fb1c 	bl	8cc <run_vm>
+}
+    1294:	bd10      	pop	{r4, pc}
+
+00001296 <c_fixnum_bitref>:
+
+//================================================================
+/*! (operator) [] bit reference
+ */
+void c_fixnum_bitref(mrb_mvm *vm, mrb_value v[], int argc)
+{
+    1296:	b570      	push	{r4, r5, r6, lr}
+  if( 0 <= v[1].i && v[1].i < 32 ) {
+    1298:	898b      	ldrh	r3, [r1, #12]
+{
+    129a:	000c      	movs	r4, r1
+    129c:	2504      	movs	r5, #4
+    SET_INT_RETURN( (v[0].i & (1 << v[1].i)) ? 1 : 0 );
+    129e:	0008      	movs	r0, r1
+  if( 0 <= v[1].i && v[1].i < 32 ) {
+    12a0:	2b1f      	cmp	r3, #31
+    12a2:	d80b      	bhi.n	12bc <c_fixnum_bitref+0x26>
+    SET_INT_RETURN( (v[0].i & (1 << v[1].i)) ? 1 : 0 );
+    12a4:	f7ff f969 	bl	57a <mrbc_release>
+    12a8:	2204      	movs	r2, #4
+    12aa:	5ea3      	ldrsh	r3, [r4, r2]
+    12ac:	210c      	movs	r1, #12
+    12ae:	5e62      	ldrsh	r2, [r4, r1]
+    12b0:	7025      	strb	r5, [r4, #0]
+    12b2:	4113      	asrs	r3, r2
+    12b4:	2201      	movs	r2, #1
+    12b6:	4013      	ands	r3, r2
+  } else {
+    SET_INT_RETURN( 0 );
+    12b8:	80a3      	strh	r3, [r4, #4]
+  }
+}
+    12ba:	bd70      	pop	{r4, r5, r6, pc}
+    SET_INT_RETURN( 0 );
+    12bc:	f7ff f95d 	bl	57a <mrbc_release>
+    12c0:	7025      	strb	r5, [r4, #0]
+    12c2:	2300      	movs	r3, #0
+    12c4:	e7f8      	b.n	12b8 <c_fixnum_bitref+0x22>
+
+000012c6 <c_fixnum_negative>:
+
+//================================================================
+/*! (operator) unary -
+*/
+void c_fixnum_negative(mrb_mvm *vm, mrb_value v[], int argc)
+{
+    12c6:	b570      	push	{r4, r5, r6, lr}
+  int32_t num = GET_INT_ARG(0);
+  SET_INT_RETURN( -num );
+    12c8:	0008      	movs	r0, r1
+{
+    12ca:	000c      	movs	r4, r1
+  int32_t num = GET_INT_ARG(0);
+    12cc:	2304      	movs	r3, #4
+    12ce:	5ecd      	ldrsh	r5, [r1, r3]
+  SET_INT_RETURN( -num );
+    12d0:	f7ff f953 	bl	57a <mrbc_release>
+    12d4:	2304      	movs	r3, #4
+    12d6:	426d      	negs	r5, r5
+    12d8:	80a5      	strh	r5, [r4, #4]
+    12da:	7023      	strb	r3, [r4, #0]
+}
+    12dc:	bd70      	pop	{r4, r5, r6, pc}
+
+000012de <c_fixnum_power>:
+//================================================================
+/*! (operator) ** power
+ */
+void c_fixnum_power(mrb_mvm *vm, mrb_value v[], int argc)
+{
+  if( v[1].tt == MRB_TT_FIXNUM ) {
+    12de:	2308      	movs	r3, #8
+    12e0:	56cb      	ldrsb	r3, [r1, r3]
+{
+    12e2:	b570      	push	{r4, r5, r6, lr}
+    12e4:	000c      	movs	r4, r1
+  if( v[1].tt == MRB_TT_FIXNUM ) {
+    12e6:	2b04      	cmp	r3, #4
+    12e8:	d10c      	bne.n	1304 <c_fixnum_power+0x26>
+    int32_t x = 1;
+    int i;
+
+    if( v[1].i < 0 ) x = 0;
+    12ea:	230c      	movs	r3, #12
+    12ec:	5eca      	ldrsh	r2, [r1, r3]
+    12ee:	2300      	movs	r3, #0
+    12f0:	43d5      	mvns	r5, r2
+    12f2:	0fed      	lsrs	r5, r5, #31
+    for( i = 0; i < v[1].i; i++ ) {
+    12f4:	429a      	cmp	r2, r3
+    12f6:	dc06      	bgt.n	1306 <c_fixnum_power+0x28>
+      x *= v[0].i;;
+    }
+    SET_INT_RETURN( x );
+    12f8:	0020      	movs	r0, r4
+    12fa:	f7ff f93e 	bl	57a <mrbc_release>
+    12fe:	2304      	movs	r3, #4
+    1300:	80a5      	strh	r5, [r4, #4]
+    1302:	7023      	strb	r3, [r4, #0]
+  }
+
+}
+    1304:	bd70      	pop	{r4, r5, r6, pc}
+      x *= v[0].i;;
+    1306:	2004      	movs	r0, #4
+    1308:	5e21      	ldrsh	r1, [r4, r0]
+    for( i = 0; i < v[1].i; i++ ) {
+    130a:	3301      	adds	r3, #1
+      x *= v[0].i;;
+    130c:	434d      	muls	r5, r1
+    130e:	e7f1      	b.n	12f4 <c_fixnum_power+0x16>
+
+00001310 <c_fixnum_mod>:
+
+//================================================================
+/*! (operator) %
+ */
+void c_fixnum_mod(mrb_mvm *vm, mrb_value v[], int argc)
+{
+    1310:	b570      	push	{r4, r5, r6, lr}
+  int32_t num = GET_INT_ARG(1);
+  SET_INT_RETURN( v->i % num );
+    1312:	0008      	movs	r0, r1
+{
+    1314:	000c      	movs	r4, r1
+  int32_t num = GET_INT_ARG(1);
+    1316:	230c      	movs	r3, #12
+    1318:	5ecd      	ldrsh	r5, [r1, r3]
+  SET_INT_RETURN( v->i % num );
+    131a:	f7ff f92e 	bl	57a <mrbc_release>
+    131e:	2304      	movs	r3, #4
+    1320:	0029      	movs	r1, r5
+    1322:	7023      	strb	r3, [r4, #0]
+    1324:	2304      	movs	r3, #4
+    1326:	5ee0      	ldrsh	r0, [r4, r3]
+    1328:	f000 fbf8 	bl	1b1c <__aeabi_idivmod>
+    132c:	80a1      	strh	r1, [r4, #4]
+}
+    132e:	bd70      	pop	{r4, r5, r6, pc}
+
+00001330 <c_fixnum_and>:
+
+//================================================================
+/*! (operator) &; bit operation AND
+ */
+void c_fixnum_and(mrb_mvm *vm, mrb_value v[], int argc)
+{
+    1330:	b570      	push	{r4, r5, r6, lr}
+  int32_t num = GET_INT_ARG(1);
+  SET_INT_RETURN(v->i & num);
+    1332:	0008      	movs	r0, r1
+{
+    1334:	000c      	movs	r4, r1
+  int32_t num = GET_INT_ARG(1);
+    1336:	230c      	movs	r3, #12
+    1338:	5ecd      	ldrsh	r5, [r1, r3]
+  SET_INT_RETURN(v->i & num);
+    133a:	f7ff f91e 	bl	57a <mrbc_release>
+    133e:	2304      	movs	r3, #4
+    1340:	7023      	strb	r3, [r4, #0]
+    1342:	88a3      	ldrh	r3, [r4, #4]
+    1344:	402b      	ands	r3, r5
+    1346:	80a3      	strh	r3, [r4, #4]
+}
+    1348:	bd70      	pop	{r4, r5, r6, pc}
+
+0000134a <c_fixnum_or>:
+
+//================================================================
+/*! (operator) |; bit operation OR
+ */
+void c_fixnum_or(mrb_mvm *vm, mrb_value v[], int argc)
+{
+    134a:	b570      	push	{r4, r5, r6, lr}
+  int32_t num = GET_INT_ARG(1);
+  SET_INT_RETURN(v->i | num);
+    134c:	0008      	movs	r0, r1
+{
+    134e:	000c      	movs	r4, r1
+  int32_t num = GET_INT_ARG(1);
+    1350:	230c      	movs	r3, #12
+    1352:	5ecd      	ldrsh	r5, [r1, r3]
+  SET_INT_RETURN(v->i | num);
+    1354:	f7ff f911 	bl	57a <mrbc_release>
+    1358:	2304      	movs	r3, #4
+    135a:	7023      	strb	r3, [r4, #0]
+    135c:	88a3      	ldrh	r3, [r4, #4]
+    135e:	431d      	orrs	r5, r3
+    1360:	80a5      	strh	r5, [r4, #4]
+}
+    1362:	bd70      	pop	{r4, r5, r6, pc}
+
+00001364 <c_fixnum_xor>:
+
+//================================================================
+/*! (operator) ^; bit operation XOR
+ */
+void c_fixnum_xor(mrb_mvm *vm, mrb_value v[], int argc)
+{
+    1364:	b570      	push	{r4, r5, r6, lr}
+  int32_t num = GET_INT_ARG(1);
+  SET_INT_RETURN( v->i ^ num );
+    1366:	0008      	movs	r0, r1
+{
+    1368:	000c      	movs	r4, r1
+  int32_t num = GET_INT_ARG(1);
+    136a:	230c      	movs	r3, #12
+    136c:	5ecd      	ldrsh	r5, [r1, r3]
+  SET_INT_RETURN( v->i ^ num );
+    136e:	f7ff f904 	bl	57a <mrbc_release>
+    1372:	2304      	movs	r3, #4
+    1374:	7023      	strb	r3, [r4, #0]
+    1376:	88a3      	ldrh	r3, [r4, #4]
+    1378:	405d      	eors	r5, r3
+    137a:	80a5      	strh	r5, [r4, #4]
+}
+    137c:	bd70      	pop	{r4, r5, r6, pc}
+
+0000137e <c_fixnum_not>:
+
+//================================================================
+/*! (operator) ~; bit operation NOT
+ */
+void c_fixnum_not(mrb_mvm *vm, mrb_value v[], int argc)
+{
+    137e:	b570      	push	{r4, r5, r6, lr}
+  int32_t num = GET_INT_ARG(0);
+    1380:	2304      	movs	r3, #4
+    1382:	5ecd      	ldrsh	r5, [r1, r3]
+  SET_INT_RETURN( ~num );
+    1384:	0008      	movs	r0, r1
+{
+    1386:	000c      	movs	r4, r1
+  SET_INT_RETURN( ~num );
+    1388:	43ed      	mvns	r5, r5
+    138a:	f7ff f8f6 	bl	57a <mrbc_release>
+    138e:	2304      	movs	r3, #4
+    1390:	80a5      	strh	r5, [r4, #4]
+    1392:	7023      	strb	r3, [r4, #0]
+}
+    1394:	bd70      	pop	{r4, r5, r6, pc}
+
+00001396 <c_fixnum_lshift>:
+
+//================================================================
+/*! (operator) <<; bit operation LEFT_SHIFT
+ */
+void c_fixnum_lshift(mrb_mvm *vm, mrb_value v[], int argc)
+{
+    1396:	b570      	push	{r4, r5, r6, lr}
+  int num = GET_INT_ARG(1);
+  SET_INT_RETURN( shift(v->i, num) );
+    1398:	0008      	movs	r0, r1
+{
+    139a:	000d      	movs	r5, r1
+  int num = GET_INT_ARG(1);
+    139c:	230c      	movs	r3, #12
+    139e:	5ecc      	ldrsh	r4, [r1, r3]
+  SET_INT_RETURN( shift(v->i, num) );
+    13a0:	f7ff f8eb 	bl	57a <mrbc_release>
+    13a4:	2304      	movs	r3, #4
+    13a6:	702b      	strb	r3, [r5, #0]
+    13a8:	2304      	movs	r3, #4
+    13aa:	5eea      	ldrsh	r2, [r5, r3]
+    x = 0;
+    13ac:	2300      	movs	r3, #0
+  if( y >= 33 ){
+    13ae:	2c20      	cmp	r4, #32
+    13b0:	dc03      	bgt.n	13ba <c_fixnum_lshift+0x24>
+  } else if( y >= 0 ){
+    13b2:	429c      	cmp	r4, r3
+    13b4:	db03      	blt.n	13be <c_fixnum_lshift+0x28>
+    x <<= y;
+    13b6:	0013      	movs	r3, r2
+    13b8:	40a3      	lsls	r3, r4
+  SET_INT_RETURN( shift(v->i, num) );
+    13ba:	80ab      	strh	r3, [r5, #4]
+}
+    13bc:	bd70      	pop	{r4, r5, r6, pc}
+  } else if( y > -33 ){
+    13be:	0021      	movs	r1, r4
+    13c0:	3120      	adds	r1, #32
+    13c2:	dbfa      	blt.n	13ba <c_fixnum_lshift+0x24>
+    x = x >> -y;
+    13c4:	0013      	movs	r3, r2
+    13c6:	4264      	negs	r4, r4
+    13c8:	4123      	asrs	r3, r4
+    13ca:	e7f6      	b.n	13ba <c_fixnum_lshift+0x24>
+
+000013cc <c_fixnum_rshift>:
+
+//================================================================
+/*! (operator) >>; bit operation RIGHT_SHIFT
+ */
+void c_fixnum_rshift(mrb_mvm *vm, mrb_value v[], int argc)
+{
+    13cc:	b570      	push	{r4, r5, r6, lr}
+  int num = GET_INT_ARG(1);
+    13ce:	230c      	movs	r3, #12
+    13d0:	5ecc      	ldrsh	r4, [r1, r3]
+  SET_INT_RETURN( shift(v->i, -num) );
+    13d2:	0008      	movs	r0, r1
+{
+    13d4:	000d      	movs	r5, r1
+  SET_INT_RETURN( shift(v->i, -num) );
+    13d6:	f7ff f8d0 	bl	57a <mrbc_release>
+    13da:	2304      	movs	r3, #4
+  if( y >= 33 ){
+    13dc:	0021      	movs	r1, r4
+  SET_INT_RETURN( shift(v->i, -num) );
+    13de:	702b      	strb	r3, [r5, #0]
+    13e0:	2304      	movs	r3, #4
+    13e2:	5eea      	ldrsh	r2, [r5, r3]
+    x = 0;
+    13e4:	2300      	movs	r3, #0
+  if( y >= 33 ){
+    13e6:	3120      	adds	r1, #32
+    13e8:	db04      	blt.n	13f4 <c_fixnum_rshift+0x28>
+  } else if( y >= 0 ){
+    13ea:	429c      	cmp	r4, r3
+    13ec:	dc04      	bgt.n	13f8 <c_fixnum_rshift+0x2c>
+    x <<= y;
+    13ee:	0013      	movs	r3, r2
+  SET_INT_RETURN( shift(v->i, -num) );
+    13f0:	4264      	negs	r4, r4
+    x <<= y;
+    13f2:	40a3      	lsls	r3, r4
+  SET_INT_RETURN( shift(v->i, -num) );
+    13f4:	80ab      	strh	r3, [r5, #4]
+}
+    13f6:	bd70      	pop	{r4, r5, r6, pc}
+  } else if( y > -33 ){
+    13f8:	2c20      	cmp	r4, #32
+    13fa:	dcfb      	bgt.n	13f4 <c_fixnum_rshift+0x28>
+    x = x >> -y;
+    13fc:	0013      	movs	r3, r2
+    13fe:	4123      	asrs	r3, r4
+    1400:	e7f8      	b.n	13f4 <c_fixnum_rshift+0x28>
+
+00001402 <c_fixnum_abs>:
+//================================================================
+/*! (method) abs
+*/
+void c_fixnum_abs(mrb_mvm *vm, mrb_value v[], int argc)
+{
+  if( v[0].i < 0 ) {
+    1402:	2204      	movs	r2, #4
+    1404:	5e8b      	ldrsh	r3, [r1, r2]
+    1406:	2b00      	cmp	r3, #0
+    1408:	da01      	bge.n	140e <c_fixnum_abs+0xc>
+    v[0].i = -v[0].i;
+    140a:	425b      	negs	r3, r3
+    140c:	808b      	strh	r3, [r1, #4]
+  }
+}
+    140e:	4770      	bx	lr
+
+00001410 <c_fixnum_times>:
+    // execute OP_CALL
+    mrbc_vm_run(vm);
+  }
+  mrbc_pop_callinfo(vm);
+  #endif
+}
+    1410:	4770      	bx	lr
+
+00001412 <c_fixnum_chr>:
+    1412:	4770      	bx	lr
+
+00001414 <c_fixnum_to_s>:
+
+//================================================================
+/*! (method) to_s
+*/
+void c_fixnum_to_s(mrb_mvm *vm, mrb_value v[], int argc)
+{
+    1414:	b570      	push	{r4, r5, r6, lr}
+    1416:	000c      	movs	r4, r1
+    1418:	b08e      	sub	sp, #56	; 0x38
+  int base = 10;
+  if( argc ) {
+    141a:	2a00      	cmp	r2, #0
+    141c:	d027      	beq.n	146e <c_fixnum_to_s+0x5a>
+    base = GET_INT_ARG(1);
+    141e:	230c      	movs	r3, #12
+    1420:	5eca      	ldrsh	r2, [r1, r3]
+    if( base < 2 || base > 36 ) {
+    1422:	1e93      	subs	r3, r2, #2
+    1424:	2b22      	cmp	r3, #34	; 0x22
+    1426:	d820      	bhi.n	146a <c_fixnum_to_s+0x56>
+  pf->buf_end = buf + size - 1;
+    1428:	231b      	movs	r3, #27
+  pf->p = pf->buf = buf;
+    142a:	a807      	add	r0, sp, #28
+  pf->buf_end = buf + size - 1;
+    142c:	446b      	add	r3, sp
+    142e:	6043      	str	r3, [r0, #4]
+  pf->fstr = fstr;
+    1430:	2300      	movs	r3, #0
+    *(((char*)(&pf->fmt))+i)=0;
+    1432:	001e      	movs	r6, r3
+  pf->p = pf->buf = buf;
+    1434:	ad03      	add	r5, sp, #12
+    1436:	9507      	str	r5, [sp, #28]
+    1438:	6085      	str	r5, [r0, #8]
+  pf->fstr = fstr;
+    143a:	60c3      	str	r3, [r0, #12]
+    *(((char*)(&pf->fmt))+i)=0;
+    143c:	18c1      	adds	r1, r0, r3
+  for(i=0;i<sizeof(pf->fmt);i++){
+    143e:	3301      	adds	r3, #1
+    *(((char*)(&pf->fmt))+i)=0;
+    1440:	740e      	strb	r6, [r1, #16]
+  for(i=0;i<sizeof(pf->fmt);i++){
+    1442:	2b0c      	cmp	r3, #12
+    1444:	d1fa      	bne.n	143c <c_fixnum_to_s+0x28>
+
+  mrb_printf pf;
+  char buf[16];
+  //sprintf(buf,"%d",v->i);
+  mrbc_printf_init( &pf, buf, sizeof(buf), NULL );
+  pf.fmt.type = 'd';
+    1446:	3358      	adds	r3, #88	; 0x58
+    1448:	7403      	strb	r3, [r0, #16]
+  mrbc_printf_int( &pf, v->i, base );
+    144a:	2304      	movs	r3, #4
+    144c:	5ee1      	ldrsh	r1, [r4, r3]
+    144e:	f000 f82d 	bl	14ac <mrbc_printf_int>
+  *pf->p = '\0';
+    1452:	9b09      	ldr	r3, [sp, #36]	; 0x24
+  mrbc_printf_end( &pf );
+
+  mrb_value value = mrbc_string_new_cstr(buf);
+    1454:	0029      	movs	r1, r5
+    1456:	701e      	strb	r6, [r3, #0]
+    1458:	ae01      	add	r6, sp, #4
+    145a:	0030      	movs	r0, r6
+    145c:	f7ff f959 	bl	712 <mrbc_string_new_cstr>
+  SET_RETURN(value);
+    1460:	0020      	movs	r0, r4
+    1462:	f7ff f88a 	bl	57a <mrbc_release>
+    1466:	ce0c      	ldmia	r6!, {r2, r3}
+    1468:	c40c      	stmia	r4!, {r2, r3}
+}
+    146a:	b00e      	add	sp, #56	; 0x38
+    146c:	bd70      	pop	{r4, r5, r6, pc}
+  int base = 10;
+    146e:	220a      	movs	r2, #10
+    1470:	e7da      	b.n	1428 <c_fixnum_to_s+0x14>
+	...
+
+00001474 <mrbc_init_class_fixnum>:
+
+
+void mrbc_init_class_fixnum()
+{
+    mrbc_class_fixnum = mrbc_define_class((char*)MRBC_SSYM_Fixnum, mrbc_class_object);
+    1474:	4b04      	ldr	r3, [pc, #16]	; (1488 <mrbc_init_class_fixnum+0x14>)
+{
+    1476:	b510      	push	{r4, lr}
+    mrbc_class_fixnum = mrbc_define_class((char*)MRBC_SSYM_Fixnum, mrbc_class_object);
+    1478:	6819      	ldr	r1, [r3, #0]
+    147a:	2007      	movs	r0, #7
+    147c:	f7ff feb4 	bl	11e8 <mrbc_define_class>
+    1480:	4b02      	ldr	r3, [pc, #8]	; (148c <mrbc_init_class_fixnum+0x18>)
+    1482:	6018      	str	r0, [r3, #0]
+}
+    1484:	bd10      	pop	{r4, pc}
+    1486:	46c0      	nop			; (mov r8, r8)
+    1488:	1000025c 	.word	0x1000025c
+    148c:	10000264 	.word	0x10000264
+
+00001490 <console_printf>:
+/*! output formatted string
+
+  @param  fstr		format string.
+*/
+void console_printf(const char *fstr, ...)
+{
+    1490:	b40f      	push	{r0, r1, r2, r3}
+    1492:	b500      	push	{lr}
+    1494:	b08b      	sub	sp, #44	; 0x2c
+  va_list ap;
+  va_start(ap, fstr);
+
+  char buf[CONSOLE_BUFF_SIZE];
+  //vsprintf(buf,fstr,ap);
+  hal_write_string(buf);
+    1496:	4668      	mov	r0, sp
+    1498:	f7ff f80d 	bl	4b6 <hal_write_string>
+  va_end(ap);
+  
+}
+    149c:	b00b      	add	sp, #44	; 0x2c
+    149e:	bc08      	pop	{r3}
+    14a0:	b004      	add	sp, #16
+    14a2:	4718      	bx	r3
+
+000014a4 <mrbc_printf_main>:
+  if( *pf->fstr ) pf->fmt.type = *pf->fstr++;
+
+  return 1;
+#endif
+  return 1;
+}
+    14a4:	2001      	movs	r0, #1
+    14a6:	4770      	bx	lr
+
+000014a8 <mrbc_printf_str>:
+  }
+
+  return ret;
+#endif
+  return 1;
+}
+    14a8:	2001      	movs	r0, #1
+    14aa:	4770      	bx	lr
+
+000014ac <mrbc_printf_int>:
+    if( sign ) *--p = sign;
+  }
+  return mrbc_printf_str( pf, p, pad );
+#endif
+  return 1;
+}
+    14ac:	2001      	movs	r0, #1
+    14ae:	4770      	bx	lr
+
+000014b0 <search_global_object>:
+/* linear search is not efficient! */
+/* TODO: Use binary search */
+static int search_global_object(mrb_sym sym_id, mrbc_globaltype gtype)
+{
+  int i;
+  for( i=0 ; i<global_end ; i++ ){
+    14b0:	4b0b      	ldr	r3, [pc, #44]	; (14e0 <search_global_object+0x30>)
+{
+    14b2:	b5f0      	push	{r4, r5, r6, r7, lr}
+  for( i=0 ; i<global_end ; i++ ){
+    14b4:	681d      	ldr	r5, [r3, #0]
+    mrb_globalobject *obj = &mrbc_global[i];
+    if( obj->sym_id == sym_id && obj->gtype == gtype ) return i;
+    14b6:	260c      	movs	r6, #12
+  for( i=0 ; i<global_end ; i++ ){
+    14b8:	2300      	movs	r3, #0
+    if( obj->sym_id == sym_id && obj->gtype == gtype ) return i;
+    14ba:	4a0a      	ldr	r2, [pc, #40]	; (14e4 <search_global_object+0x34>)
+  for( i=0 ; i<global_end ; i++ ){
+    14bc:	429d      	cmp	r5, r3
+    14be:	dc03      	bgt.n	14c8 <search_global_object+0x18>
+  }
+  return -1;
+    14c0:	2301      	movs	r3, #1
+    14c2:	425b      	negs	r3, r3
+}
+    14c4:	0018      	movs	r0, r3
+    14c6:	bdf0      	pop	{r4, r5, r6, r7, pc}
+    if( obj->sym_id == sym_id && obj->gtype == gtype ) return i;
+    14c8:	0034      	movs	r4, r6
+    14ca:	435c      	muls	r4, r3
+    14cc:	18a7      	adds	r7, r4, r2
+    14ce:	787f      	ldrb	r7, [r7, #1]
+    14d0:	4287      	cmp	r7, r0
+    14d2:	d102      	bne.n	14da <search_global_object+0x2a>
+    14d4:	5ca4      	ldrb	r4, [r4, r2]
+    14d6:	428c      	cmp	r4, r1
+    14d8:	d0f4      	beq.n	14c4 <search_global_object+0x14>
+  for( i=0 ; i<global_end ; i++ ){
+    14da:	3301      	adds	r3, #1
+    14dc:	e7ee      	b.n	14bc <search_global_object+0xc>
+    14de:	46c0      	nop			; (mov r8, r8)
+    14e0:	10000134 	.word	0x10000134
+    14e4:	10000138 	.word	0x10000138
+
+000014e8 <global_object_add>:
+
+/* add */
+/* TODO: Check reference count */
+void global_object_add(mrb_sym sym_id, mrb_value v)
+{
+    14e8:	b5f7      	push	{r0, r1, r2, r4, r5, r6, r7, lr}
+    14ea:	466d      	mov	r5, sp
+    14ec:	9100      	str	r1, [sp, #0]
+  int index = search_global_object(sym_id, MRBC_GLOBAL_OBJECT);
+    14ee:	2101      	movs	r1, #1
+{
+    14f0:	0006      	movs	r6, r0
+    14f2:	606a      	str	r2, [r5, #4]
+  int index = search_global_object(sym_id, MRBC_GLOBAL_OBJECT);
+    14f4:	f7ff ffdc 	bl	14b0 <search_global_object>
+    14f8:	4c0e      	ldr	r4, [pc, #56]	; (1534 <global_object_add+0x4c>)
+    14fa:	0007      	movs	r7, r0
+  if( index == -1 ) {
+    14fc:	1c43      	adds	r3, r0, #1
+    14fe:	d111      	bne.n	1524 <global_object_add+0x3c>
+    index = global_end++;
+    1500:	4b0d      	ldr	r3, [pc, #52]	; (1538 <global_object_add+0x50>)
+    1502:	681f      	ldr	r7, [r3, #0]
+    1504:	1c7a      	adds	r2, r7, #1
+    1506:	601a      	str	r2, [r3, #0]
+    //assert( index < MAX_GLOBAL_OBJECT_SIZE );	// maybe raise ex
+  } else {
+    mrbc_release( &(mrbc_global[index].obj) );
+  }
+
+  mrbc_global[index].gtype = MRBC_GLOBAL_OBJECT;
+    1508:	230c      	movs	r3, #12
+    150a:	435f      	muls	r7, r3
+    150c:	3b0b      	subs	r3, #11
+    150e:	55e3      	strb	r3, [r4, r7]
+  mrbc_global[index].sym_id = sym_id;
+  mrbc_global[index].obj = v;
+    1510:	002b      	movs	r3, r5
+  mrbc_global[index].sym_id = sym_id;
+    1512:	19e4      	adds	r4, r4, r7
+    1514:	7066      	strb	r6, [r4, #1]
+  mrbc_global[index].obj = v;
+    1516:	3404      	adds	r4, #4
+  mrbc_dup( &v );
+    1518:	0028      	movs	r0, r5
+  mrbc_global[index].obj = v;
+    151a:	cb06      	ldmia	r3!, {r1, r2}
+    151c:	c406      	stmia	r4!, {r1, r2}
+  mrbc_dup( &v );
+    151e:	f7ff f823 	bl	568 <mrbc_dup>
+}
+    1522:	bdf7      	pop	{r0, r1, r2, r4, r5, r6, r7, pc}
+    mrbc_release( &(mrbc_global[index].obj) );
+    1524:	200c      	movs	r0, #12
+    1526:	4378      	muls	r0, r7
+    1528:	3004      	adds	r0, #4
+    152a:	1820      	adds	r0, r4, r0
+    152c:	f7ff f825 	bl	57a <mrbc_release>
+    1530:	e7ea      	b.n	1508 <global_object_add+0x20>
+    1532:	46c0      	nop			; (mov r8, r8)
+    1534:	10000138 	.word	0x10000138
+    1538:	10000134 	.word	0x10000134
+
+0000153c <const_object_add>:
+
+/* add const */
+/* TODO: Check reference count */
+/* TODO: Integrate with global_add */
+void const_object_add(mrb_sym sym_id, mrb_object *obj)
+{
+    153c:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
+    153e:	000d      	movs	r5, r1
+  int index = search_global_object(sym_id, MRBC_CONST_OBJECT);
+    1540:	2102      	movs	r1, #2
+{
+    1542:	0006      	movs	r6, r0
+  int index = search_global_object(sym_id, MRBC_CONST_OBJECT);
+    1544:	f7ff ffb4 	bl	14b0 <search_global_object>
+    1548:	4c0e      	ldr	r4, [pc, #56]	; (1584 <const_object_add+0x48>)
+    154a:	0007      	movs	r7, r0
+  if( index == -1 ){
+    154c:	1c43      	adds	r3, r0, #1
+    154e:	d111      	bne.n	1574 <const_object_add+0x38>
+    index = global_end;
+    1550:	4b0d      	ldr	r3, [pc, #52]	; (1588 <const_object_add+0x4c>)
+    1552:	681f      	ldr	r7, [r3, #0]
+    global_end++;
+    1554:	1c7a      	adds	r2, r7, #1
+    1556:	601a      	str	r2, [r3, #0]
+    //assert( index < MAX_GLOBAL_OBJECT_SIZE );	// maybe raise ex
+  } else {
+    // warning: already initialized constant.
+    mrbc_release( &(mrbc_global[index].obj) );
+  }
+  mrbc_global[index].gtype = MRBC_CONST_OBJECT;
+    1558:	230c      	movs	r3, #12
+    155a:	435f      	muls	r7, r3
+    155c:	3b0a      	subs	r3, #10
+    155e:	55e3      	strb	r3, [r4, r7]
+  mrbc_global[index].sym_id = sym_id;
+  mrbc_global[index].obj = *obj;
+    1560:	002b      	movs	r3, r5
+  mrbc_global[index].sym_id = sym_id;
+    1562:	19e4      	adds	r4, r4, r7
+    1564:	7066      	strb	r6, [r4, #1]
+  mrbc_global[index].obj = *obj;
+    1566:	3404      	adds	r4, #4
+  mrbc_dup( obj );
+    1568:	0028      	movs	r0, r5
+  mrbc_global[index].obj = *obj;
+    156a:	cb06      	ldmia	r3!, {r1, r2}
+    156c:	c406      	stmia	r4!, {r1, r2}
+  mrbc_dup( obj );
+    156e:	f7fe fffb 	bl	568 <mrbc_dup>
+}
+    1572:	bdf8      	pop	{r3, r4, r5, r6, r7, pc}
+    mrbc_release( &(mrbc_global[index].obj) );
+    1574:	200c      	movs	r0, #12
+    1576:	4378      	muls	r0, r7
+    1578:	3004      	adds	r0, #4
+    157a:	1820      	adds	r0, r4, r0
+    157c:	f7fe fffd 	bl	57a <mrbc_release>
+    1580:	e7ea      	b.n	1558 <const_object_add+0x1c>
+    1582:	46c0      	nop			; (mov r8, r8)
+    1584:	10000138 	.word	0x10000138
+    1588:	10000134 	.word	0x10000134
+
+0000158c <global_object_get>:
+
+/* get */
+mrb_value global_object_get(mrb_sym sym_id)
+{
+    158c:	b573      	push	{r0, r1, r4, r5, r6, lr}
+    158e:	0005      	movs	r5, r0
+    1590:	0008      	movs	r0, r1
+  int index = search_global_object(sym_id, MRBC_GLOBAL_OBJECT);
+    1592:	2101      	movs	r1, #1
+    1594:	f7ff ff8c 	bl	14b0 <search_global_object>
+  if( index >= 0 ){
+    1598:	2800      	cmp	r0, #0
+    159a:	db0d      	blt.n	15b8 <global_object_get+0x2c>
+    mrbc_dup( &mrbc_global[index].obj );
+    159c:	260c      	movs	r6, #12
+    159e:	4346      	muls	r6, r0
+    15a0:	4c0b      	ldr	r4, [pc, #44]	; (15d0 <global_object_get+0x44>)
+    15a2:	1d30      	adds	r0, r6, #4
+    15a4:	1900      	adds	r0, r0, r4
+    15a6:	f7fe ffdf 	bl	568 <mrbc_dup>
+    return mrbc_global[index].obj;
+    15aa:	002b      	movs	r3, r5
+    15ac:	19a4      	adds	r4, r4, r6
+    15ae:	1d20      	adds	r0, r4, #4
+    15b0:	c806      	ldmia	r0!, {r1, r2}
+    15b2:	c306      	stmia	r3!, {r1, r2}
+  } else {
+    DEBUG_FPRINTLN("OBJ NOTFOUND");
+    return mrb_nil_value();
+  }
+}
+    15b4:	0028      	movs	r0, r5
+    15b6:	bd76      	pop	{r1, r2, r4, r5, r6, pc}
+
+  @return	mrb_value of type nil.
+*/
+static inline mrb_value mrb_nil_value(void)
+{
+  mrb_value value = {.tt = MRB_TT_NIL};
+    15b8:	466c      	mov	r4, sp
+    15ba:	2208      	movs	r2, #8
+    15bc:	2100      	movs	r1, #0
+    15be:	0020      	movs	r0, r4
+    15c0:	f000 f961 	bl	1886 <memset>
+  return value;
+    15c4:	2301      	movs	r3, #1
+    15c6:	7023      	strb	r3, [r4, #0]
+    15c8:	002b      	movs	r3, r5
+    15ca:	cc06      	ldmia	r4!, {r1, r2}
+    15cc:	c306      	stmia	r3!, {r1, r2}
+    15ce:	e7f1      	b.n	15b4 <global_object_get+0x28>
+    15d0:	10000138 	.word	0x10000138
+
+000015d4 <const_object_get>:
+
+/* get const */
+/* TODO: Integrate with get_global_object */
+mrb_object const_object_get(mrb_sym sym_id)
+{
+    15d4:	b573      	push	{r0, r1, r4, r5, r6, lr}
+    15d6:	0005      	movs	r5, r0
+    15d8:	0008      	movs	r0, r1
+  int index = search_global_object(sym_id, MRBC_CONST_OBJECT);
+    15da:	2102      	movs	r1, #2
+    15dc:	f7ff ff68 	bl	14b0 <search_global_object>
+  if( index >= 0 ){
+    15e0:	2800      	cmp	r0, #0
+    15e2:	db0d      	blt.n	1600 <const_object_get+0x2c>
+    mrbc_dup( &mrbc_global[index].obj );
+    15e4:	260c      	movs	r6, #12
+    15e6:	4346      	muls	r6, r0
+    15e8:	4c0b      	ldr	r4, [pc, #44]	; (1618 <const_object_get+0x44>)
+    15ea:	1d30      	adds	r0, r6, #4
+    15ec:	1900      	adds	r0, r0, r4
+    15ee:	f7fe ffbb 	bl	568 <mrbc_dup>
+    return mrbc_global[index].obj;
+    15f2:	002b      	movs	r3, r5
+    15f4:	19a4      	adds	r4, r4, r6
+    15f6:	1d20      	adds	r0, r4, #4
+    15f8:	c806      	ldmia	r0!, {r1, r2}
+    15fa:	c306      	stmia	r3!, {r1, r2}
+  } else {
+    return mrb_nil_value();
+  }
+}
+    15fc:	0028      	movs	r0, r5
+    15fe:	bd76      	pop	{r1, r2, r4, r5, r6, pc}
+  mrb_value value = {.tt = MRB_TT_NIL};
+    1600:	466c      	mov	r4, sp
+    1602:	2208      	movs	r2, #8
+    1604:	2100      	movs	r1, #0
+    1606:	0020      	movs	r0, r4
+    1608:	f000 f93d 	bl	1886 <memset>
+  return value;
+    160c:	2301      	movs	r3, #1
+    160e:	7023      	strb	r3, [r4, #0]
+    1610:	002b      	movs	r3, r5
+    1612:	cc06      	ldmia	r4!, {r1, r2}
+    1614:	c306      	stmia	r3!, {r1, r2}
+    1616:	e7f1      	b.n	15fc <const_object_get+0x28>
+    1618:	10000138 	.word	0x10000138
+
+0000161c <init_symbol_table>:
+static uint8_t sym_tbl_size = 0;
+static uint8_t static_sym_tbl_size = 0;
+
+static char global_sym_name_buff[MAX_SYMBOL_LEN];
+
+void init_symbol_table(void){
+    161c:	b510      	push	{r4, lr}
+  //static table
+  static_sym_tbl_size = get_max_static_symbol_id();
+    161e:	f7fe ffd5 	bl	5cc <get_max_static_symbol_id>
+  //dynamic table
+  sym_tbl_size = INIT_SYMBOL_TABLE_LEN;
+    1622:	220a      	movs	r2, #10
+  static_sym_tbl_size = get_max_static_symbol_id();
+    1624:	4b04      	ldr	r3, [pc, #16]	; (1638 <init_symbol_table+0x1c>)
+    1626:	7018      	strb	r0, [r3, #0]
+  sym_tbl_size = INIT_SYMBOL_TABLE_LEN;
+    1628:	4b04      	ldr	r3, [pc, #16]	; (163c <init_symbol_table+0x20>)
+  symbol_table = (char**)mrbc_raw_alloc( sizeof(char*) * sym_tbl_size );
+    162a:	2028      	movs	r0, #40	; 0x28
+  sym_tbl_size = INIT_SYMBOL_TABLE_LEN;
+    162c:	701a      	strb	r2, [r3, #0]
+  symbol_table = (char**)mrbc_raw_alloc( sizeof(char*) * sym_tbl_size );
+    162e:	f7fe fdca 	bl	1c6 <mrbc_raw_alloc>
+    1632:	4b03      	ldr	r3, [pc, #12]	; (1640 <init_symbol_table+0x24>)
+    1634:	6018      	str	r0, [r3, #0]
+}
+    1636:	bd10      	pop	{r4, pc}
+    1638:	10000238 	.word	0x10000238
+    163c:	1000023a 	.word	0x1000023a
+    1640:	1000023c 	.word	0x1000023c
+
+00001644 <add_index>:
+
+mrb_sym add_index(const char* str ){
+    1644:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
+  if(sym_tbl_cnt+static_sym_tbl_size>=MAX_SYMBOL-1){ //Total table size must be less than MAX_SYMBOL
+    1646:	4c16      	ldr	r4, [pc, #88]	; (16a0 <add_index+0x5c>)
+    1648:	4b16      	ldr	r3, [pc, #88]	; (16a4 <add_index+0x60>)
+    164a:	7822      	ldrb	r2, [r4, #0]
+    164c:	781b      	ldrb	r3, [r3, #0]
+mrb_sym add_index(const char* str ){
+    164e:	0006      	movs	r6, r0
+  if(sym_tbl_cnt+static_sym_tbl_size>=MAX_SYMBOL-1){ //Total table size must be less than MAX_SYMBOL
+    1650:	189b      	adds	r3, r3, r2
+    return INVALID_SYMBOL;
+    1652:	20ff      	movs	r0, #255	; 0xff
+  if(sym_tbl_cnt+static_sym_tbl_size>=MAX_SYMBOL-1){ //Total table size must be less than MAX_SYMBOL
+    1654:	2bfe      	cmp	r3, #254	; 0xfe
+    1656:	dc21      	bgt.n	169c <add_index+0x58>
+  }
+
+  if(sym_tbl_cnt>=sym_tbl_size){
+    1658:	4b13      	ldr	r3, [pc, #76]	; (16a8 <add_index+0x64>)
+    165a:	4d14      	ldr	r5, [pc, #80]	; (16ac <add_index+0x68>)
+    165c:	7819      	ldrb	r1, [r3, #0]
+    165e:	428a      	cmp	r2, r1
+    1660:	d307      	bcc.n	1672 <add_index+0x2e>
+    //extend table
+    sym_tbl_size++;
+    1662:	3101      	adds	r1, #1
+    1664:	b2c9      	uxtb	r1, r1
+    1666:	7019      	strb	r1, [r3, #0]
+    DEBUG_FPRINTLN("Extend SymTbl!");
+    symbol_table = (char**)mrbc_raw_realloc(symbol_table, sizeof(char*)*sym_tbl_size);
+    1668:	6828      	ldr	r0, [r5, #0]
+    166a:	0089      	lsls	r1, r1, #2
+    166c:	f7fe fdaf 	bl	1ce <mrbc_raw_realloc>
+    1670:	6028      	str	r0, [r5, #0]
+  }
+  symbol_table[sym_tbl_cnt] = (char*)mrbc_raw_alloc(strlen(str)+1);
+    1672:	0030      	movs	r0, r6
+    1674:	f000 f8d6 	bl	1824 <strlen>
+    1678:	7827      	ldrb	r7, [r4, #0]
+    167a:	682b      	ldr	r3, [r5, #0]
+    167c:	00bf      	lsls	r7, r7, #2
+    167e:	3001      	adds	r0, #1
+    1680:	19df      	adds	r7, r3, r7
+    1682:	f7fe fda0 	bl	1c6 <mrbc_raw_alloc>
+  strcpy(symbol_table[sym_tbl_cnt],str);
+    1686:	7823      	ldrb	r3, [r4, #0]
+    1688:	682a      	ldr	r2, [r5, #0]
+    168a:	009b      	lsls	r3, r3, #2
+  symbol_table[sym_tbl_cnt] = (char*)mrbc_raw_alloc(strlen(str)+1);
+    168c:	6038      	str	r0, [r7, #0]
+  strcpy(symbol_table[sym_tbl_cnt],str);
+    168e:	5898      	ldr	r0, [r3, r2]
+    1690:	0031      	movs	r1, r6
+    1692:	f000 f8d0 	bl	1836 <strcpy>
+  sym_tbl_cnt++;
+    1696:	7820      	ldrb	r0, [r4, #0]
+    1698:	1c43      	adds	r3, r0, #1
+    169a:	7023      	strb	r3, [r4, #0]
+  return sym_tbl_cnt-1;
+}
+    169c:	bdf8      	pop	{r3, r4, r5, r6, r7, pc}
+    169e:	46c0      	nop			; (mov r8, r8)
+    16a0:	10000239 	.word	0x10000239
+    16a4:	10000238 	.word	0x10000238
+    16a8:	1000023a 	.word	0x1000023a
+    16ac:	1000023c 	.word	0x1000023c
+
+000016b0 <search_index_dynamic>:
+
+mrb_sym search_index_dynamic(const char* str){
+    16b0:	b570      	push	{r4, r5, r6, lr}
+    16b2:	0005      	movs	r5, r0
+  int i;
+  for(i=0;i<sym_tbl_cnt;i++){
+    16b4:	2400      	movs	r4, #0
+    16b6:	4b09      	ldr	r3, [pc, #36]	; (16dc <search_index_dynamic+0x2c>)
+    16b8:	781b      	ldrb	r3, [r3, #0]
+    16ba:	42a3      	cmp	r3, r4
+    16bc:	dc01      	bgt.n	16c2 <search_index_dynamic+0x12>
+    if(0 == strcmp(str, symbol_table[i])){
+      return i;
+    }
+  }
+  return INVALID_SYMBOL;
+    16be:	20ff      	movs	r0, #255	; 0xff
+    16c0:	e009      	b.n	16d6 <search_index_dynamic+0x26>
+    if(0 == strcmp(str, symbol_table[i])){
+    16c2:	4b07      	ldr	r3, [pc, #28]	; (16e0 <search_index_dynamic+0x30>)
+    16c4:	00a2      	lsls	r2, r4, #2
+    16c6:	681b      	ldr	r3, [r3, #0]
+    16c8:	0028      	movs	r0, r5
+    16ca:	58d1      	ldr	r1, [r2, r3]
+    16cc:	f000 f8ba 	bl	1844 <strcmp>
+    16d0:	2800      	cmp	r0, #0
+    16d2:	d101      	bne.n	16d8 <search_index_dynamic+0x28>
+      return i;
+    16d4:	b2e0      	uxtb	r0, r4
+}
+    16d6:	bd70      	pop	{r4, r5, r6, pc}
+  for(i=0;i<sym_tbl_cnt;i++){
+    16d8:	3401      	adds	r4, #1
+    16da:	e7ec      	b.n	16b6 <search_index_dynamic+0x6>
+    16dc:	10000239 	.word	0x10000239
+    16e0:	1000023c 	.word	0x1000023c
+
+000016e4 <search_index>:
+
+xinline mrb_sym search_index(const char* str){
+    16e4:	b510      	push	{r4, lr}
+    16e6:	0004      	movs	r4, r0
+  mrb_sym sym_id = search_index_static(str);
+    16e8:	f7fe ff72 	bl	5d0 <search_index_static>
+  if(INVALID_SYMBOL!=sym_id) return sym_id;
+    16ec:	28ff      	cmp	r0, #255	; 0xff
+    16ee:	d108      	bne.n	1702 <search_index+0x1e>
+  
+  sym_id = search_index_dynamic(str);
+    16f0:	0020      	movs	r0, r4
+    16f2:	f7ff ffdd 	bl	16b0 <search_index_dynamic>
+  if(INVALID_SYMBOL!=sym_id) return sym_id + static_sym_tbl_size;
+    16f6:	28ff      	cmp	r0, #255	; 0xff
+    16f8:	d003      	beq.n	1702 <search_index+0x1e>
+    16fa:	4b02      	ldr	r3, [pc, #8]	; (1704 <search_index+0x20>)
+    16fc:	781b      	ldrb	r3, [r3, #0]
+    16fe:	18c0      	adds	r0, r0, r3
+    1700:	b2c0      	uxtb	r0, r0
+
+  return INVALID_SYMBOL;
+}
+    1702:	bd10      	pop	{r4, pc}
+    1704:	10000238 	.word	0x10000238
+
+00001708 <mrbc_symbol_new>:
+
+mrb_value mrbc_symbol_new(struct VM *vm, const char *str)
+{
+    1708:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
+    170a:	0016      	movs	r6, r2
+  mrb_value ret = {.tt = MRB_TT_SYMBOL};
+    170c:	2100      	movs	r1, #0
+    170e:	2208      	movs	r2, #8
+{
+    1710:	0004      	movs	r4, r0
+  mrb_value ret = {.tt = MRB_TT_SYMBOL};
+    1712:	f000 f8b8 	bl	1886 <memset>
+  mrb_sym sym_id = search_index(str);
+    1716:	0030      	movs	r0, r6
+    1718:	f7ff ffe4 	bl	16e4 <search_index>
+  if(INVALID_SYMBOL!=sym_id){
+    171c:	28ff      	cmp	r0, #255	; 0xff
+    171e:	d003      	beq.n	1728 <mrbc_symbol_new+0x20>
+  char *buf = (char*)mrbc_raw_alloc(size);
+  if( buf == NULL ) return ret; 	// ENOMEM raise?
+
+  memcpy(buf, str, size);
+  ret.i = add_index( buf );
+  return ret;
+    1720:	2306      	movs	r3, #6
+  ret.i = add_index( buf );
+    1722:	80a0      	strh	r0, [r4, #4]
+  return ret;
+    1724:	7023      	strb	r3, [r4, #0]
+    1726:	e00a      	b.n	173e <mrbc_symbol_new+0x36>
+  int size = strlen(str) + 1;
+    1728:	0030      	movs	r0, r6
+    172a:	f000 f87b 	bl	1824 <strlen>
+    172e:	1c45      	adds	r5, r0, #1
+  char *buf = (char*)mrbc_raw_alloc(size);
+    1730:	0028      	movs	r0, r5
+    1732:	f7fe fd48 	bl	1c6 <mrbc_raw_alloc>
+    1736:	1e07      	subs	r7, r0, #0
+  if( buf == NULL ) return ret; 	// ENOMEM raise?
+    1738:	d103      	bne.n	1742 <mrbc_symbol_new+0x3a>
+    173a:	2306      	movs	r3, #6
+    173c:	7023      	strb	r3, [r4, #0]
+}
+    173e:	0020      	movs	r0, r4
+    1740:	bdf8      	pop	{r3, r4, r5, r6, r7, pc}
+  memcpy(buf, str, size);
+    1742:	002a      	movs	r2, r5
+    1744:	0031      	movs	r1, r6
+    1746:	f000 f895 	bl	1874 <memmove>
+  ret.i = add_index( buf );
+    174a:	0038      	movs	r0, r7
+    174c:	f7ff ff7a 	bl	1644 <add_index>
+    1750:	e7e6      	b.n	1720 <mrbc_symbol_new+0x18>
+
+00001752 <str_to_symid>:
+
+mrb_sym str_to_symid(const char *str)
+{
+    1752:	b510      	push	{r4, lr}
+    1754:	0004      	movs	r4, r0
+  mrb_sym sym_id = search_index(str);
+    1756:	f7ff ffc5 	bl	16e4 <search_index>
+  if(INVALID_SYMBOL!=sym_id) return sym_id;
+    175a:	28ff      	cmp	r0, #255	; 0xff
+    175c:	d102      	bne.n	1764 <str_to_symid+0x12>
+
+  return add_index( str );
+    175e:	0020      	movs	r0, r4
+    1760:	f7ff ff70 	bl	1644 <add_index>
+}
+    1764:	bd10      	pop	{r4, pc}
+	...
+
+00001768 <symid_to_str>:
+
+
+const char * symid_to_str(mrb_sym sym_id)
+{
+    1768:	b510      	push	{r4, lr}
+  const char * str;
+  if( sym_id < 0 ) return NULL;
+  if( sym_id < static_sym_tbl_size){
+    176a:	4b08      	ldr	r3, [pc, #32]	; (178c <symid_to_str+0x24>)
+{
+    176c:	0001      	movs	r1, r0
+  if( sym_id < static_sym_tbl_size){
+    176e:	7818      	ldrb	r0, [r3, #0]
+    1770:	4288      	cmp	r0, r1
+    1772:	d905      	bls.n	1780 <symid_to_str+0x18>
+     copy_symbol_str(global_sym_name_buff,sym_id);
+    1774:	4c06      	ldr	r4, [pc, #24]	; (1790 <symid_to_str+0x28>)
+    1776:	0020      	movs	r0, r4
+    1778:	f7fe ff42 	bl	600 <copy_symbol_str>
+     return global_sym_name_buff;
+    177c:	0020      	movs	r0, r4
+  }
+  return symbol_table[sym_id-static_sym_tbl_size];
+}
+    177e:	bd10      	pop	{r4, pc}
+  return symbol_table[sym_id-static_sym_tbl_size];
+    1780:	4b04      	ldr	r3, [pc, #16]	; (1794 <symid_to_str+0x2c>)
+    1782:	1a09      	subs	r1, r1, r0
+    1784:	681b      	ldr	r3, [r3, #0]
+    1786:	0089      	lsls	r1, r1, #2
+    1788:	58c8      	ldr	r0, [r1, r3]
+    178a:	e7f8      	b.n	177e <symid_to_str+0x16>
+    178c:	10000238 	.word	0x10000238
+    1790:	10000228 	.word	0x10000228
+    1794:	1000023c 	.word	0x1000023c
+
+00001798 <c_all_symbols>:
+    sym1.i = i;
+    mrbc_array_push(&ret, &sym1);
+  }
+  SET_RETURN(ret);
+#endif
+}
+    1798:	4770      	bx	lr
+
+0000179a <c_to_s>:
+
+void c_to_s(mrb_mvm *vm, mrb_value v[], int argc)
+{
+    179a:	b537      	push	{r0, r1, r2, r4, r5, lr}
+  v[0] = mrbc_string_new_cstr( symid_to_str(v[0].i));
+    179c:	7908      	ldrb	r0, [r1, #4]
+{
+    179e:	000d      	movs	r5, r1
+  v[0] = mrbc_string_new_cstr( symid_to_str(v[0].i));
+    17a0:	466c      	mov	r4, sp
+    17a2:	f7ff ffe1 	bl	1768 <symid_to_str>
+    17a6:	0001      	movs	r1, r0
+    17a8:	0020      	movs	r0, r4
+    17aa:	f7fe ffb2 	bl	712 <mrbc_string_new_cstr>
+    17ae:	cc0c      	ldmia	r4!, {r2, r3}
+    17b0:	c50c      	stmia	r5!, {r2, r3}
+}
+    17b2:	bd37      	pop	{r0, r1, r2, r4, r5, pc}
+
+000017b4 <mrbc_init_class_symbol>:
+  } else {
+    SET_FALSE_RETURN();
+  }
+}
+
+void mrbc_init_class_symbol(void){
+    17b4:	b510      	push	{r4, lr}
+  mrbc_class_symbol = mrbc_define_class((char*)MRBC_SSYM_Symbol, 0);
+    17b6:	2100      	movs	r1, #0
+    17b8:	2008      	movs	r0, #8
+    17ba:	f7ff fd15 	bl	11e8 <mrbc_define_class>
+    17be:	4b01      	ldr	r3, [pc, #4]	; (17c4 <mrbc_init_class_symbol+0x10>)
+    17c0:	6018      	str	r0, [r3, #0]
+  //all_symbols
+  //to_s
+  //id2name
+  //to_sym
+  //===
+}
+    17c2:	bd10      	pop	{r4, pc}
+    17c4:	10000258 	.word	0x10000258
+
+000017c8 <malloc>:
+void memman_init() {
+  for (int i = 0; i < MM_N_MEM; i++)
+    mm_use[i] = 0;
+}
+
+void* malloc(int size) {
+    17c8:	0003      	movs	r3, r0
+        return mm_mem + i * MM_BLOCK;
+      }
+    }
+  }
+  // out of memory
+  return NULL;
+    17ca:	2000      	movs	r0, #0
+  if (size < MM_BLOCK) {
+    17cc:	2b0f      	cmp	r3, #15
+    17ce:	dc08      	bgt.n	17e2 <malloc+0x1a>
+      if (!mm_use[i]) {
+    17d0:	4b07      	ldr	r3, [pc, #28]	; (17f0 <malloc+0x28>)
+    17d2:	5c1a      	ldrb	r2, [r3, r0]
+    17d4:	2a00      	cmp	r2, #0
+    17d6:	d105      	bne.n	17e4 <malloc+0x1c>
+        mm_use[i] = 1;
+    17d8:	3201      	adds	r2, #1
+    17da:	541a      	strb	r2, [r3, r0]
+        return mm_mem + i * MM_BLOCK;
+    17dc:	4b05      	ldr	r3, [pc, #20]	; (17f4 <malloc+0x2c>)
+    17de:	0100      	lsls	r0, r0, #4
+    17e0:	18c0      	adds	r0, r0, r3
+}
+    17e2:	4770      	bx	lr
+    for (int i = 0; i < MM_N_MEM; i++) {
+    17e4:	3001      	adds	r0, #1
+    17e6:	2840      	cmp	r0, #64	; 0x40
+    17e8:	d1f3      	bne.n	17d2 <malloc+0xa>
+  return NULL;
+    17ea:	2000      	movs	r0, #0
+    17ec:	e7f9      	b.n	17e2 <malloc+0x1a>
+    17ee:	46c0      	nop			; (mov r8, r8)
+    17f0:	1000066c 	.word	0x1000066c
+    17f4:	1000026c 	.word	0x1000026c
+
+000017f8 <realloc>:
+
+void* realloc(void* p, int size) {
+  if (size < MM_BLOCK) {
+    return NULL; // out of memory
+    17f8:	2300      	movs	r3, #0
+  if (size < MM_BLOCK) {
+    17fa:	290f      	cmp	r1, #15
+    17fc:	dd00      	ble.n	1800 <realloc+0x8>
+  }
+  return p;
+    17fe:	0003      	movs	r3, r0
+}
+    1800:	0018      	movs	r0, r3
+    1802:	4770      	bx	lr
+
+00001804 <free>:
+
+void free(void* p) {
+  mm_use[((char*)p - mm_mem) / MM_BLOCK] = 0;
+    1804:	220f      	movs	r2, #15
+    1806:	4b05      	ldr	r3, [pc, #20]	; (181c <free+0x18>)
+    1808:	1ac3      	subs	r3, r0, r3
+    180a:	17d8      	asrs	r0, r3, #31
+    180c:	4010      	ands	r0, r2
+    180e:	2200      	movs	r2, #0
+    1810:	18c0      	adds	r0, r0, r3
+    1812:	4b03      	ldr	r3, [pc, #12]	; (1820 <free+0x1c>)
+    1814:	1100      	asrs	r0, r0, #4
+    1816:	541a      	strb	r2, [r3, r0]
+}
+    1818:	4770      	bx	lr
+    181a:	46c0      	nop			; (mov r8, r8)
+    181c:	1000026c 	.word	0x1000026c
+    1820:	1000066c 	.word	0x1000066c
+
+00001824 <strlen>:
+#include "typedef.h"
+
+int strlen(const char* s) {
+    1824:	0002      	movs	r2, r0
+	int n = 0;
+	while (*s++)
+    1826:	0003      	movs	r3, r0
+    1828:	1a98      	subs	r0, r3, r2
+    182a:	3301      	adds	r3, #1
+    182c:	1e59      	subs	r1, r3, #1
+    182e:	7809      	ldrb	r1, [r1, #0]
+    1830:	2900      	cmp	r1, #0
+    1832:	d1f9      	bne.n	1828 <strlen+0x4>
+		n++;
+	return n;
+}
+    1834:	4770      	bx	lr
+
+00001836 <strcpy>:
+void strcpy(char* buf, const char* src) {
+	while (*buf++ = *src++);
+    1836:	2300      	movs	r3, #0
+    1838:	5cca      	ldrb	r2, [r1, r3]
+    183a:	54c2      	strb	r2, [r0, r3]
+    183c:	3301      	adds	r3, #1
+    183e:	2a00      	cmp	r2, #0
+    1840:	d1fa      	bne.n	1838 <strcpy+0x2>
+}
+    1842:	4770      	bx	lr
+
+00001844 <strcmp>:
+int strcmp(const char* buf1, const char* buf2) {
+    1844:	2200      	movs	r2, #0
+    1846:	b510      	push	{r4, lr}
+	for (;;) {
+		int n = *buf1++;
+    1848:	5c84      	ldrb	r4, [r0, r2]
+	    int c = n - *buf2++;
+    184a:	5c8b      	ldrb	r3, [r1, r2]
+    184c:	1ae3      	subs	r3, r4, r3
+	    if (c)
+    184e:	d102      	bne.n	1856 <strcmp+0x12>
+    1850:	3201      	adds	r2, #1
+	      return c;
+		if (!n)
+    1852:	2c00      	cmp	r4, #0
+    1854:	d1f8      	bne.n	1848 <strcmp+0x4>
+			return 0;
+	}
+}
+    1856:	0018      	movs	r0, r3
+    1858:	bd10      	pop	{r4, pc}
+
+0000185a <strcat>:
+		if (s1[i] != s2[i])
+			return i;
+	}
+}
+char* strcat(char* s1, const char* s2) {
+	char* s = s1;
+    185a:	0002      	movs	r2, r0
+char* strcat(char* s1, const char* s2) {
+    185c:	b510      	push	{r4, lr}
+	while (*s++);
+    185e:	7813      	ldrb	r3, [r2, #0]
+    1860:	1c54      	adds	r4, r2, #1
+    1862:	0022      	movs	r2, r4
+    1864:	2b00      	cmp	r3, #0
+    1866:	d1fa      	bne.n	185e <strcat+0x4>
+	while (*s++ = *s2++);
+    1868:	5cca      	ldrb	r2, [r1, r3]
+    186a:	54e2      	strb	r2, [r4, r3]
+    186c:	3301      	adds	r3, #1
+    186e:	2a00      	cmp	r2, #0
+    1870:	d1fa      	bne.n	1868 <strcat+0xe>
+	return s1;
+}
+    1872:	bd10      	pop	{r4, pc}
+
+00001874 <memmove>:
+      return c;
+  }
+  return 0;
+}
+void memmove(void* buf1, const void* buf2, int len) {
+	for (int i = 0; i < len; i++) {
+    1874:	2300      	movs	r3, #0
+void memmove(void* buf1, const void* buf2, int len) {
+    1876:	b510      	push	{r4, lr}
+	for (int i = 0; i < len; i++) {
+    1878:	4293      	cmp	r3, r2
+    187a:	db00      	blt.n	187e <memmove+0xa>
+		*(char*)buf1++ = *(char*)buf2++;
+	}
+}
+    187c:	bd10      	pop	{r4, pc}
+		*(char*)buf1++ = *(char*)buf2++;
+    187e:	5ccc      	ldrb	r4, [r1, r3]
+    1880:	54c4      	strb	r4, [r0, r3]
+	for (int i = 0; i < len; i++) {
+    1882:	3301      	adds	r3, #1
+    1884:	e7f8      	b.n	1878 <memmove+0x4>
+
+00001886 <memset>:
+void memset(void* p, uint8_t ch, int len) {
+	for (int i = len; i > 0; i--)
+    1886:	2a00      	cmp	r2, #0
+    1888:	dc00      	bgt.n	188c <memset+0x6>
+		*(char*)p++ = ch;
+}
+    188a:	4770      	bx	lr
+		*(char*)p++ = ch;
+    188c:	7001      	strb	r1, [r0, #0]
+	for (int i = len; i > 0; i--)
+    188e:	3a01      	subs	r2, #1
+    1890:	3001      	adds	r0, #1
+    1892:	e7f8      	b.n	1886 <memset>
+
+00001894 <SysTick_Handler>:
+void InitSysTick(int hz) {
+	SYST_RVR = 48000000 / hz - 1;
+	SYST_CSR = 0x07;
+}
+void SysTick_Handler(void) {
+	systick++;
+    1894:	4a02      	ldr	r2, [pc, #8]	; (18a0 <SysTick_Handler+0xc>)
+    1896:	6813      	ldr	r3, [r2, #0]
+    1898:	3301      	adds	r3, #1
+    189a:	6013      	str	r3, [r2, #0]
+}
+    189c:	4770      	bx	lr
+    189e:	46c0      	nop			; (mov r8, r8)
+    18a0:	10000240 	.word	0x10000240
+
+000018a4 <wait>:
+void wait(int n) {
+	int endt = systick + n;
+    18a4:	4a03      	ldr	r2, [pc, #12]	; (18b4 <wait+0x10>)
+    18a6:	6813      	ldr	r3, [r2, #0]
+    18a8:	1818      	adds	r0, r3, r0
+	for (;;) {
+		if (systick > endt)
+    18aa:	6813      	ldr	r3, [r2, #0]
+    18ac:	4283      	cmp	r3, r0
+    18ae:	ddfc      	ble.n	18aa <wait+0x6>
+			break;
+	}
+}
+    18b0:	4770      	bx	lr
+    18b2:	46c0      	nop			; (mov r8, r8)
+    18b4:	10000240 	.word	0x10000240
+
+000018b8 <ext_led>:
+
+// ext by mmruby
+
+void ext_led(int n) {
+    18b8:	4b05      	ldr	r3, [pc, #20]	; (18d0 <ext_led+0x18>)
+    18ba:	2220      	movs	r2, #32
+	if (n) {
+		GPIO1DATA |= 1 << 5;
+    18bc:	6819      	ldr	r1, [r3, #0]
+	if (n) {
+    18be:	2800      	cmp	r0, #0
+    18c0:	d002      	beq.n	18c8 <ext_led+0x10>
+		GPIO1DATA |= 1 << 5;
+    18c2:	430a      	orrs	r2, r1
+    18c4:	601a      	str	r2, [r3, #0]
+	} else {
+		GPIO1DATA &= ~(1 << 5);
+	}
+}
+    18c6:	4770      	bx	lr
+		GPIO1DATA &= ~(1 << 5);
+    18c8:	4391      	bics	r1, r2
+    18ca:	6019      	str	r1, [r3, #0]
+}
+    18cc:	e7fb      	b.n	18c6 <ext_led+0xe>
+    18ce:	46c0      	nop			; (mov r8, r8)
+    18d0:	50013ffc 	.word	0x50013ffc
+
+000018d4 <ext_wait>:
+void ext_wait(int n) {
+    18d4:	b510      	push	{r4, lr}
+	wait(n * 16);
+    18d6:	0100      	lsls	r0, r0, #4
+    18d8:	f7ff ffe4 	bl	18a4 <wait>
+}
+    18dc:	bd10      	pop	{r4, pc}
+	...
+
+000018e0 <ext_btn>:
+int ext_btn() {
+	return !(GPIO1DATA & (1 << 4));
+    18e0:	2001      	movs	r0, #1
+    18e2:	4b02      	ldr	r3, [pc, #8]	; (18ec <ext_btn+0xc>)
+    18e4:	681b      	ldr	r3, [r3, #0]
+    18e6:	091b      	lsrs	r3, r3, #4
+    18e8:	4398      	bics	r0, r3
+}
+    18ea:	4770      	bx	lr
+    18ec:	50013ffc 	.word	0x50013ffc
+
+000018f0 <ext_init>:
+	SYST_RVR = 48000000 / hz - 1;
+    18f0:	4b07      	ldr	r3, [pc, #28]	; (1910 <ext_init+0x20>)
+    18f2:	4a08      	ldr	r2, [pc, #32]	; (1914 <ext_init+0x24>)
+//
+void ext_init() {
+	InitSysTick(1000);
+	
+	IOCON_PIO1_5 = 0xd0; // digital out
+	GPIO1DIR = 1 << 5;
+    18f4:	2120      	movs	r1, #32
+	SYST_RVR = 48000000 / hz - 1;
+    18f6:	601a      	str	r2, [r3, #0]
+	SYST_CSR = 0x07;
+    18f8:	2207      	movs	r2, #7
+    18fa:	4b07      	ldr	r3, [pc, #28]	; (1918 <ext_init+0x28>)
+    18fc:	601a      	str	r2, [r3, #0]
+	IOCON_PIO1_5 = 0xd0; // digital out
+    18fe:	23d0      	movs	r3, #208	; 0xd0
+    1900:	4a06      	ldr	r2, [pc, #24]	; (191c <ext_init+0x2c>)
+    1902:	6013      	str	r3, [r2, #0]
+	GPIO1DIR = 1 << 5;
+    1904:	4a06      	ldr	r2, [pc, #24]	; (1920 <ext_init+0x30>)
+    1906:	6011      	str	r1, [r2, #0]
+
+	IOCON_PIO1_4 = 0xd0; // digital in
+    1908:	4a06      	ldr	r2, [pc, #24]	; (1924 <ext_init+0x34>)
+    190a:	6013      	str	r3, [r2, #0]
+}
+    190c:	4770      	bx	lr
+    190e:	46c0      	nop			; (mov r8, r8)
+    1910:	e000e014 	.word	0xe000e014
+    1914:	0000bb7f 	.word	0x0000bb7f
+    1918:	e000e010 	.word	0xe000e010
+    191c:	400440a0 	.word	0x400440a0
+    1920:	50018000 	.word	0x50018000
+    1924:	40044094 	.word	0x40044094
+
+00001928 <__gnu_thumb1_case_uqi>:
+    1928:	b402      	push	{r1}
+    192a:	4671      	mov	r1, lr
+    192c:	0849      	lsrs	r1, r1, #1
+    192e:	0049      	lsls	r1, r1, #1
+    1930:	5c09      	ldrb	r1, [r1, r0]
+    1932:	0049      	lsls	r1, r1, #1
+    1934:	448e      	add	lr, r1
+    1936:	bc02      	pop	{r1}
+    1938:	4770      	bx	lr
+    193a:	46c0      	nop			; (mov r8, r8)
+
+0000193c <__gnu_thumb1_case_uhi>:
+    193c:	b403      	push	{r0, r1}
+    193e:	4671      	mov	r1, lr
+    1940:	0849      	lsrs	r1, r1, #1
+    1942:	0040      	lsls	r0, r0, #1
+    1944:	0049      	lsls	r1, r1, #1
+    1946:	5a09      	ldrh	r1, [r1, r0]
+    1948:	0049      	lsls	r1, r1, #1
+    194a:	448e      	add	lr, r1
+    194c:	bc03      	pop	{r0, r1}
+    194e:	4770      	bx	lr
+
+00001950 <__divsi3>:
+    1950:	4603      	mov	r3, r0
+    1952:	430b      	orrs	r3, r1
+    1954:	d47f      	bmi.n	1a56 <__divsi3+0x106>
+    1956:	2200      	movs	r2, #0
+    1958:	0843      	lsrs	r3, r0, #1
+    195a:	428b      	cmp	r3, r1
+    195c:	d374      	bcc.n	1a48 <__divsi3+0xf8>
+    195e:	0903      	lsrs	r3, r0, #4
+    1960:	428b      	cmp	r3, r1
+    1962:	d35f      	bcc.n	1a24 <__divsi3+0xd4>
+    1964:	0a03      	lsrs	r3, r0, #8
+    1966:	428b      	cmp	r3, r1
+    1968:	d344      	bcc.n	19f4 <__divsi3+0xa4>
+    196a:	0b03      	lsrs	r3, r0, #12
+    196c:	428b      	cmp	r3, r1
+    196e:	d328      	bcc.n	19c2 <__divsi3+0x72>
+    1970:	0c03      	lsrs	r3, r0, #16
+    1972:	428b      	cmp	r3, r1
+    1974:	d30d      	bcc.n	1992 <__divsi3+0x42>
+    1976:	22ff      	movs	r2, #255	; 0xff
+    1978:	0209      	lsls	r1, r1, #8
+    197a:	ba12      	rev	r2, r2
+    197c:	0c03      	lsrs	r3, r0, #16
+    197e:	428b      	cmp	r3, r1
+    1980:	d302      	bcc.n	1988 <__divsi3+0x38>
+    1982:	1212      	asrs	r2, r2, #8
+    1984:	0209      	lsls	r1, r1, #8
+    1986:	d065      	beq.n	1a54 <__divsi3+0x104>
+    1988:	0b03      	lsrs	r3, r0, #12
+    198a:	428b      	cmp	r3, r1
+    198c:	d319      	bcc.n	19c2 <__divsi3+0x72>
+    198e:	e000      	b.n	1992 <__divsi3+0x42>
+    1990:	0a09      	lsrs	r1, r1, #8
+    1992:	0bc3      	lsrs	r3, r0, #15
+    1994:	428b      	cmp	r3, r1
+    1996:	d301      	bcc.n	199c <__divsi3+0x4c>
+    1998:	03cb      	lsls	r3, r1, #15
+    199a:	1ac0      	subs	r0, r0, r3
+    199c:	4152      	adcs	r2, r2
+    199e:	0b83      	lsrs	r3, r0, #14
+    19a0:	428b      	cmp	r3, r1
+    19a2:	d301      	bcc.n	19a8 <__divsi3+0x58>
+    19a4:	038b      	lsls	r3, r1, #14
+    19a6:	1ac0      	subs	r0, r0, r3
+    19a8:	4152      	adcs	r2, r2
+    19aa:	0b43      	lsrs	r3, r0, #13
+    19ac:	428b      	cmp	r3, r1
+    19ae:	d301      	bcc.n	19b4 <__divsi3+0x64>
+    19b0:	034b      	lsls	r3, r1, #13
+    19b2:	1ac0      	subs	r0, r0, r3
+    19b4:	4152      	adcs	r2, r2
+    19b6:	0b03      	lsrs	r3, r0, #12
+    19b8:	428b      	cmp	r3, r1
+    19ba:	d301      	bcc.n	19c0 <__divsi3+0x70>
+    19bc:	030b      	lsls	r3, r1, #12
+    19be:	1ac0      	subs	r0, r0, r3
+    19c0:	4152      	adcs	r2, r2
+    19c2:	0ac3      	lsrs	r3, r0, #11
+    19c4:	428b      	cmp	r3, r1
+    19c6:	d301      	bcc.n	19cc <__divsi3+0x7c>
+    19c8:	02cb      	lsls	r3, r1, #11
+    19ca:	1ac0      	subs	r0, r0, r3
+    19cc:	4152      	adcs	r2, r2
+    19ce:	0a83      	lsrs	r3, r0, #10
+    19d0:	428b      	cmp	r3, r1
+    19d2:	d301      	bcc.n	19d8 <__divsi3+0x88>
+    19d4:	028b      	lsls	r3, r1, #10
+    19d6:	1ac0      	subs	r0, r0, r3
+    19d8:	4152      	adcs	r2, r2
+    19da:	0a43      	lsrs	r3, r0, #9
+    19dc:	428b      	cmp	r3, r1
+    19de:	d301      	bcc.n	19e4 <__divsi3+0x94>
+    19e0:	024b      	lsls	r3, r1, #9
+    19e2:	1ac0      	subs	r0, r0, r3
+    19e4:	4152      	adcs	r2, r2
+    19e6:	0a03      	lsrs	r3, r0, #8
+    19e8:	428b      	cmp	r3, r1
+    19ea:	d301      	bcc.n	19f0 <__divsi3+0xa0>
+    19ec:	020b      	lsls	r3, r1, #8
+    19ee:	1ac0      	subs	r0, r0, r3
+    19f0:	4152      	adcs	r2, r2
+    19f2:	d2cd      	bcs.n	1990 <__divsi3+0x40>
+    19f4:	09c3      	lsrs	r3, r0, #7
+    19f6:	428b      	cmp	r3, r1
+    19f8:	d301      	bcc.n	19fe <__divsi3+0xae>
+    19fa:	01cb      	lsls	r3, r1, #7
+    19fc:	1ac0      	subs	r0, r0, r3
+    19fe:	4152      	adcs	r2, r2
+    1a00:	0983      	lsrs	r3, r0, #6
+    1a02:	428b      	cmp	r3, r1
+    1a04:	d301      	bcc.n	1a0a <__divsi3+0xba>
+    1a06:	018b      	lsls	r3, r1, #6
+    1a08:	1ac0      	subs	r0, r0, r3
+    1a0a:	4152      	adcs	r2, r2
+    1a0c:	0943      	lsrs	r3, r0, #5
+    1a0e:	428b      	cmp	r3, r1
+    1a10:	d301      	bcc.n	1a16 <__divsi3+0xc6>
+    1a12:	014b      	lsls	r3, r1, #5
+    1a14:	1ac0      	subs	r0, r0, r3
+    1a16:	4152      	adcs	r2, r2
+    1a18:	0903      	lsrs	r3, r0, #4
+    1a1a:	428b      	cmp	r3, r1
+    1a1c:	d301      	bcc.n	1a22 <__divsi3+0xd2>
+    1a1e:	010b      	lsls	r3, r1, #4
+    1a20:	1ac0      	subs	r0, r0, r3
+    1a22:	4152      	adcs	r2, r2
+    1a24:	08c3      	lsrs	r3, r0, #3
+    1a26:	428b      	cmp	r3, r1
+    1a28:	d301      	bcc.n	1a2e <__divsi3+0xde>
+    1a2a:	00cb      	lsls	r3, r1, #3
+    1a2c:	1ac0      	subs	r0, r0, r3
+    1a2e:	4152      	adcs	r2, r2
+    1a30:	0883      	lsrs	r3, r0, #2
+    1a32:	428b      	cmp	r3, r1
+    1a34:	d301      	bcc.n	1a3a <__divsi3+0xea>
+    1a36:	008b      	lsls	r3, r1, #2
+    1a38:	1ac0      	subs	r0, r0, r3
+    1a3a:	4152      	adcs	r2, r2
+    1a3c:	0843      	lsrs	r3, r0, #1
+    1a3e:	428b      	cmp	r3, r1
+    1a40:	d301      	bcc.n	1a46 <__divsi3+0xf6>
+    1a42:	004b      	lsls	r3, r1, #1
+    1a44:	1ac0      	subs	r0, r0, r3
+    1a46:	4152      	adcs	r2, r2
+    1a48:	1a41      	subs	r1, r0, r1
+    1a4a:	d200      	bcs.n	1a4e <__divsi3+0xfe>
+    1a4c:	4601      	mov	r1, r0
+    1a4e:	4152      	adcs	r2, r2
+    1a50:	4610      	mov	r0, r2
+    1a52:	4770      	bx	lr
+    1a54:	e05d      	b.n	1b12 <__divsi3+0x1c2>
+    1a56:	0fca      	lsrs	r2, r1, #31
+    1a58:	d000      	beq.n	1a5c <__divsi3+0x10c>
+    1a5a:	4249      	negs	r1, r1
+    1a5c:	1003      	asrs	r3, r0, #32
+    1a5e:	d300      	bcc.n	1a62 <__divsi3+0x112>
+    1a60:	4240      	negs	r0, r0
+    1a62:	4053      	eors	r3, r2
+    1a64:	2200      	movs	r2, #0
+    1a66:	469c      	mov	ip, r3
+    1a68:	0903      	lsrs	r3, r0, #4
+    1a6a:	428b      	cmp	r3, r1
+    1a6c:	d32d      	bcc.n	1aca <__divsi3+0x17a>
+    1a6e:	0a03      	lsrs	r3, r0, #8
+    1a70:	428b      	cmp	r3, r1
+    1a72:	d312      	bcc.n	1a9a <__divsi3+0x14a>
+    1a74:	22fc      	movs	r2, #252	; 0xfc
+    1a76:	0189      	lsls	r1, r1, #6
+    1a78:	ba12      	rev	r2, r2
+    1a7a:	0a03      	lsrs	r3, r0, #8
+    1a7c:	428b      	cmp	r3, r1
+    1a7e:	d30c      	bcc.n	1a9a <__divsi3+0x14a>
+    1a80:	0189      	lsls	r1, r1, #6
+    1a82:	1192      	asrs	r2, r2, #6
+    1a84:	428b      	cmp	r3, r1
+    1a86:	d308      	bcc.n	1a9a <__divsi3+0x14a>
+    1a88:	0189      	lsls	r1, r1, #6
+    1a8a:	1192      	asrs	r2, r2, #6
+    1a8c:	428b      	cmp	r3, r1
+    1a8e:	d304      	bcc.n	1a9a <__divsi3+0x14a>
+    1a90:	0189      	lsls	r1, r1, #6
+    1a92:	d03a      	beq.n	1b0a <__divsi3+0x1ba>
+    1a94:	1192      	asrs	r2, r2, #6
+    1a96:	e000      	b.n	1a9a <__divsi3+0x14a>
+    1a98:	0989      	lsrs	r1, r1, #6
+    1a9a:	09c3      	lsrs	r3, r0, #7
+    1a9c:	428b      	cmp	r3, r1
+    1a9e:	d301      	bcc.n	1aa4 <__divsi3+0x154>
+    1aa0:	01cb      	lsls	r3, r1, #7
+    1aa2:	1ac0      	subs	r0, r0, r3
+    1aa4:	4152      	adcs	r2, r2
+    1aa6:	0983      	lsrs	r3, r0, #6
+    1aa8:	428b      	cmp	r3, r1
+    1aaa:	d301      	bcc.n	1ab0 <__divsi3+0x160>
+    1aac:	018b      	lsls	r3, r1, #6
+    1aae:	1ac0      	subs	r0, r0, r3
+    1ab0:	4152      	adcs	r2, r2
+    1ab2:	0943      	lsrs	r3, r0, #5
+    1ab4:	428b      	cmp	r3, r1
+    1ab6:	d301      	bcc.n	1abc <__divsi3+0x16c>
+    1ab8:	014b      	lsls	r3, r1, #5
+    1aba:	1ac0      	subs	r0, r0, r3
+    1abc:	4152      	adcs	r2, r2
+    1abe:	0903      	lsrs	r3, r0, #4
+    1ac0:	428b      	cmp	r3, r1
+    1ac2:	d301      	bcc.n	1ac8 <__divsi3+0x178>
+    1ac4:	010b      	lsls	r3, r1, #4
+    1ac6:	1ac0      	subs	r0, r0, r3
+    1ac8:	4152      	adcs	r2, r2
+    1aca:	08c3      	lsrs	r3, r0, #3
+    1acc:	428b      	cmp	r3, r1
+    1ace:	d301      	bcc.n	1ad4 <__divsi3+0x184>
+    1ad0:	00cb      	lsls	r3, r1, #3
+    1ad2:	1ac0      	subs	r0, r0, r3
+    1ad4:	4152      	adcs	r2, r2
+    1ad6:	0883      	lsrs	r3, r0, #2
+    1ad8:	428b      	cmp	r3, r1
+    1ada:	d301      	bcc.n	1ae0 <__divsi3+0x190>
+    1adc:	008b      	lsls	r3, r1, #2
+    1ade:	1ac0      	subs	r0, r0, r3
+    1ae0:	4152      	adcs	r2, r2
+    1ae2:	d2d9      	bcs.n	1a98 <__divsi3+0x148>
+    1ae4:	0843      	lsrs	r3, r0, #1
+    1ae6:	428b      	cmp	r3, r1
+    1ae8:	d301      	bcc.n	1aee <__divsi3+0x19e>
+    1aea:	004b      	lsls	r3, r1, #1
+    1aec:	1ac0      	subs	r0, r0, r3
+    1aee:	4152      	adcs	r2, r2
+    1af0:	1a41      	subs	r1, r0, r1
+    1af2:	d200      	bcs.n	1af6 <__divsi3+0x1a6>
+    1af4:	4601      	mov	r1, r0
+    1af6:	4663      	mov	r3, ip
+    1af8:	4152      	adcs	r2, r2
+    1afa:	105b      	asrs	r3, r3, #1
+    1afc:	4610      	mov	r0, r2
+    1afe:	d301      	bcc.n	1b04 <__divsi3+0x1b4>
+    1b00:	4240      	negs	r0, r0
+    1b02:	2b00      	cmp	r3, #0
+    1b04:	d500      	bpl.n	1b08 <__divsi3+0x1b8>
+    1b06:	4249      	negs	r1, r1
+    1b08:	4770      	bx	lr
+    1b0a:	4663      	mov	r3, ip
+    1b0c:	105b      	asrs	r3, r3, #1
+    1b0e:	d300      	bcc.n	1b12 <__divsi3+0x1c2>
+    1b10:	4240      	negs	r0, r0
+    1b12:	b501      	push	{r0, lr}
+    1b14:	2000      	movs	r0, #0
+    1b16:	f000 f805 	bl	1b24 <__aeabi_idiv0>
+    1b1a:	bd02      	pop	{r1, pc}
+
+00001b1c <__aeabi_idivmod>:
+    1b1c:	2900      	cmp	r1, #0
+    1b1e:	d0f8      	beq.n	1b12 <__divsi3+0x1c2>
+    1b20:	e716      	b.n	1950 <__divsi3>
+    1b22:	4770      	bx	lr
+
+00001b24 <__aeabi_idiv0>:
+    1b24:	4770      	bx	lr
+    1b26:	46c0      	nop			; (mov r8, r8)
+    1b28:	003d      	.short	0x003d
+    1b2a:	3c23      	.short	0x3c23
+    1b2c:	253a7325 	.word	0x253a7325
+    1b30:	3e783830 	.word	0x3e783830
+    1b34:	00          	.byte	0x00
+    1b35:	4d          	.byte	0x4d
+    1b36:	4252      	.short	0x4252
+    1b38:	5f54545f 	.word	0x5f54545f
+    1b3c:	25285858 	.word	0x25285858
+    1b40:	00002964 	.word	0x00002964
+
+00001b44 <CSWTCH.11>:
+    1b44:	00000231 0000025f 0000026f 00000295     1..._...o.......
+    1b54:	00000385 000002b1 000002d9 00000309     ................
+    1b64:	00000467 00000473 0000045b 00000489     g...s...[.......
+    1b74:	0000048b 000004a1 0000049f 00000419     ................
+    1b84:	0000041b 0000041d 00000447 00000433     ........G...3...
+    1b94:	00000431 00001297 000012c7 000012df     1...............
+    1ba4:	00001311 00001331 0000134b 00001365     ....1...K...e...
+    1bb4:	0000137f 00001397 000013cd 00001403     ................
+    1bc4:	00001411 00001413 00001129 00001415     ........).......
+    1bd4:	00001015 00001031 00001091 000010a9     ....1...........
+    1be4:	000010c1 000010c1 00001799 0000179b     ................
+    1bf4:	0000179b 00001129                       ....)...
+
+00001bfc <mmruby_code_irep_000>:
+    1bfc:	02001d00 170c4000 06008000 03004001     .....@.......@..
+    1c0c:	a0008000 06008000 83044001 a0408000     .........@....@.
+    1c1c:	06008000 83ff3f01 a0008000 06008000     .....?..........
+    1c2c:	83044001 a0408000 06008000 03004001     .@....@......@..
+    1c3c:	a0008000 06008000 830e4001 a0408000     .........@....@.
+    1c4c:	06008000 83ff3f01 a0008000 06008000     .....?..........
+    1c5c:	830e4001 a0408000 07008000 18f3bf00     .@....@.........
+    1c6c:	05008000 4a000000                        .......J..
+
+00001c76 <mmruby_code_proc_table_Array>:
+	...
+
+00001c77 <mmruby_code_proc_table_False>:
+    1c77:	                                         .(.
+
+00001c7a <mmruby_code_proc_table_Fixnum>:
+    1c7a:	17321618 19341833 1b361a35 1d381c37     ..2.3.4.5.6.7.8.
+    1c8a:	1f1c1e17 213a2039 233c223b               ....9 :!;"<#.$.
+
+00001c99 <mmruby_code_proc_table_Nil>:
+    1c99:	                                         .'.
+
+00001c9c <mmruby_code_proc_table_Object>:
+    1c9c:	0220011f 04220321 0623050f 08250724     .. .!."...#.$.%.
+    1cac:	0a26091d 0c270b1e 0e290d28 102b0f2a     ..&...'.(.).*.+.
+    1cbc:	122d112c 142f132e                        ,.-.../.0..
+
+00001cc7 <mmruby_code_proc_table_Proc>:
+    1cc7:	260f2531                                 1%.&.
+
+00001ccc <mmruby_code_proc_table_Range>:
+	...
+
+00001ccd <mmruby_code_proc_table_String>:
+    1ccd:	2c0f2b3d 2e3f2d3e                        =+.,>-?..
+
+00001cd6 <mmruby_code_proc_table_Symbol>:
+    1cd6:	                                         .*.
+
+00001cd9 <mmruby_code_proc_table_True>:
+    1cd9:	                                         .).
+
+00001cdc <mmruby_code_symbol_ref00>:
+	...
+
+00001cdd <mmruby_code_symbol_ref01>:
+    1cdd:	656a624f                                 Object.
+
+00001ce4 <mmruby_code_symbol_ref02>:
+    1ce4:	69727453                                 String.
+
+00001ceb <mmruby_code_symbol_ref03>:
+    1ceb:	006c694e                                Nil.
+
+00001cef <mmruby_code_symbol_ref04>:
+    1cef:	636f7250                                 Proc.
+
+00001cf4 <mmruby_code_symbol_ref05>:
+    1cf4:	736c6146                                 False.
+
+00001cfa <mmruby_code_symbol_ref06>:
+    1cfa:	65757254                                 True.
+
+00001cff <mmruby_code_symbol_ref07>:
+    1cff:	6e786946                                 Fixnum.
+
+00001d06 <mmruby_code_symbol_ref08>:
+    1d06:	626d7953                                 Symbol.
+
+00001d0d <mmruby_code_symbol_ref09>:
+    1d0d:	61727241                                 Array.
+
+00001d13 <mmruby_code_symbol_ref0a>:
+    1d13:	676e6152                                 Range.
+
+00001d19 <mmruby_code_symbol_ref0b>:
+    1d19:	68736148                                 Hash.
+
+00001d1e <mmruby_code_symbol_ref0c>:
+    1d1e:	75647241 006f6e69                       Arduino.
+
+00001d26 <mmruby_code_symbol_ref0d>:
+    1d26:	65757274                                 true.
+
+00001d2b <mmruby_code_symbol_ref0e>:
+    1d2b:	736c6166                                 false.
+
+00001d31 <mmruby_code_symbol_ref0f>:
+    1d31:	735f6f74                                 to_s.
+
+00001d36 <mmruby_code_symbol_ref10>:
+    1d36:	55504e49                                 INPUT.
+
+00001d3c <mmruby_code_symbol_ref11>:
+    1d3c:	5054554f                                 OUTPUT.
+
+00001d43 <mmruby_code_symbol_ref12>:
+    1d43:	55504e49 55505f54 50554c4c               INPUT_PULLUP.
+
+00001d50 <mmruby_code_symbol_ref13>:
+    1d50:	48474948                                 HIGH.
+
+00001d55 <mmruby_code_symbol_ref14>:
+    1d55:	00574f4c                                LOW.
+
+00001d59 <mmruby_code_symbol_ref15>:
+    1d59:	                                         +.
+
+00001d5b <mmruby_code_symbol_ref16>:
+    1d5b:	003d3d3d                                ===.
+
+00001d5f <mmruby_code_symbol_ref17>:
+    1d5f:	                                         <<.
+
+00001d62 <mmruby_code_symbol_ref18>:
+    1d62:	                                         [].
+
+00001d65 <mmruby_code_symbol_ref19>:
+    1d65:	003d5d5b                                []=.
+
+00001d69 <mmruby_code_symbol_ref1a>:
+    1d69:	                                         ().
+
+00001d6c <mmruby_code_symbol_ref1b>:
+    1d6c:	                                         -.
+
+00001d6e <mmruby_code_symbol_ref1c>:
+    1d6e:	                                         >>.
+
+00001d71 <mmruby_code_symbol_ref1d>:
+    1d71:	0064656c                                led.
+
+00001d75 <mmruby_code_symbol_ref1e>:
+    1d75:	74696177                                 wait.
+
+00001d7a <mmruby_code_symbol_ref1f>:
+    1d7a:	73747570                                 puts.
+
+00001d7f <mmruby_code_symbol_ref20>:
+    1d7f:	                                         !.
+
+00001d81 <mmruby_code_symbol_ref21>:
+    1d81:	                                         !=.
+
+00001d84 <mmruby_code_symbol_ref22>:
+    1d84:	003e3d3c                                <=>.
+
+00001d88 <mmruby_code_symbol_ref23>:
+    1d88:	73616c63                                 class.
+
+00001d8e <mmruby_code_symbol_ref24>:
+    1d8e:	72747461 6165725f 00726564              attr_reader.
+
+00001d9a <mmruby_code_symbol_ref25>:
+    1d9a:	72747461 6363615f 6f737365               attr_accessor.
+
+00001da8 <mmruby_code_symbol_ref26>:
+    1da8:	006e7462                                btn.
+
+00001dac <mmruby_code_symbol_ref27>:
+    1dac:	0074756f                                out.
+
+00001db0 <mmruby_code_symbol_ref28>:
+    1db0:	                                         in.
+
+00001db3 <mmruby_code_symbol_ref29>:
+    1db3:	00616e61                                ana.
+
+00001db7 <mmruby_code_symbol_ref2a>:
+    1db7:	006d7770                                pwm.
+
+00001dbb <mmruby_code_symbol_ref2b>:
+    1dbb:	00736c63                                cls.
+
+00001dbf <mmruby_code_symbol_ref2c>:
+    1dbf:	                                         lc.
+
+00001dc2 <mmruby_code_symbol_ref2d>:
+    1dc2:	00726373                                scr.
+
+00001dc6 <mmruby_code_symbol_ref2e>:
+    1dc6:	656b6e69                                 inkey.
+
+00001dcc <mmruby_code_symbol_ref2f>:
+    1dcc:	00646e72                                rnd.
+
+00001dd0 <mmruby_code_symbol_ref30>:
+    1dd0:	6e697270                                 print.
+
+00001dd6 <mmruby_code_symbol_ref31>:
+    1dd6:	6c6c6163                                 call.
+
+00001ddb <mmruby_code_symbol_ref32>:
+    1ddb:	                                         -@.
+
+00001dde <mmruby_code_symbol_ref33>:
+    1dde:	                                         **.
+
+00001de1 <mmruby_code_symbol_ref34>:
+    1de1:	                                         %.
+
+00001de3 <mmruby_code_symbol_ref35>:
+    1de3:	                                         &.
+
+00001de5 <mmruby_code_symbol_ref36>:
+    1de5:	                                         |.
+
+00001de7 <mmruby_code_symbol_ref37>:
+    1de7:	                                         ^.
+
+00001de9 <mmruby_code_symbol_ref38>:
+    1de9:	                                         ~.
+
+00001deb <mmruby_code_symbol_ref39>:
+    1deb:	00736261                                abs.
+
+00001def <mmruby_code_symbol_ref3a>:
+    1def:	656d6974                                 times.
+
+00001df5 <mmruby_code_symbol_ref3b>:
+    1df5:	00726863                                chr.
+
+00001df9 <mmruby_code_symbol_ref3c>:
+    1df9:	695f6f74                                 to_i.
+
+00001dfe <mmruby_code_symbol_ref3d>:
+    1dfe:	5f6c6c61 626d7973 00736c6f              all_symbols.
+
+00001e0a <mmruby_code_symbol_ref3e>:
+    1e0a:	6e326469 00656d61                       id2name.
+
+00001e12 <mmruby_code_symbol_ref3f>:
+    1e12:	735f6f74 00006d79                        to_sym....
+
+00001e1c <mmruby_code_symbol_table>:
+    1e1c:	00001cdc 00001cdd 00001ce4 00001ceb     ................
+    1e2c:	00001cef 00001cf4 00001cfa 00001cff     ................
+    1e3c:	00001d06 00001d0d 00001d13 00001d19     ................
+    1e4c:	00001d1e 00001d26 00001d2b 00001d31     ....&...+...1...
+    1e5c:	00001d36 00001d3c 00001d43 00001d50     6...<...C...P...
+    1e6c:	00001d55 00001d59 00001d5b 00001d5f     U...Y...[..._...
+    1e7c:	00001d62 00001d65 00001d69 00001d6c     b...e...i...l...
+    1e8c:	00001d6e 00001d71 00001d75 00001d7a     n...q...u...z...
+    1e9c:	00001d7f 00001d81 00001d84 00001d88     ................
+    1eac:	00001d8e 00001d9a 00001da8 00001dac     ................
+    1ebc:	00001db0 00001db3 00001db7 00001dbb     ................
+    1ecc:	00001dbf 00001dc2 00001dc6 00001dcc     ................
+    1edc:	00001dd0 00001dd6 00001ddb 00001dde     ................
+    1eec:	00001de1 00001de3 00001de5 00001de7     ................
+    1efc:	00001de9 00001deb 00001def 00001df5     ................
+    1f0c:	00001df9 00001dfe 00001e0a 00001e12     ................
+    1f1c:	6874654d 6f4e646f 756f4674 2520646e     MethodNotFound %
+    1f2c:	25000a64 78252078 6f74000a 2800735f     d..%x %x..to_s.(
+    1f3c:	4e550029 574f4e4b 3e3e204e 32302520     ).UNKNOWN >> %02
+    1f4c:	66000a58 65736c61 50233c00 3a636f72     X..false.<#Proc:
+    1f5c:	78383025 7274003e                        %08x>.true.

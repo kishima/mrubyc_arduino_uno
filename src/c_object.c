@@ -1,5 +1,5 @@
 #include "vm_config.h"
-#include <string.h>
+#include "string_mini.h"
 
 #include "value.h"
 #include "micro_vm.h"
@@ -12,6 +12,8 @@
 #include "debug.h"
 #include "avr_access.h"
 #include "symbol_ids.h"
+
+#include "ext.h"
 
 /* Object Class */
 
@@ -409,8 +411,8 @@ void mrbc_init_class_object(){
 
 // add by taisukef
 
-void emb_led(int n);
-void emb_wait(int n);
+void ext_led(int n);
+void ext_wait(int n);
 
 void c_object_cls(mrb_mvm *vm, mrb_value v[], int argc) {
 //  printf("cls\n");
@@ -440,13 +442,16 @@ void c_object_inkey(mrb_mvm *vm, mrb_value v[], int argc) {
 }
 void c_object_wait(mrb_mvm *vm, mrb_value v[], int argc) {
   int32_t n = GET_INT_ARG(1);
-  emb_wait(n);
+  ext_wait(n);
 //  printf("wait %d\n", n);
 }
 void c_object_led(mrb_mvm *vm, mrb_value v[], int argc) {
   int32_t n = GET_INT_ARG(1);
-  emb_led(n);
+  ext_led(n);
 //  printf("led %d\n", n);
+}
+void c_object_btn(mrb_mvm *vm, mrb_value v[], int argc) {
+  SET_INT_RETURN(ext_btn());
 }
 void c_object_out(mrb_mvm *vm, mrb_value v[], int argc) {
   int32_t n = GET_INT_ARG(1);

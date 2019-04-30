@@ -14,8 +14,8 @@
 #ifndef MRBC_SRC_C_STRING_H_
 #define MRBC_SRC_C_STRING_H_
 
-#include <stdint.h>
-#include <string.h>
+//#include <stdint.h>
+#include "string_mini.h"
 #include "value.h"
 
 //================================================================

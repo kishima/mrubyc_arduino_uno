@@ -1,9 +1,9 @@
 //#include <stdio.h>
 
-#include <stdint.h>
-#include <stddef.h>
-#include <string.h>
-#include <assert.h>
+//#include <stdint.h>
+//#include <stddef.h>
+#include "string_mini.h"
+//#include <assert.h>
 #include "micro_vm.h"
 #include "class.h"
 #include "symbol.h"
@@ -990,7 +990,7 @@ void run_vm(void){
     
     // Dispatch
     uint32_t opcode = GET_OPCODE(code);
-printf("%x %x\n", code, opcode);
+cprintf("%x %x\n", code, opcode);
 #ifdef SHOW_OPCODE
     show_opcode_name(vm,opcode);
 #endif

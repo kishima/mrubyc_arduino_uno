@@ -15,7 +15,7 @@
 #ifndef MRBC_SRC_VALUE_H_
 #define MRBC_SRC_VALUE_H_
 
-#include <stdint.h>
+#include "typedef.h"
 
 // mrb types
 //typedef int16_t mrb_sym;
@@ -145,7 +145,7 @@ typedef struct StaticRProc {
 // for C call
 #define SET_INT_RETURN(n)	(mrbc_release(v), v[0].tt=MRB_TT_FIXNUM, v[0].i=(n))
 #define SET_NIL_RETURN()	(mrbc_release(v), v[0].tt=MRB_TT_NIL)
-#define SET_FLOAT_RETURN(n)	(mrbc_release(v), v[0].tt=MRB_TT_FLOAT, v[0].d=(n))
+//#define SET_FLOAT_RETURN(n)	(mrbc_release(v), v[0].tt=MRB_TT_FLOAT, v[0].d=(n))
 #define SET_FALSE_RETURN()	(mrbc_release(v), v[0].tt=MRB_TT_FALSE)
 #define SET_TRUE_RETURN()	(mrbc_release(v), v[0].tt=MRB_TT_TRUE)
 #define SET_RETURN(n)		(mrbc_release(v), v[0]=(n))
@@ -154,7 +154,7 @@ typedef struct StaticRProc {
 #define GET_INT_ARG(n)		(v[(n)].i)
 #define GET_ARY_ARG(n)		(v[(n)])
 #define GET_ARG(n)		(v[(n)])
-#define GET_FLOAT_ARG(n)	(v[(n)].d)
+//#define GET_FLOAT_ARG(n)	(v[(n)].d)
 #define GET_STRING_ARG(n)	(v[(n)].string->data)
 
 

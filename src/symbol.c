@@ -12,8 +12,7 @@
 */
 
 #include "vm_config.h"
-#include <stdint.h>
-#include <string.h>
+#include "string_mini.h"
 #include "avr_access.h"
 #include "class.h"
 #include "symbol.h"

@@ -12,9 +12,9 @@
   </pre>
 */
 
-#include <stdint.h>
-#include <string.h>
-#include <assert.h>
+//#include <stdint.h>
+#include "string_mini.h"
+//#include <assert.h>
 
 #include "micro_vm.h"
 #include "value.h"

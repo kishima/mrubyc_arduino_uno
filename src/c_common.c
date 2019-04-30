@@ -1,5 +1,5 @@
 #include "vm_config.h"
-#include <string.h>
+#include "string_mini.h"
 
 #include "value.h"
 #include "micro_vm.h"

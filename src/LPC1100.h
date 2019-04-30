@@ -5,7 +5,8 @@
 
 #ifndef __LPC1100
 #define __LPC1100
-#include <stdint.h>
+//#include <stdint.h>
+#include "typedef.h"
 
 /* System Configuration*/
 #define SYSMEMREMAP		(*(volatile uint32_t*)0x40048000)

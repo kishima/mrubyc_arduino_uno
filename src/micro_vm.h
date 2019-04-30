@@ -1,7 +1,7 @@
 #ifndef MRBC_SRC_MICRO_VM_H_
 #define MRBC_SRC_MICRO_VM_H_
 
-#include <stdint.h>
+//#include <stdint.h>
 #include "vm_config.h"
 
 #ifndef MMRUBY_TRANSCODE

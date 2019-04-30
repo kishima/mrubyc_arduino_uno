@@ -1,7 +1,7 @@
 #ifndef MRBC_SRC_C_FIXNUM_H_
 #define MRBC_SRC_C_FIXNUM_H_
 
-#include <stdint.h>
+//#include <stdint.h>
 #include "value.h"
 
 void mrbc_init_class_fixnum();

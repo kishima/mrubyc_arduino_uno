@@ -7,8 +7,8 @@
 
 #ifdef USE_RGB_LCD
 
-#include <Wire.h>
-#include <rgb_lcd.h>
+//#include <Wire.h>
+//#include <rgb_lcd.h>
 
 #include "value.h"
 #include "micro_vm.h"

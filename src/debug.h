@@ -17,10 +17,10 @@ void debug_printb(unsigned char byte);
 
 #include <stdio.h>
 
-#define DEBUG_FPRINT(x) printf("%s\n", (x))
-#define DEBUG_FPRINTLN(x) printf("%s\n", (x))
-#define DEBUG_PRINT(x) printf("%s\n", (x))
-#define DEBUG_PRINTLN(x) printf("%s\n", (x))
+#define DEBUG_FPRINT(x) cprintf("%s\n", (x))
+#define DEBUG_FPRINTLN(x) cprintf("%s\n", (x))
+#define DEBUG_PRINT(x) cprintf("%s\n", (x))
+#define DEBUG_PRINTLN(x) cprintf("%s\n", (x))
 
 /*
 #include <avr/pgmspace.h>

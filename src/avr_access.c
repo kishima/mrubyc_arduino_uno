@@ -1,7 +1,4 @@
-#include <stdint.h>
-#include <string.h>
-//#include <Arduino.h>
-//#include <avr/pgmspace.h>
+#include "string_mini.h"
 
 #include "value.h"
 #include "micro_vm.h"
@@ -25,7 +22,7 @@
 #include "avr_access.h"
 
 //inline static void memcpy_pgm2ram(uint8_t* buff, short pgm_p, uint16_t len){
-inline static void memcpy_pgm2ram(uint8_t* buff, uint8_t* pgm_p, uint16_t len){
+inline static void memcpy_pgm2ram(uint8_t* buff, const uint8_t* pgm_p, uint16_t len){
   int i=0;
   for(i=0;i<len;i++){
     buff[i] = pgm_read_byte_near( pgm_p+i );
@@ -34,7 +31,7 @@ inline static void memcpy_pgm2ram(uint8_t* buff, uint8_t* pgm_p, uint16_t len){
 }
 
 //inline static void strcpy_pgm2ram(char* buff, short pgm_p){
-inline static void strcpy_pgm2ram(char* buff, char* pgm_p){
+inline static void strcpy_pgm2ram(char* buff, const char* pgm_p){
   int i=0;
   for(i=0;i<MAX_SYMBOL_LEN;i++){
     char c = pgm_read_byte_near( pgm_p+i );
@@ -124,12 +121,12 @@ void copy_symbol_str(char* buff, mrb_sym sym_id){
   strcpy_pgm2ram(buff, addr);
 }
 
-short find_func_no_by_sym_id(const uint8_t* addr,mrb_sym target_sym_id){
+int find_func_no_by_sym_id(const uint8_t* addr,mrb_sym target_sym_id){
   int i=0;
   uint8_t v=0;
   while(1){
     mrb_sym sym_id = pgm_read_byte_near( addr + i*2 );
-    if(sym_id == target_sym_id) return (short)pgm_read_byte_near( addr + i*2 +1 ); //addr > 0
+    if(sym_id == target_sym_id) return (int)pgm_read_byte_near( addr + i*2 +1 ); //addr > 0
     if(sym_id == 0) return 0;
     i++;
   }
@@ -137,51 +134,51 @@ short find_func_no_by_sym_id(const uint8_t* addr,mrb_sym target_sym_id){
 }
 
 mrb_func_t find_c_funcs(mrb_proc* proc){
-  return find_c_funcs_by_no((short)proc);
+  return find_c_funcs_by_no((int)proc);
 }
 
 xinline mrb_proc *find_static_procs(mrb_sym class_sym_id, mrb_sym sym_id){
-  short addr=0;
+  int addr=0;
   //cprintf(" class %d %d\n",class_sym_id,sym_id);
   switch(class_sym_id){
   case MRBC_SSYM_Object:
-    addr = (short)find_func_no_by_sym_id( mmruby_code_proc_table_Object , sym_id);
+    addr = find_func_no_by_sym_id( mmruby_code_proc_table_Object , sym_id);
     break;
   case MRBC_SSYM_Proc:
-    addr = (short)find_func_no_by_sym_id( mmruby_code_proc_table_Proc , sym_id);
+    addr = find_func_no_by_sym_id( mmruby_code_proc_table_Proc , sym_id);
     break;
   case MRBC_SSYM_False:
-    addr = (short)find_func_no_by_sym_id( mmruby_code_proc_table_False , sym_id);
+    addr = find_func_no_by_sym_id( mmruby_code_proc_table_False , sym_id);
     break;
   case MRBC_SSYM_True:
-    addr = (short)find_func_no_by_sym_id( mmruby_code_proc_table_True , sym_id);
+    addr = find_func_no_by_sym_id( mmruby_code_proc_table_True , sym_id);
     break;
   case MRBC_SSYM_Nil:
-    addr = (short)find_func_no_by_sym_id( mmruby_code_proc_table_Nil , sym_id);
+    addr = find_func_no_by_sym_id( mmruby_code_proc_table_Nil , sym_id);
     break;
   case MRBC_SSYM_Array:
-    addr = (short)find_func_no_by_sym_id( mmruby_code_proc_table_Array , sym_id);
+    addr = find_func_no_by_sym_id( mmruby_code_proc_table_Array , sym_id);
     break;
   case MRBC_SSYM_Fixnum:
-    addr = (short)find_func_no_by_sym_id( mmruby_code_proc_table_Fixnum , sym_id);
+    addr = find_func_no_by_sym_id( mmruby_code_proc_table_Fixnum , sym_id);
     break;
   case MRBC_SSYM_String:
-    addr = (short)find_func_no_by_sym_id( mmruby_code_proc_table_String , sym_id);
+    addr = find_func_no_by_sym_id( mmruby_code_proc_table_String , sym_id);
     break;
   case MRBC_SSYM_Symbol:
-    addr = (short)find_func_no_by_sym_id( mmruby_code_proc_table_Symbol , sym_id);
+    addr = find_func_no_by_sym_id( mmruby_code_proc_table_Symbol , sym_id);
     break;
   case MRBC_SSYM_Range:
-    addr = (short)find_func_no_by_sym_id( mmruby_code_proc_table_Range , sym_id);
+    addr = find_func_no_by_sym_id( mmruby_code_proc_table_Range , sym_id);
     break;
 #ifdef USE_ARDUINO
   case MRBC_SSYM_Arduino:
-    addr = (short)find_func_no_by_sym_id( mmruby_code_proc_table_Arduino , sym_id);
+    addr = find_func_no_by_sym_id( mmruby_code_proc_table_Arduino , sym_id);
     break;
 #endif
 #ifdef USE_RGB_LCD
   case MRBC_SSYM_RGB_LCD:
-    addr = (short)find_func_no_by_sym_id( mmruby_code_proc_table_RGB_LCD , sym_id);
+    addr = find_func_no_by_sym_id( mmruby_code_proc_table_RGB_LCD , sym_id);
     break;
 #endif
   default:

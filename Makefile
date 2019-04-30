@@ -1,6 +1,6 @@
 PROJECT	= mmruby
 
-CSRC	= main.c startup1100.c alloc.c c_object.c debug.c hal.c value.c avr_access.c c_string.c ext_arduino.c vm.c c_common.c class.c ext_rgb_lcd.c mmruby.c c_fixnum.c console.c global.c symbol.c
+CSRC	= main.c startup1100.c alloc.c c_object.c debug.c hal.c value.c avr_access.c c_string.c ext_arduino.c vm.c c_common.c class.c ext_rgb_lcd.c mmruby.c c_fixnum.c console.c global.c symbol.c memman.c string_mini.c ext.c
 ASRC	=
 CSRCARM	=
 ASRCARM	=
@@ -17,8 +17,8 @@ CPU   = cortex-m0
 THUMB = YES
 
 # Linker script for the target MCU
-#LINKSCRIPT = lpc1114fn28.ld # ROM:32KB RAM:4KB
-LINKSCRIPT = lpc1114fhn33.ld # ROM:56KB RAM:8KB
+LINKSCRIPT = lpc1114fn28.ld # ROM:32KB RAM:4KB
+#LINKSCRIPT = lpc1114fhn33.ld # ROM:56KB RAM:8KB
 
 ### Output file type (hex, bin or both) and debugger type
 OUTPUT	= both
@@ -75,12 +75,14 @@ endif
 CFLAGS += -std=$(CSTD)
 CFLAGS += -g$(DEBUG)
 CFLAGS += -O$(OPTIMIZE)
-CFLAGS += $(addprefix -W,$(WARNINGS))
+#CFLAGS += $(addprefix -W,$(WARNINGS))
+#CFLAGS += -Wunused-parameter
 CFLAGS += $(addprefix -I,$(INCDIRS))
 CFLAGS += $(addprefix -D,$(DEFS))
 CFLAGS += -fomit-frame-pointer -fmessage-length=0 -fno-builtin -ffunction-sections -fdata-sections
 #CFLAGS += -w -c
 # -W -Wall -c -fno-builtin
+#CFLAGS += -Wp,-M,-MP,-MT,$(OBJDIR)/$(*F).o,-MF,$(OBJDIR)/$(*F).d
 CFLAGS += -Wp,-M,-MP,-MT,$(OBJDIR)/$(*F).o,-MF,$(OBJDIR)/$(*F).d
 
 # Assembler flags

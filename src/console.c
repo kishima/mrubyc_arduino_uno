@@ -13,9 +13,9 @@
 
 #include "vm_config.h"
 // #include <stdio.h>
-#include <stdint.h>
-#include <stdarg.h>
-#include <string.h>
+//#include <stdint.h>
+//#include <stdarg.h>
+#include "string_mini.h"
 #include "console.h"
 #include "hal.h"
 
@@ -32,7 +32,7 @@ void console_printf(const char *fstr, ...)
   va_start(ap, fstr);
 
   char buf[CONSOLE_BUFF_SIZE];
-  vsprintf(buf,fstr,ap);
+  //vsprintf(buf,fstr,ap);
   hal_write_string(buf);
   va_end(ap);
   

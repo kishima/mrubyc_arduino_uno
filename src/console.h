@@ -14,9 +14,10 @@
 #ifndef MRBC_SRC_CONSOLE_H_
 #define MRBC_SRC_CONSOLE_H_
 
-#include <stdint.h>
-#include <stdarg.h>
-#include <string.h>
+//#include <stdint.h>
+#include "typedef.h"
+//#include <stdarg.h>
+#include "string_mini.h"
 #include "hal.h"
 #include "debug.h"
 

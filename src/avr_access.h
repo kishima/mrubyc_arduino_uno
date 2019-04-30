@@ -1,7 +1,7 @@
 #ifndef MRBC_AVR_ACCESS_H_
 #define MRBC_AVR_ACCESS_H_
 
-#include <stdint.h>
+#include "typedef.h"
 #include "value.h"
 
 #define pgm_read_byte_near(address) (*(uint8_t*)(address))
@@ -9,7 +9,7 @@
 #define pgm_read_dword_near(address) (*(uint32_t*)(address))
 #define PROGMEM
 
-#define IS_PGM(x) (((short)x)<0x0100)
+#define IS_PGM(x) (((int)x)<0x0100)
 
 //access irep
 uint32_t read_bytecode(mrb_irep_id irep_id, uint8_t pc);

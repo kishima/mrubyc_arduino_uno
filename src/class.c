@@ -1,5 +1,5 @@
 #include "vm_config.h"
-#include <string.h>
+#include "string_mini.h"
 
 #include "value.h"
 #include "micro_vm.h"
@@ -91,8 +91,8 @@ mrb_class * mrbc_define_class(const char *name, mrb_class *super)
   //DEBUG_FPRINTLN("define class");
   mrb_class *cls;
   mrb_sym sym_id;
-  if((short)name < 0xFF){ //direct sym_id 
-    sym_id = (mrb_sym)((short)name);
+  if((int)name < 0xFF){ //direct sym_id 
+    sym_id = (mrb_sym)((int)name);
   }else{
     sym_id = str_to_symid(name);
   }
@@ -145,7 +145,7 @@ void mrbc_init_class(void)
   mrbc_init_class_symbol();
 
   //extension
-  mrbc_init_class_arduino();
+  //mrbc_init_class_arduino();
 
 #ifdef USE_RGB_LCD
   define_rgb_lcd_class();

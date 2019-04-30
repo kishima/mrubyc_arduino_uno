@@ -18,7 +18,7 @@ void hal_delay(int msec){
 
 void hal_write_string(char* text){
   //Serial.print(text);
-  printf(text);
+  DEBUG_PRINTLN(text);
 }
 
 int hal_write(int fd, const void *buf, int nbytes){
@@ -49,7 +49,6 @@ void debug_println(char* text){
 
 void debug_printb(unsigned char byte){
 //  Serial.print(byte);
-  printf("%x\n", byte);
 }
 
 #endif

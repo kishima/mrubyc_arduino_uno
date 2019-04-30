@@ -11,7 +11,7 @@
 /*-------------------------------------------------------------------*/
 /* Basic Configurations                                              */
 
-#define STACK_SIZE	1024	/* Stack size (Must be multiple of 8. If zero, MSP is set to last RAM address) */
+#define STACK_SIZE	0		/* Stack size (Must be multiple of 8. If zero, MSP is set to last RAM address) */
 
 #define	CLK_SEL	3			/* Main clock selection = 0:IRC(12MHz), 1:PLL-in, 2:WDT or 3:PLL-out */
 #define OSC_SEL	0			/* PLL input selection = 0:IRC osc or 1:Main osc */
