@@ -5,8 +5,6 @@ This project is to run mruby/c on IchigoJam (LPC1114FN28/FDH28 by NXP) or Ichigo
 This project is based on "micro mruby for Arduino Uno".
 "micro mruby for Arduino Uno" is a subset of mruby/c with a lot of limitations.  
 
-Be careful! This is still very buggy!!  
-
 micro mruby for Arduino Uno  
 https://silentworlds.info/2018/10/26/hacked-mruby-c-can-work-on-arduino-uno/  
 
@@ -18,6 +16,12 @@ http://mruby.org/
 
 IchigoJam  
 https://ichigojam.net/  
+
+Be careful! This is still very buggy!!  
+
+Known bug  
+- crash: mruby code has more than 2 irep  
+
 
 # Required environment
 

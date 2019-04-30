@@ -1,9 +1,4 @@
-//#include <stdio.h>
-
-//#include <stdint.h>
-//#include <stddef.h>
 #include "string_mini.h"
-//#include <assert.h>
 #include "micro_vm.h"
 #include "class.h"
 #include "symbol.h"
