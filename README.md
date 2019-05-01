@@ -21,7 +21,7 @@ Be careful! This is still very buggy!!
 
 Known bug  
 - crash: mruby code has more than 2 irep  
-
+- not supported: mruby 2.0 code (for2.0 TBD)  
 
 # Required environment
 

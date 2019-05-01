@@ -453,6 +453,7 @@ void c_object_btn(mrb_mvm *vm, mrb_value v[], int argc) {
 void c_object_out(mrb_mvm *vm, mrb_value v[], int argc) {
   int32_t n = GET_INT_ARG(1);
   int32_t m = GET_INT_ARG(2);
+  ext_out(n, m);
 //  printf("out %d, %d\n", n, m);
  //SET_RETURN(0);
 }

@@ -12,6 +12,9 @@ void ext_wait(int n) {
 int ext_btn() {
 	return 0;
 }
+void ext_out(int n, int m) {
+	printf("out %d, %d\n", n, m);
+}
 //
 void ext_init() {
 }

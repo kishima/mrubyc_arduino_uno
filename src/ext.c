@@ -32,14 +32,31 @@ void ext_wait(int n) {
 int ext_btn() {
 	return !(GPIO1DATA & (1 << 4));
 }
+void ext_out(int n, int m) {
+	if (n < 1 || n > 4)
+		return;
+	n--;
+	if (m) {
+		GPIO1DATA |= 1 << n;
+	} else {
+		GPIO1DATA &= ~(1 << n);
+	}
+}
 
 //
 void ext_init() {
 	InitSysTick(1000);
 	
-	IOCON_PIO1_5 = 0xd0; // digital out
-	GPIO1DIR = 1 << 5;
+	IOCON_PIO1_5 = 0xd0; // digital out // LED
 
+	IOCON_R_PIO1_0 = 0xd1; // digital out
+	IOCON_R_PIO1_1 = 0xd1; // digital out
+	IOCON_R_PIO1_2 = 0xd1; // digital out
+	IOCON_SWDIO_PIO1_3 = 0xd1; // digital out
+
+	GPIO1DIR = 0b101111;
+	GPIO1DATA &= ~0b101111;
+	
 	IOCON_PIO1_4 = 0xd0; // digital in
 }
 

@@ -6,5 +6,6 @@ int ext_btn();
 void ext_led(int n);
 void ext_wait(int n);
 int ext_btn();
+void ext_out(int n, int m);
 
 #endif
