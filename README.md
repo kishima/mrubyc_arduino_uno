@@ -73,10 +73,15 @@ $ make
 ```
 
 ```C
-#include "mmruby_lpc1114.h"
 void main() {
-	mmruby_setup();
-	mmruby_run();
+	memman_init();
+	hal_init();
+	ext_init();
+
+	init_symbol_table();
+	mrbc_init_class();
+	init_vm();
+	run_vm();
 }
 ```
 
